@@ -332,14 +332,20 @@
                 var trLawan = document.createElement("tr");
 
                 if (item.jenis === "Pemasukan") {
-                    totalDebit += item.jumlah; totalKredit += item.jumlah;
-                    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas LPK Kas Utama</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-                    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan LPK (${item.kategori} - ${item.keterangan})</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
-                } else {
-                    totalDebit += item.jumlah; totalKredit += item.jumlah;
-                    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban Operasional (${item.kategori} - ${item.keterangan})</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-                    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas LPK Kas Utama</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
-                }
+    totalDebit += item.jumlah; totalKredit += item.jumlah;
+    // Baris 1: Kas Utama LPK di sisi Debit
+    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+    
+    // Baris 2: Nama akun Pendapatan lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
+    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+} else {
+    totalDebit += item.jumlah; totalKredit += item.jumlah;
+    // Baris 1: Nama akun Beban lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
+    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+    
+    // Baris 2: Kas Utama LPK di sisi Kredit
+    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+}
                 jbody.appendChild(trKas); jbody.appendChild(trLawan);
             });
             jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE JURNAL</td><td class="text-end text-success">${formatRupiah(totalDebit)}</td><td class="text-end text-success">${formatRupiah(totalKredit)}</td></tr>`;
