@@ -238,7 +238,7 @@
             return pattern + "-" + urutan;
         }
 
-        function renderTabel(arr) {
+       function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); 
             var tfoot = document.getElementById("tabel-foot");
             tbody.innerHTML = ""; if(tfoot) tfoot.innerHTML = "";
@@ -259,10 +259,11 @@
                 
                 var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+                // POSISI NO.REF SEKARANG ADA DI SETELAH TANGGAL
                 tr.innerHTML = `
                     <td>${nomorUrut++}</td>
-                    <td class="text-muted fw-bold">${item.noref}</td>
                     <td style="white-space:nowrap">${tglIndo}</td>
+                    <td class="text-muted fw-bold">${item.noref}</td>
                     <td><span class="badge btn-xs ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td>
                     <td><b>${item.kategori}</b></td>
                     <td>${item.keterangan}</td>
