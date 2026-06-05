@@ -311,17 +311,43 @@
             if(res && res.hasil === "Sukses") { form.reset(); form.tanggal.value = new Date().toISOString().split('T')[0]; segarkanSemuaData(); }
         }
 
-        function bukaEdit(idx) {
-            var item = masterData[idx]; document.getElementById("e-jenis").value = item.jenis; document.getElementById("e-idbaris").value = item.idBaris; document.getElementById("e-tanggal").value = item.tanggalForm; document.getElementById("e-kategori").value = item.kategori; document.getElementById("e-keterangan").value = item.keterangan; document.getElementById("e-jumlah").value = item.jumlah; document.getElementById("e-noref").value = item.noref; instanceModal.show();
+       function bukaEdit(idx) {
+            var item = masterData[idx]; 
+            document.getElementById("e-jenis").value = item.jenis; 
+            document.getElementById("e-idbaris").value = item.idBaris; 
+            document.getElementById("e-tanggal").value = item.tanggalForm; 
+            document.getElementById("e-kategori").value = item.kategori; 
+            document.getElementById("e-keterangan").value = item.keterangan; 
+            document.getElementById("e-jumlah").value = item.jumlah; 
+            
+            // JIKA NO REF MASIH KOSONG ATAU BERISI TANDA MINUS, KOSONGKAN SAJA AGAR NANTI DIGANTI OTOMATIS
+            if (item.noref === "-" || !item.noref) {
+                document.getElementById("e-noref").value = "";
+            } else {
+                document.getElementById("e-noref").value = item.noref;
+            }
+            instanceModal.show();
         }
 
         async function simpanEdit(e) {
             e.preventDefault();
-            var p = `aksi=edit&jenis=${document.getElementById("e-jenis").value}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${document.getElementById("e-tanggal").value}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}&noref=${document.getElementById("e-noref").value}`;
+            var jenis = document.getElementById("e-jenis").value;
+            var tglInput = document.getElementById("e-tanggal").value;
+            var noRefSekarang = document.getElementById("e-noref").value;
+            
+            // JIKA NO REF KOSONG (KARENA DATA LAMA), TERBITKAN NO.REF BARU SECARA OTOMATIS
+            if (noRefSekarang === "" || noRefSekarang === "-") {
+                noRefSekarang = buatNoRefOtomatis(jenis, tglInput);
+            }
+            
+            var p = `aksi=edit&jenis=${jenis}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${tglInput}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}&noref=${noRefSekarang}`;
+            
             const res = await panggilAPI(p);
-            if(res && res.hasil === "Sukses") { instanceModal.hide(); segarkanSemuaData(); }
+            if(res && res.hasil === "Sukses") { 
+                instanceModal.hide(); 
+                segarkanSemuaData(); 
+            }
         }
-
         async function hapusData(jenis, idBaris) { if(confirm("Hapus data?")) { const res = await panggilAPI(`aksi=hapus&jenis=${jenis}&idBaris=${idBaris}`); if(res && res.hasil === "Sukses") segarkanSemuaData(); } }
         function formatRupiah(n) { return "Rp " + parseFloat(n).toLocaleString('id-ID'); }
     </script>
