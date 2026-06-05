@@ -132,12 +132,11 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // 1. SILAKAN PASTE URL WEB APP ANDA DI SINI
         var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
         
-        // 2. ATUR PIN KHUSUS ADMIN DI SINI (Contoh: "123456", silakan ganti bebas)
+        // 2. ATUR PIN KHUSUS ADMIN DI SINI
         var PIN_RAHASIA = "20242026";
 
         var masterData = [];
@@ -181,21 +180,38 @@
             window.location.reload();
         }
 
-        // --- SISA FUNGSI LOGIKA CRUD DI BAWAH TETAP SAMA SEPERTI KEMARIN ---
-        function panggilAPI(param, callbackName, callbackFunc) {
-            window[callbackName] = function(data) { callbackFunc(data); delete window[callbackName]; document.getElementById(callbackName).remove(); };
-            var script = document.createElement('script'); script.id = callbackName;
-            script.src = API_URL + "?" + param + "&callback=" + callbackName + "&_ts=" + new Date().getTime();
-            document.body.appendChild(script);
+        // =========================================================
+        // BAGIAN KHUSUS LOGIKA FETCH MODERN (RAMAH HP & ANTI MACET)
+        // =========================================================
+        async function panggilAPI(param) {
+            try {
+                const respons = await fetch(API_URL + "?" + param);
+                if (!respons.ok) throw new Error("Koneksi gagal");
+                return await respons.json();
+            } catch (err) {
+                console.error("Gagal memuat data: ", err);
+                return null;
+            }
         }
 
-        function segarkanSemuaData() {
-            panggilAPI("aksi=getRingkasan", "cbDashboard", function(d) {
+        async function segarkanSemuaData() {
+            document.getElementById('txt-pemasukan').innerText = "Memuat...";
+            document.getElementById('txt-pengeluaran').innerText = "Memuat...";
+            document.getElementById('txt-saldo').innerText = "Memuat...";
+            document.getElementById('tabel-body').innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Sedang memuat database Sheets...</td></tr>`;
+
+            const d = await panggilAPI("aksi=getRingkasan");
+            if (d) {
                 document.getElementById('txt-pemasukan').innerText = formatRupiah(d.pemasukan);
                 document.getElementById('txt-pengeluaran').innerText = formatRupiah(d.pengeluaran);
                 document.getElementById('txt-saldo').innerText = formatRupiah(d.saldo);
-            });
-            panggilAPI("aksi=ambilData", "cbTabel", function(data) { masterData = data; renderTabel(masterData); });
+            }
+
+            const data = await panggilAPI("aksi=ambilData");
+            if (data) {
+                masterData = data;
+                renderTabel(masterData);
+            }
         }
 
         function renderTabel(arr) {
@@ -227,24 +243,42 @@
             renderTabel(hasil);
         }
 
-        function simpanData(e, jenis) {
+        async function simpanData(e, jenis) {
             e.preventDefault(); var form = e.target;
             var p = `aksi=simpan&jenis=${jenis}&tanggal=${form.tanggal.value}&kategori=${encodeURIComponent(form.kategori.value)}&keterangan=${encodeURIComponent(form.keterangan.value)}&jumlah=${form.jumlah.value}`;
-            panggilAPI(p, "cbSimpan", function(res) { if(res.hasil === "Sukses") { form.reset(); form.tanggal.value = new Date().toISOString().split('T')[0]; segarkanSemuaData(); } else { alert(res.hasil); } });
+            
+            const res = await panggilAPI(p);
+            if(res && res.hasil === "Sukses") { 
+                form.reset(); 
+                form.tanggal.value = new Date().toISOString().split('T')[0]; 
+                segarkanSemuaData(); 
+            } else { 
+                alert(res ? res.hasil : "Gagal menyimpan data"); 
+            }
         }
 
         function bukaEdit(idx) {
             var item = masterData[idx]; document.getElementById("e-jenis").value = item.jenis; document.getElementById("e-idbaris").value = item.idBaris; document.getElementById("e-tanggal").value = item.tanggalForm; document.getElementById("e-kategori").value = item.kategori; document.getElementById("e-keterangan").value = item.keterangan; document.getElementById("e-jumlah").value = item.jumlah; instanceModal.show();
         }
 
-        function simpanEdit(e) {
+        async function simpanEdit(e) {
             e.preventDefault();
             var p = `aksi=edit&jenis=${document.getElementById("e-jenis").value}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${document.getElementById("e-tanggal").value}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}`;
-            panggilAPI(p, "cbEdit", function(res) { if(res.hasil === "Sukses") { instanceModal.hide(); segarkanSemuaData(); } else { alert(res.hasil); } });
+            
+            const res = await panggilAPI(p);
+            if(res && res.hasil === "Sukses") { 
+                instanceModal.hide(); 
+                segarkanSemuaData(); 
+            } else { 
+                alert(res ? res.hasil : "Gagal mengubah data"); 
+            }
         }
 
-        function hapusData(jenis, idBaris) {
-            if(confirm("Hapus data ini?")) { panggilAPI(`aksi=hapus&jenis=${jenis}&idBaris=${idBaris}`, "cbHapus", function(res) { if(res.hasil === "Sukses") segarkanSemuaData(); }); }
+        async function hapusData(jenis, idBaris) {
+            if(confirm("Hapus data ini?")) { 
+                const res = await panggilAPI(`aksi=hapus&jenis=${jenis}&idBaris=${idBaris}`);
+                if(res && res.hasil === "Sukses") segarkanSemuaData(); 
+            }
         }
 
         function formatRupiah(n) { return "Rp " + parseFloat(n).toLocaleString('id-ID'); }
