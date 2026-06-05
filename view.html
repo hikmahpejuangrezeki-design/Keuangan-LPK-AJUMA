@@ -92,7 +92,7 @@
             }
         }
 
-        function renderTabel(arr) {
+       function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); var tfoot = document.getElementById("tabel-foot");
             tbody.innerHTML = ""; tfoot.innerHTML = "";
             if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
@@ -103,7 +103,24 @@
                 var tr = document.createElement("tr"); var isM = item.jenis === 'Pemasukan';
                 if (filterJenisSaatIni === "Semua") { if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } } else { akumulasiTotal += item.jumlah; }
 
-                tr.innerHTML = `<td>${item.tanggal}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>`;
+                // --- KODE BARU: FORMAT TANGGAL INDONESIA TANPA JAM ---
+                var tanggalIndo = "-";
+                if (item.tanggal) {
+                    var objekTanggal = new Date(item.tanggalForm || item.tanggal);
+                    if (!isNaN(objekTanggal.getTime())) {
+                        tanggalIndo = objekTanggal.toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    } else {
+                        tanggalIndo = item.tanggal;
+                    }
+                }
+                // -----------------------------------------------------
+
+                tr.innerHTML = `<td>${tanggalIndo}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>`;
                 tbody.appendChild(tr);
             });
 
