@@ -2,79 +2,87 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Mode Viewer - Sistem Keuangan LPK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laporan Keuangan LPK</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f6f9; font-family: system-ui, -apple-system, sans-serif; }
-        @media print {
-            nav, .btn, .filter-area { display: none !important; }
-            body { background: #fff; color: #000; }
-            table { width: 100% !important; border: 1px solid #000; }
-            th, td { border: 1px solid #000 !important; padding: 6px !important; }
-        }
+        body { background-color: #f4f6f9; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-secondary shadow-sm mb-4">
-        <div class="container">
-            <span class="navbar-brand fw-bold"><i class="bi bi-eye me-2"></i>MONITORING KEUANGAN LPK (VIEW ONLY)</span>
-            <span class="badge bg-light text-dark fw-bold">Akses Terbatas</span>
+    <nav class="navbar navbar-dark bg-dark shadow-sm mb-4">
+        <div class="container-fluid px-3">
+            <span class="navbar-brand fw-bold small"><i class="bi bi-wallet2 me-2"></i>MONITORING KEUANGAN LPK</span>
+            <button class="btn btn-sm btn-outline-light" onclick="segarkanSemuaData()"><i class="bi bi-arrow-clockwise"></i></button>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid px-3">
+        <!-- RINGKASAN DASHBOARD -->
         <div class="row mb-4 text-white">
-            <div class="col-md-4 mb-2"><div class="card bg-success p-3 border-0 shadow-sm">Pemasukan<h2 class="fw-bold m-0" id="txt-pemasukan">Memuat...</h2></div></div>
-            <div class="col-md-4 mb-2"><div class="card bg-danger p-3 border-0 shadow-sm">Pengeluaran<h2 class="fw-bold m-0" id="txt-pengeluaran">Memuat...</h2></div></div>
-            <div class="col-md-4 mb-2"><div class="card bg-primary p-3 border-0 shadow-sm">Saldo Kas LPK<h2 class="fw-bold m-0" id="txt-saldo">Memuat...</h2></div></div>
+            <div class="col-6 col-md-4 mb-2"><div class="card bg-success p-3 border-0 shadow-sm card-sm">Pemasukan<h4 class="fw-bold m-0" id="txt-pemasukan">Memuat...</h4></div></div>
+            <div class="col-6 col-md-4 mb-2"><div class="card bg-danger p-3 border-0 shadow-sm card-sm">Pengeluaran<h4 class="fw-bold m-0" id="txt-pengeluaran">Memuat...</h4></div></div>
+            <div class="col-12 col-md-4 mb-2"><div class="card bg-primary p-3 border-0 shadow-sm card-sm">Saldo Kas LPK<h4 class="fw-bold m-0" id="txt-saldo">Memuat...</h4></div></div>
         </div>
 
-        <div class="card p-4 border-0 shadow-sm bg-white mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan LPK</h5>
-                <button class="btn btn-primary btn-sm fw-bold px-3" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Laporan</button>
+        <!-- NAV TAB -->
+        <ul class="nav nav-tabs mb-3" id="tabsLaporan" role="tablist">
+            <li class="nav-item"><button class="nav-link active fw-bold small" id="rekap-tab" data-bs-toggle="tab" data-bs-target="#tab-rekap" type="button">Rekapitulasi</button></li>
+            <li class="nav-item"><button class="nav-link fw-bold small" id="jurnal-tab" data-bs-toggle="tab" data-bs-target="#tab-jurnal" type="button">Jurnal Akuntansi</button></li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- TAB REKAP -->
+            <div class="tab-pane fade show active" id="tab-rekap">
+                <div class="card p-3 border-0 shadow-sm bg-white mb-5">
+                    <div class="row g-1 mb-2 p-1 bg-light rounded">
+                        <div class="col-4"><select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()"><option value="Semua">Semua</option><option value="Pemasukan">Masuk</option><option value="Pengeluaran">Keluar</option></select></div>
+                        <div class="col-8"><input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari..."></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover text-sm align-middle">
+                            <thead class="table-light">
+                                <tr><th>No</th><th>Tanggal</th><th>No.Ref</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th class="text-end">Jumlah</th></tr>
+                            </thead>
+                            <tbody id="tabel-body"><tr><td colspan="7" class="text-center py-3">Memuat...</td></tr></tbody>
+                            <tfoot class="table-dark" id="tabel-foot"></tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="row g-2 mb-3 p-2 bg-light rounded filter-area">
-                <div class="col-md-4"><select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()"><option value="Semua">-- Semua Jenis --</option><option value="Pemasukan">Pemasukan</option><option value="Pengeluaran">Pengeluaran</option></select></div>
-                <div class="col-md-8"><input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari keterangan / kategori..."></div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th class="text-end">Jumlah</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-body">
-                        <tr><td colspan="5" class="text-center py-4 text-muted">Sedang memuat database Sheets...</td></tr>
-                    </tbody>
-                    <tfoot class="table-dark" id="tabel-foot"></tfoot>
-                </table>
+            <!-- TAB JURNAL -->
+            <div class="tab-pane fade" id="tab-jurnal">
+                <div class="card p-3 border-0 shadow-sm bg-white mb-5">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered text-sm align-middle">
+                            <thead class="table-secondary text-center">
+                                <tr><th>Tanggal</th><th>No. Ref</th><th>Keterangan Akun</th><th class="text-end">Debit</th><th class="text-end">Kredit</th></tr>
+                            </thead>
+                            <tbody id="jurnal-body"><tr><td colspan="5" class="text-center py-3">Memuat Jurnal...</td></tr></tbody>
+                            <tfoot class="table-light fw-bold" id="jurnal-foot"></tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 1. SILAKAN PASTE URL WEB APP ANDA DI SINI
-        var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
+        var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec"; 
         var masterData = [];
 
         window.onload = function() { segarkanSemuaData(); };
 
-        // Fungsi Panggil API Menggunakan Fetch Modern (Sangat Ramah HP)
         async function panggilAPI(param) {
             try {
                 const respons = await fetch(API_URL + "?" + param);
-                if (!respons.ok) throw new Error("Koneksi gagal");
                 return await respons.json();
-            } catch (err) {
-                console.error("Gagal memuat data: ", err);
-                return null;
-            }
+            } catch (err) { return null; }
         }
 
         async function segarkanSemuaData() {
@@ -84,58 +92,62 @@
                 document.getElementById('txt-pengeluaran').innerText = formatRupiah(d.pengeluaran);
                 document.getElementById('txt-saldo').innerText = formatRupiah(d.saldo);
             }
-
             const data = await panggilAPI("aksi=ambilData");
             if (data) {
                 masterData = data;
                 renderTabel(masterData);
+                renderJurnal(masterData);
             }
         }
 
-       function renderTabel(arr) {
+        function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); var tfoot = document.getElementById("tabel-foot");
-            tbody.innerHTML = ""; tfoot.innerHTML = "";
-            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
-
+            tbody.innerHTML = ""; if(tfoot) tfoot.innerHTML = "";
+            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3">Kosong.</td></tr>`; return; }
+            
             var akumulasiTotal = 0; var filterJenisSaatIni = document.getElementById("f-jenis").value;
+            var nomorUrut = 1;
 
             arr.forEach(function(item) {
-                var tr = document.createElement("tr"); var isM = item.jenis === 'Pemasukan';
+                if (filterJenisSaatIni !== "Semua" && item.jenis !== filterJenisSaatIni) return;
+                var isM = item.jenis === 'Pemasukan';
                 if (filterJenisSaatIni === "Semua") { if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } } else { akumulasiTotal += item.jumlah; }
+                var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-                // --- KODE BARU: FORMAT TANGGAL INDONESIA TANPA JAM ---
-                var tanggalIndo = "-";
-                if (item.tanggal) {
-                    var objekTanggal = new Date(item.tanggalForm || item.tanggal);
-                    if (!isNaN(objekTanggal.getTime())) {
-                        tanggalIndo = objekTanggal.toLocaleDateString('id-ID', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                    } else {
-                        tanggalIndo = item.tanggal;
-                    }
-                }
-                // -----------------------------------------------------
-
-                tr.innerHTML = `<td>${tanggalIndo}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>`;
+                var tr = document.createElement("tr");
+                tr.innerHTML = `<td>${nomorUrut++}</td><td class="fw-bold text-muted">${item.noref}</td><td style="white-space:nowrap">${tglIndo}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>`;
                 tbody.appendChild(tr);
             });
+            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">TOTAL SALDO AKHIR :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+        }
 
-            var labelTotal = "TOTAL SALDO AKHIR";
-            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN";
-            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN";
-            tfoot.innerHTML = `<tr><td colspan="4" class="fw-bold text-end">${labelTotal} :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+        function renderJurnal(arr) {
+            var jbody = document.getElementById("jurnal-body"); var jfoot = document.getElementById("jurnal-foot");
+            jbody.innerHTML = ""; jfoot.innerHTML = "";
+            if(!arr || arr.length === 0) return;
+            var totalDebit = 0; var totalKredit = 0;
+            arr.forEach(function(item) {
+                var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                var trKas = document.createElement("tr"); var trLawan = document.createElement("tr");
+                if (item.jenis === "Pemasukan") {
+                    totalDebit += item.jumlah; totalKredit += item.jumlah;
+                    trKas.innerHTML = `<td>${tglIndo}</td><td>${item.noref}</td><td>Kas LPK Kas Utama</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+                    trLawan.innerHTML = `<td></td><td></td><td style="padding-left:25px;" class="text-muted">Pendapatan LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+                } else {
+                    totalDebit += item.jumlah; totalKredit += item.jumlah;
+                    trKas.innerHTML = `<td>${tglIndo}</td><td>${item.noref}</td><td>Beban Operasional</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+                    trLawan.innerHTML = `<td></td><td></td><td style="padding-left:25px;" class="text-muted">Kas LPK Kas Utama</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+                }
+                jbody.appendChild(trKas); jbody.appendChild(trLawan);
+            });
+            jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE</td><td class="text-end text-success">${formatRupiah(totalDebit)}</td><td class="text-end text-success">${formatRupiah(totalKredit)}</td></tr>`;
         }
 
         function filterTabel() {
             var jns = document.getElementById("f-jenis").value; var cari = document.getElementById("f-cari").value.toLowerCase();
-            var hasil = masterData.filter(function(item) { return (jns === "Semua" || item.jenis === jns) && (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari)); });
+            var hasil = masterData.filter(function(item) { return (jns === "Semua" || item.jenis === jns) && (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari) || item.noref.toLowerCase().includes(cari)); });
             renderTabel(hasil);
         }
-
         function formatRupiah(n) { return "Rp " + parseFloat(n).toLocaleString('id-ID'); }
     </script>
 </body>
