@@ -140,12 +140,15 @@
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="tab-jurnal">
-                    <div class="card p-3 border-0 shadow-sm bg-white mb-5">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold m-0"><i class="bi bi-book-half text-info"></i>Jurnal Umum Keuangan LPK</h6>
-                            <button class="btn btn-info btn-sm text-white fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Jurnal</button>
-                        </div>
+               <div class="tab-pane fade" id="tab-jurnal">
+    <div class="card p-3 border-0 shadow-sm bg-white mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="fw-bold m-0"><i class="bi bi-book-half text-info"></i> Buku Jurnal Umum Keuangan LPK AJUMA</h6>
+                <small id="jurnal-periode" class="text-muted fw-semibold" style="font-size: 12px;"></small>
+            </div>
+            <button class="btn btn-info btn-sm text-white fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Jurnal</button>
+        </div>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered text-sm align-middle">
                                 <thead class="table-secondary text-center">
@@ -352,10 +355,18 @@
         }
 
         // FUNGSI GABUNGAN UNTUK FILTER BERDASARKAN BULAN SIKLUS, JENIS, DAN SEARCH BAR
-        function filterTabel() {
-            var bln = document.getElementById("f-bulan").value; 
+       function filterTabel() {
+            var selectBulan = document.getElementById("f-bulan");
+            var bln = selectBulan.value; 
             var jns = document.getElementById("f-jenis").value; 
             var cari = document.getElementById("f-cari").value.toLowerCase();
+            
+            // OTOMATIS UPDATE TEKS PERIODE DI BAWAH JUDUL JURNAL
+            var teksBulanTerpilih = selectBulan.options[selectBulan.selectedIndex].text;
+            var elemenPeriode = document.getElementById("jurnal-periode");
+            if(elemenPeriode) {
+                elemenPeriode.innerText = bln === "Semua" ? "Periode: Semua Transaksi" : "Periode SIKLUS: " + teksBulanTerpilih;
+            }
             
             var hasil = masterData.filter(function(item) { 
                 var cocokSiklus = apakahMasukSiklusBulan(item.tanggalForm, bln);
@@ -366,7 +377,7 @@
             });
             
             renderTabel(hasil);
-            renderJurnal(hasil); // Sinkronisasi jurnal dengan filter bulan terpilih
+            renderJurnal(hasil);
         }
 
         async function simpanData(e, jenis) {
