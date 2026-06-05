@@ -93,10 +93,37 @@
                             <h6 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan</h6>
                             <button class="btn btn-primary btn-sm fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Rekap</button>
                         </div>
+                        
                         <div class="row g-1 mb-2 p-1 bg-light rounded filter-area">
-                            <div class="col-4"><select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()"><option value="Semua">Semua</option><option value="Pemasukan">Masuk</option><option value="Pengeluaran">Keluar</option></select></div>
-                            <div class="col-8"><input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari data..."></div>
+                            <div class="col-4 col-md-2">
+                                <select class="form-select form-select-sm fw-bold border-primary" id="f-bulan" onchange="filterTabel()">
+                                    <option value="Semua">Semua Bulan</option>
+                                    <option value="01">Januari (21 Des - 20 Jan)</option>
+                                    <option value="02">Februari (21 Jan - 20 Feb)</option>
+                                    <option value="03">Maret (21 Feb - 20 Mar)</option>
+                                    <option value="04">April (21 Mar - 20 Apr)</option>
+                                    <option value="05">Mei (21 Apr - 20 Mei)</option>
+                                    <option value="06">Juni (21 Mei - 20 Jun)</option>
+                                    <option value="07">Juli (21 Jun - 20 Jul)</option>
+                                    <option value="08">Agustus (21 Jul - 20 Agu)</option>
+                                    <option value="09">September (21 Agu - 20 Sep)</option>
+                                    <option value="10">Oktobor (21 Sep - 20 Okt)</option>
+                                    <option value="11">November (21 Okt - 20 Nov)</option>
+                                    <option value="12">Desember (21 Nov - 20 Des)</option>
+                                </select>
+                            </div>
+                            <div class="col-4 col-md-2">
+                                <select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()">
+                                    <option value="Semua">Semua Jenis</option>
+                                    <option value="Pemasukan">Masuk</option>
+                                    <option value="Pengeluaran">Keluar</option>
+                                </select>
+                            </div>
+                            <div class="col-4 col-md-8">
+                                <input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari data...">
+                            </div>
                         </div>
+
                         <div class="table-responsive">
                             <table class="table table-sm table-hover text-sm align-middle">
                                 <thead class="table-light">
@@ -210,8 +237,7 @@
             const data = await panggilAPI("aksi=ambilData");
             if (data) {
                 masterData = data;
-                renderTabel(masterData);
-                renderJurnal(masterData);
+                filterTabel(); // Memicu filter awal
             }
         }
 
@@ -231,19 +257,37 @@
             return pattern + "-" + urutan;
         }
 
+        // FUNGSI CEK SIKLUS TANGGAL (21 BULAN LALU HINGGA 20 BULAN BERJALAN)
+        function apakahMasukSiklusBulan(tanggalString, bulanTarget) {
+            if (bulanTarget === "Semua") return true;
+            
+            var d = new Date(tanggalString);
+            var tgl = d.getDate();
+            var bln = d.getMonth() + 1; // JS bermula dari 0
+            
+            var target = parseInt(bulanTarget);
+            
+            // Contoh Target Juni (06): Maka kriteria masuk adalah:
+            // 21 Mei s/d 31 Mei (bln == target-1 && tgl >= 21) ATAU 1 Juni s/d 20 Juni (bln == target && tgl <= 20)
+            var bulanLalu = target === 1 ? 12 : target - 1;
+            
+            if (bln === bulanLalu && tgl >= 21) return true;
+            if (bln === target && tgl <= 20) return true;
+            
+            return false;
+        }
+
         function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); 
             var tfoot = document.getElementById("tabel-foot");
             tbody.innerHTML = ""; if(tfoot) tfoot.innerHTML = "";
-            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
+            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Data tidak ditemukan.</td></tr>`; return; }
             
             var akumulasiTotal = 0; 
             var filterJenisSaatIni = document.getElementById("f-jenis").value;
             var nomorUrut = 1;
 
             arr.forEach(function(item, index) {
-                if (filterJenisSaatIni !== "Semua" && item.jenis !== filterJenisSaatIni) return;
-                
                 var tr = document.createElement("tr"); 
                 var isM = item.jenis === 'Pemasukan';
                 if (filterJenisSaatIni === "Semua") { 
@@ -267,7 +311,11 @@
                 `;
                 tbody.appendChild(tr);
             });
-            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">TOTAL SALDO AKHIR :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td></td></tr>`;
+            
+            var teksLabel = "TOTAL SALDO AKHIR :";
+            if (filterJenisSaatIni === "Pemasukan") teksLabel = "TOTAL MASUK PERIODE :";
+            if (filterJenisSaatIni === "Pengeluaran") teksLabel = "TOTAL KELUAR PERIODE :";
+            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td></td></tr>`;
         }
 
         function renderJurnal(arr) {
@@ -297,10 +345,22 @@
             jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE JURNAL</td><td class="text-end text-success">${formatRupiah(totalDebit)}</td><td class="text-end text-success">${formatRupiah(totalKredit)}</td></tr>`;
         }
 
+        // FUNGSI GABUNGAN UNTUK FILTER BERDASARKAN BULAN SIKLUS, JENIS, DAN SEARCH BAR
         function filterTabel() {
-            var jns = document.getElementById("f-jenis").value; var cari = document.getElementById("f-cari").value.toLowerCase();
-            var hasil = masterData.filter(function(item) { return (jns === "Semua" || item.jenis === jns) && (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari) || item.noref.toLowerCase().includes(cari)); });
+            var bln = document.getElementById("f-bulan").value; 
+            var jns = document.getElementById("f-jenis").value; 
+            var cari = document.getElementById("f-cari").value.toLowerCase();
+            
+            var hasil = masterData.filter(function(item) { 
+                var cocokSiklus = apakahMasukSiklusBulan(item.tanggalForm, bln);
+                var cocokJenis = (jns === "Semua" || item.jenis === jns);
+                var cocokCari = (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari) || item.noref.toLowerCase().includes(cari));
+                
+                return cocokSiklus && cocokJenis && cocokCari; 
+            });
+            
             renderTabel(hasil);
+            renderJurnal(hasil); // Sinkronisasi jurnal dengan filter bulan terpilih
         }
 
         async function simpanData(e, jenis) {
@@ -311,7 +371,7 @@
             if(res && res.hasil === "Sukses") { form.reset(); form.tanggal.value = new Date().toISOString().split('T')[0]; segarkanSemuaData(); }
         }
 
-       function bukaEdit(idx) {
+        function bukaEdit(idx) {
             var item = masterData[idx]; 
             document.getElementById("e-jenis").value = item.jenis; 
             document.getElementById("e-idbaris").value = item.idBaris; 
@@ -320,7 +380,6 @@
             document.getElementById("e-keterangan").value = item.keterangan; 
             document.getElementById("e-jumlah").value = item.jumlah; 
             
-            // JIKA NO REF MASIH KOSONG ATAU BERISI TANDA MINUS, KOSONGKAN SAJA AGAR NANTI DIGANTI OTOMATIS
             if (item.noref === "-" || !item.noref) {
                 document.getElementById("e-noref").value = "";
             } else {
@@ -335,7 +394,6 @@
             var tglInput = document.getElementById("e-tanggal").value;
             var noRefSekarang = document.getElementById("e-noref").value;
             
-            // JIKA NO REF KOSONG (KARENA DATA LAMA), TERBITKAN NO.REF BARU SECARA OTOMATIS
             if (noRefSekarang === "" || noRefSekarang === "-") {
                 noRefSekarang = buatNoRefOtomatis(jenis, tglInput);
             }
@@ -343,11 +401,9 @@
             var p = `aksi=edit&jenis=${jenis}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${tglInput}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}&noref=${noRefSekarang}`;
             
             const res = await panggilAPI(p);
-            if(res && res.hasil === "Sukses") { 
-                instanceModal.hide(); 
-                segarkanSemuaData(); 
-            }
+            if(res && res.hasil === "Sukses") {  instanceModal.hide(); segarkanSemuaData(); }
         }
+
         async function hapusData(jenis, idBaris) { if(confirm("Hapus data?")) { const res = await panggilAPI(`aksi=hapus&jenis=${jenis}&idBaris=${idBaris}`); if(res && res.hasil === "Sukses") segarkanSemuaData(); } }
         function formatRupiah(n) { return "Rp " + parseFloat(n).toLocaleString('id-ID'); }
     </script>
