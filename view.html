@@ -59,26 +59,37 @@
     </div>
 
     <script>
-        // TEMPELKAN URL WEB APP ANDA DI BAWAH INI
+        // 1. SILAKAN PASTE URL WEB APP ANDA DI SINI
         var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
         var masterData = [];
 
         window.onload = function() { segarkanSemuaData(); };
 
-        function panggilAPI(param, callbackName, callbackFunc) {
-            window[callbackName] = function(data) { callbackFunc(data); delete window[callbackName]; document.getElementById(callbackName).remove(); };
-            var script = document.createElement('script'); script.id = callbackName;
-            script.src = API_URL + "?" + param + "&callback=" + callbackName + "&_ts=" + new Date().getTime();
-            document.body.appendChild(script);
+        // Fungsi Panggil API Menggunakan Fetch Modern (Sangat Ramah HP)
+        async function panggilAPI(param) {
+            try {
+                const respons = await fetch(API_URL + "?" + param);
+                if (!respons.ok) throw new Error("Koneksi gagal");
+                return await respons.json();
+            } catch (err) {
+                console.error("Gagal memuat data: ", err);
+                return null;
+            }
         }
 
-        function segarkanSemuaData() {
-            panggilAPI("aksi=getRingkasan", "cbDashboard", function(d) {
+        async function segarkanSemuaData() {
+            const d = await panggilAPI("aksi=getRingkasan");
+            if (d) {
                 document.getElementById('txt-pemasukan').innerText = formatRupiah(d.pemasukan);
                 document.getElementById('txt-pengeluaran').innerText = formatRupiah(d.pengeluaran);
                 document.getElementById('txt-saldo').innerText = formatRupiah(d.saldo);
-            });
-            panggilAPI("aksi=ambilData", "cbTabel", function(data) { masterData = data; renderTabel(masterData); });
+            }
+
+            const data = await panggilAPI("aksi=ambilData");
+            if (data) {
+                masterData = data;
+                renderTabel(masterData);
+            }
         }
 
         function renderTabel(arr) {
