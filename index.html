@@ -87,12 +87,17 @@
             </ul>
 
             <div class="tab-content">
-                <div class="tab-pane fade show active" id="tab-rekap">
-                    <div class="card p-3 border-0 shadow-sm bg-white mb-5">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan</h6>
-                            <button class="btn btn-primary btn-sm fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Rekap</button>
-                        </div>
+                <!-- TAB 1: REKAPITULASI ARUS KAS -->
+<div class="tab-pane fade show active" id="tab-rekap">
+    <div class="card p-3 border-0 shadow-sm bg-white mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="fw-bold m-0"><i class="bi bi-wallet2 text-primary"></i> Laporan Rekapitulasi Keuangan</h6>
+                <!-- BARIS PERIODE UTOMATIS REKAP YANG KITA TAMBAHKAN -->
+                <small id="rekap-periode" class="text-muted fw-semibold" style="font-size: 12px;"></small>
+            </div>
+            <button class="btn btn-primary btn-sm fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Rekap</button>
+        </div>
                         
                         <div class="row g-1 mb-2 p-1 bg-light rounded filter-area">
                             <div class="col-4 col-md-2">
@@ -361,11 +366,19 @@
             var jns = document.getElementById("f-jenis").value; 
             var cari = document.getElementById("f-cari").value.toLowerCase();
             
-            // OTOMATIS UPDATE TEKS PERIODE DI BAWAH JUDUL JURNAL
+            // Ambil teks bulan dari opsi dropdown yang sedang dipilih
             var teksBulanTerpilih = selectBulan.options[selectBulan.selectedIndex].text;
-            var elemenPeriode = document.getElementById("jurnal-periode");
-            if(elemenPeriode) {
-                elemenPeriode.innerText = bln === "Semua" ? "Periode: Semua Transaksi" : "Periode SIKLUS: " + teksBulanTerpilih;
+            
+            // 1. UPDATE TEKS PERIODE DI TABEL JURNAL (Yang kita buat sebelumnya)
+            var elemenPeriodeJurnal = document.getElementById("jurnal-periode");
+            if(elemenPeriodeJurnal) {
+                elemenPeriodeJurnal.innerText = bln === "Semua" ? "Periode: Semua Transaksi" : "Periode SIKLUS: " + teksBulanTerpilih;
+            }
+            
+            // 2. UPDATE TEKS PERIODE DI TABEL REKAP (Baru ditambahkan)
+            var elemenPeriodeRekap = document.getElementById("rekap-periode");
+            if(elemenPeriodeRekap) {
+                elemenPeriodeRekap.innerText = bln === "Semua" ? "Periode: Semua Transaksi" : "Periode SIKLUS: " + teksBulanTerpilih;
             }
             
             var hasil = masterData.filter(function(item) { 
