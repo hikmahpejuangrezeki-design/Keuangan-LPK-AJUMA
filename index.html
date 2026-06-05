@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { background-color: #f4f6f9; font-family: system-ui, -apple-system, sans-serif; }
-        /* Menyembunyikan seluruh aplikasi sebelum PIN benar */
         #konten-aplikasi { display: none; }
         #form-login-pin { display: flex; min-height: 100vh; align-items: center; justify-content: center; }
         @media print {
@@ -20,22 +19,19 @@
 </head>
 <body>
 
-    <!-- LAYER PENGUNCI PIN (TAMPIL PERTAMA KALI) -->
     <div id="form-login-pin">
         <div class="card p-4 shadow-sm border-0 text-center" style="max-width: 350px; width: 100%;">
             <div class="text-danger mb-3"><i class="bi bi-shield-lock-fill" style="font-size: 3rem;"></i></div>
             <h5 class="fw-bold mb-1">Akses Admin Terkunci</h5>
             <p class="small text-muted mb-3">Masukkan PIN Keuangan untuk melanjutkan</p>
             <form onsubmit="verifikasiPIN(event)">
-                <input type="password" id="input-pin" class="form-control form-control-lg text-center mb-3" placeholder="••••••" maxlength="8" required>
+                <input type="password" id="input-pin" class="form-control form-control-lg text-center mb-3" placeholder="••••••" maxlength="6" required>
                 <button type="submit" class="btn btn-dark w-100 fw-bold">Buka Akses</button>
             </form>
             <div id="pesan-salah" class="text-danger small mt-2 fw-semibold" style="display: none;">PIN Salah! Akses Ditolak.</div>
         </div>
     </div>
 
-
-    <!-- KONTEN UTAMA APLIKASI (AKAN DISEDIAKAN JIKA PIN BENAR) -->
     <div id="konten-aplikasi">
         <nav class="navbar navbar-dark bg-dark shadow-sm mb-4 d-print-none">
             <div class="container">
@@ -48,14 +44,12 @@
         </nav>
 
         <div class="container">
-            <!-- RINGKASAN DASHBOARD -->
             <div class="row mb-4 text-white">
                 <div class="col-md-4 mb-2"><div class="card bg-success p-3 border-0 shadow-sm">Pemasukan<h2 class="fw-bold m-0" id="txt-pemasukan">Memuat...</h2></div></div>
                 <div class="col-md-4 mb-2"><div class="card bg-danger p-3 border-0 shadow-sm">Pengeluaran<h2 class="fw-bold m-0" id="txt-pengeluaran">Memuat...</h2></div></div>
                 <div class="col-md-4 mb-2"><div class="card bg-primary p-3 border-0 shadow-sm">Saldo Kas LPK<h2 class="fw-bold m-0" id="txt-saldo">Memuat...</h2></div></div>
             </div>
 
-            <!-- FORM INPUT -->
             <div class="row mb-4 d-print-none">
                 <div class="col-md-6 mb-3">
                     <div class="card p-4 border-0 shadow-sm bg-white">
@@ -83,14 +77,12 @@
                 </div>
             </div>
 
-            <!-- RIWAYAT TABEL DETAIL -->
             <div class="card p-4 border-0 shadow-sm bg-white mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold m-0" id="judul-tabel-utama"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan LPK</h5>
                     <button class="btn btn-primary btn-sm fw-bold px-3 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Laporan</button>
                 </div>
 
-                <!-- Area Saring/Cari -->
                 <div class="row g-2 mb-3 p-2 bg-light rounded filter-area">
                     <div class="col-md-4"><select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()"><option value="Semua">-- Semua Jenis --</option><option value="Pemasukan">Pemasukan</option><option value="Pengeluaran">Pengeluaran</option></select></div>
                     <div class="col-md-8"><input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari keterangan / kategori..."></div>
@@ -113,7 +105,6 @@
         </div>
     </div>
 
-    <!-- POPUP MODAL UPDATE EDIT -->
     <div class="modal fade" id="modalUbah" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -132,17 +123,18 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 1. SILAKAN PASTE URL WEB APP ANDA DI SINI
-        var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
-        
-        // 2. ATUR PIN KHUSUS ADMIN DI SINI
-        var PIN_RAHASIA = "20242026";
+        // ==========================================
+        // SILAKAN AMANKAN PENGATURAN ANDA DI SINI
+        // ==========================================
+        var API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec"; 
+        var PIN_RAHASIA = "202426"; 
 
         var masterData = [];
         var instanceModal;
 
-        // Fungsi Cek PIN saat halaman dimuat
+        // Cek Sesi Login Saat Pertama Halaman Dibuka
         window.onload = function() {
             var sesiLogin = sessionStorage.getItem("admin_LPK_login");
             if (sesiLogin === "true") {
@@ -169,8 +161,12 @@
             document.getElementById("konten-aplikasi").style.display = "block";
             
             var tgl = new Date().toISOString().split('T')[0];
-            document.getElementsByName('tanggal')[0].value = tgl;
-            document.getElementsByName('tanggal')[1].value = tgl;
+            var inputTglPemasukan = document.getElementsByName('tanggal')[0];
+            var inputTglPengeluaran = document.getElementsByName('tanggal')[1];
+            
+            if(inputTglPemasukan) inputTglPemasukan.value = tgl;
+            if(inputTglPengeluaran) inputTglPengeluaran.value = tgl;
+            
             instanceModal = new bootstrap.Modal(document.getElementById('modalUbah'));
             segarkanSemuaData();
         }
@@ -180,9 +176,7 @@
             window.location.reload();
         }
 
-        // =========================================================
-        // BAGIAN KHUSUS LOGIKA FETCH MODERN (RAMAH HP & ANTI MACET)
-        // =========================================================
+        // Fungsi Ambil Data Server (Fetch Modern)
         async function panggilAPI(param) {
             try {
                 const respons = await fetch(API_URL + "?" + param);
@@ -195,16 +189,21 @@
         }
 
         async function segarkanSemuaData() {
-            document.getElementById('txt-pemasukan').innerText = "Memuat...";
-            document.getElementById('txt-pengeluaran').innerText = "Memuat...";
-            document.getElementById('txt-saldo').innerText = "Memuat...";
-            document.getElementById('tabel-body').innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Sedang memuat database Sheets...</td></tr>`;
+            var txtPem = document.getElementById('txt-pemasukan');
+            var txtPeng = document.getElementById('txt-pengeluaran');
+            var txtSal = document.getElementById('txt-saldo');
+            var tBody = document.getElementById('tabel-body');
+
+            if(txtPem) txtPem.innerText = "Memuat...";
+            if(txtPeng) txtPeng.innerText = "Memuat...";
+            if(txtSal) txtSal.innerText = "Memuat...";
+            if(tBody) tBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Sedang memuat database Sheets...</td></tr>`;
 
             const d = await panggilAPI("aksi=getRingkasan");
             if (d) {
-                document.getElementById('txt-pemasukan').innerText = formatRupiah(d.pemasukan);
-                document.getElementById('txt-pengeluaran').innerText = formatRupiah(d.pengeluaran);
-                document.getElementById('txt-saldo').innerText = formatRupiah(d.saldo);
+                if(txtPem) txtPem.innerText = formatRupiah(d.pemasukan);
+                if(txtPeng) txtPeng.innerText = formatRupiah(d.pengeluaran);
+                if(txtSal) txtSal.innerText = formatRupiah(d.saldo);
             }
 
             const data = await panggilAPI("aksi=ambilData");
@@ -214,17 +213,31 @@
             }
         }
 
-       function renderTabel(arr) {
-            var tbody = document.getElementById("tabel-body"); var tfoot = document.getElementById("tabel-foot");
-            tbody.innerHTML = ""; tfoot.innerHTML = "";
-            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
-            var akumulasiTotal = 0; var filterJenisSaatIni = document.getElementById("f-jenis").value;
+        function renderTabel(arr) {
+            var tbody = document.getElementById("tabel-body"); 
+            var tfoot = document.getElementById("tabel-foot");
+            if(!tbody) return;
+            tbody.innerHTML = ""; 
+            if(tfoot) tfoot.innerHTML = "";
+
+            if(!arr || arr.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Data kosong.</td></tr>`;
+                return;
+            }
+            
+            var akumulasiTotal = 0; 
+            var filterJenisSaatIni = document.getElementById("f-jenis") ? document.getElementById("f-jenis").value : "Semua";
             
             arr.forEach(function(item, index) {
-                var tr = document.createElement("tr"); var isM = item.jenis === 'Pemasukan';
-                if (filterJenisSaatIni === "Semua") { if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } } else { akumulasiTotal += item.jumlah; }
+                var tr = document.createElement("tr"); 
+                var isM = item.jenis === 'Pemasukan';
+                if (filterJenisSaatIni === "Semua") { 
+                    if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } 
+                } else { 
+                    akumulasiTotal += item.jumlah; 
+                }
                 
-                // FORMAT TANGGAL INDONESIA
+                // FORMAT INDONESIA KEBAL ERROR
                 var tanggalIndo = "-";
                 if (item.tanggal) {
                     var objekTanggal = new Date(item.tanggalForm || item.tanggal);
@@ -240,7 +253,6 @@
                     }
                 }
 
-                // MENAMPILKAN KEMBALI TOMBOL EDIT & HAPUS UNTUK ADMIN
                 tr.innerHTML = `
                     <td>${tanggalIndo}</td>
                     <td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td>
@@ -255,15 +267,20 @@
                 tbody.appendChild(tr);
             });
             
-            var labelTotal = "TOTAL SALDO AKHIR";
-            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN";
-            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN)";
-            tfoot.innerHTML = `<tr><td colspan="4" class="fw-bold text-end">${labelTotal} :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td class="action-col"></td></tr>`;
+            if(tfoot) {
+                var labelTotal = "TOTAL SALDO AKHIR";
+                if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN";
+                if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN";
+                tfoot.innerHTML = `<tr><td colspan="4" class="fw-bold text-end">${labelTotal} :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td class="action-col"></td></tr>`;
+            }
         }
 
         function filterTabel() {
-            var jns = document.getElementById("f-jenis").value; var cari = document.getElementById("f-cari").value.toLowerCase();
-            var hasil = masterData.filter(function(item) { return (jns === "Semua" || item.jenis === jns) && (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari)); });
+            var jns = document.getElementById("f-jenis") ? document.getElementById("f-jenis").value : "Semua"; 
+            var cari = document.getElementById("f-cari") ? document.getElementById("f-cari").value.toLowerCase() : "";
+            var hasil = masterData.filter(function(item) { 
+                return (jns === "Semua" || item.jenis === jns) && (item.keterangan.toLowerCase().includes(cari) || item.kategori.toLowerCase().includes(cari)); 
+            });
             renderTabel(hasil);
         }
 
@@ -282,7 +299,14 @@
         }
 
         function bukaEdit(idx) {
-            var item = masterData[idx]; document.getElementById("e-jenis").value = item.jenis; document.getElementById("e-idbaris").value = item.idBaris; document.getElementById("e-tanggal").value = item.tanggalForm; document.getElementById("e-kategori").value = item.kategori; document.getElementById("e-keterangan").value = item.keterangan; document.getElementById("e-jumlah").value = item.jumlah; instanceModal.show();
+            var item = masterData[idx]; 
+            document.getElementById("e-jenis").value = item.jenis; 
+            document.getElementById("e-idbaris").value = item.idBaris; 
+            document.getElementById("e-tanggal").value = item.tanggalForm; 
+            document.getElementById("e-kategori").value = item.kategori; 
+            document.getElementById("e-keterangan").value = item.keterangan; 
+            document.getElementById("e-jumlah").value = item.jumlah; 
+            instanceModal.show();
         }
 
         async function simpanEdit(e) {
