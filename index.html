@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- FIX FULL LAYAR HP (Mencegah Zoom & Geser Kanan Kiri) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Keuangan LPK - Terkunci</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,12 +16,13 @@
             body { background: #fff; color: #000; }
             table { width: 100% !important; border: 1px solid #000; }
             th, td { border: 1px solid #000 !important; padding: 6px !important; }
+            .tab-pane { display: none !important; opacity: 0 !important; }
+            .tab-pane.active { display: block !important; opacity: 1 !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- LAYER PENGUNCI PIN -->
     <div id="form-login-pin">
         <div class="card p-4 shadow-sm border-0 text-center" style="max-width: 350px; width: 100%;">
             <div class="text-danger mb-3"><i class="bi bi-shield-lock-fill" style="font-size: 3rem;"></i></div>
@@ -36,11 +36,10 @@
         </div>
     </div>
 
-    <!-- KONTEN UTAMA APLIKASI -->
     <div id="konten-aplikasi">
         <nav class="navbar navbar-dark bg-dark shadow-sm mb-4 d-print-none">
             <div class="container-fluid px-3">
-                <span class="navbar-brand fw-bold small"><i class="bi bi-wallet2 me-2"></i>KEUANGAN LPK AJUMA</span>
+                <span class="navbar-brand fw-bold small"><i class="bi bi-wallet2 me-2"></i>KEUANGAN LPK AJU</span>
                 <div>
                     <button class="btn btn-sm btn-outline-light me-1" onclick="segarkanSemuaData()"><i class="bi bi-arrow-clockwise"></i></button>
                     <button class="btn btn-sm btn-danger" onclick="keluarAdmin()"><i class="bi bi-box-arrow-right"></i></button>
@@ -49,14 +48,12 @@
         </nav>
 
         <div class="container-fluid px-3">
-            <!-- RINGKASAN DASHBOARD -->
-            <div class="row mb-4 text-white">
+            <div class="row mb-4 text-white d-print-none">
                 <div class="col-6 col-md-4 mb-2"><div class="card bg-success p-3 border-0 shadow-sm card-sm">Pemasukan<h4 class="fw-bold m-0" id="txt-pemasukan">Memuat...</h4></div></div>
                 <div class="col-6 col-md-4 mb-2"><div class="card bg-danger p-3 border-0 shadow-sm card-sm">Pengeluaran<h4 class="fw-bold m-0" id="txt-pengeluaran">Memuat...</h4></div></div>
                 <div class="col-12 col-md-4 mb-2"><div class="card bg-primary p-3 border-0 shadow-sm card-sm">Saldo Kas LPK<h4 class="fw-bold m-0" id="txt-saldo">Memuat...</h4></div></div>
             </div>
 
-            <!-- FORM INPUT -->
             <div class="row mb-4 d-print-none">
                 <div class="col-md-6 mb-3">
                     <div class="card p-3 border-0 shadow-sm bg-white">
@@ -84,20 +81,18 @@
                 </div>
             </div>
 
-            <!-- NAV TAB VIEW: REKAP DAN JURNAL -->
             <ul class="nav nav-tabs mb-3 d-print-none" id="tabsLaporan" role="tablist">
                 <li class="nav-item"><button class="nav-link active fw-bold small" id="rekap-tab" data-bs-toggle="tab" data-bs-target="#tab-rekap" type="button">Tabel Rekapitulasi</button></li>
                 <li class="nav-item"><button class="nav-link fw-bold small" id="jurnal-tab" data-bs-toggle="tab" data-bs-target="#tab-jurnal" type="button">Tabel Jurnal Keuangan</button></li>
             </ul>
 
             <div class="tab-content">
-                <!-- TAB 1: REKAP -->
                 <div class="tab-pane fade show active" id="tab-rekap">
                     <div class="card p-3 border-0 shadow-sm bg-white mb-5">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-    <h6 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan LPK</h6>
-    <button class="btn btn-primary btn-sm fw-bold px-3 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Laporan</button>
-</div>
+                            <h6 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Laporan Rekapitulasi Keuangan</h6>
+                            <button class="btn btn-primary btn-sm fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Rekap</button>
+                        </div>
                         <div class="row g-1 mb-2 p-1 bg-light rounded filter-area">
                             <div class="col-4"><select class="form-select form-select-sm" id="f-jenis" onchange="filterTabel()"><option value="Semua">Semua</option><option value="Pemasukan">Masuk</option><option value="Pengeluaran">Keluar</option></select></div>
                             <div class="col-8"><input type="text" class="form-control form-control-sm" id="f-cari" onkeyup="filterTabel()" placeholder="Cari data..."></div>
@@ -118,11 +113,11 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: JURNAL AKUNTANSI -->
                 <div class="tab-pane fade" id="tab-jurnal">
                     <div class="card p-3 border-0 shadow-sm bg-white mb-5">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold m-0"><i class="bi bi-book-half text-info"></i> Buku Jurnal Umum Keuangan LPK</h6>
+                            <button class="btn btn-info btn-sm text-white fw-bold px-2 d-print-none" onclick="window.print()"><i class="bi bi-printer-fill"></i> Cetak Jurnal</button>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-sm table-bordered text-sm align-middle">
@@ -143,7 +138,6 @@
         </div>
     </div>
 
-    <!-- POPUP MODAL EDIT -->
     <div class="modal fade" id="modalUbah" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -221,7 +215,6 @@
             }
         }
 
-        // GENERATOR NOMOR REFERENSI OTOMATIS (BKM/BKK + YYMM + URUTAN)
         function buatNoRefOtomatis(jenis, inputTanggal) {
             var d = new Date(inputTanggal);
             if (isNaN(d.getTime())) return "-";
@@ -238,19 +231,14 @@
             return pattern + "-" + urutan;
         }
 
-       function renderTabel(arr) {
+        function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); 
             var tfoot = document.getElementById("tabel-foot");
-            if(!tbody) return;
             tbody.innerHTML = ""; if(tfoot) tfoot.innerHTML = "";
-            
-            if(!arr || arr.length === 0) { 
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Data kosong.</td></tr>`; 
-                return; 
-            }
+            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
             
             var akumulasiTotal = 0; 
-            var filterJenisSaatIni = document.getElementById("f-jenis") ? document.getElementById("f-jenis").value : "Semua";
+            var filterJenisSaatIni = document.getElementById("f-jenis").value;
             var nomorUrut = 1;
 
             arr.forEach(function(item, index) {
@@ -267,7 +255,7 @@
                 tr.innerHTML = `
                     <td>${nomorUrut++}</td>
                     <td style="white-space:nowrap">${tglIndo}</td>
-                    <td class="text-muted fw-bold">${item.noref || "-"}</td>
+                    <td class="text-muted fw-bold">${item.noref}</td>
                     <td><span class="badge btn-xs ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td>
                     <td><b>${item.kategori}</b></td>
                     <td>${item.keterangan}</td>
@@ -279,17 +267,9 @@
                 `;
                 tbody.appendChild(tr);
             });
-            
-            if(tfoot) {
-                var labelTotal = "TOTAL SALDO AKHIR :";
-                if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN :";
-                if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN :";
-                // colspan="6" agar pas melompati kolom No, Tanggal, No.Ref, Jenis, Kategori, Keterangan
-                tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">${labelTotal}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td class="action-col"></td></tr>`;
-            }
+            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">TOTAL SALDO AKHIR :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td></td></tr>`;
         }
 
-        // FUNGSI BUAT TABEL JURNAL AKUNTANSI OTOMATIS
         function renderJurnal(arr) {
             var jbody = document.getElementById("jurnal-body");
             var jfoot = document.getElementById("jurnal-foot");
@@ -327,7 +307,6 @@
             e.preventDefault(); var form = e.target;
             var norefOto = buatNoRefOtomatis(jenis, form.tanggal.value);
             var p = `aksi=simpan&jenis=${jenis}&tanggal=${form.tanggal.value}&kategori=${encodeURIComponent(form.kategori.value)}&keterangan=${encodeURIComponent(form.keterangan.value)}&jumlah=${form.jumlah.value}&noref=${norefOto}`;
-            
             const res = await panggilAPI(p);
             if(res && res.hasil === "Sukses") { form.reset(); form.tanggal.value = new Date().toISOString().split('T')[0]; segarkanSemuaData(); }
         }
