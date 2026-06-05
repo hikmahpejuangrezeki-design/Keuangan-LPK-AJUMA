@@ -214,7 +214,7 @@
             }
         }
 
-        function renderTabel(arr) {
+       function renderTabel(arr) {
             var tbody = document.getElementById("tabel-body"); var tfoot = document.getElementById("tabel-foot");
             tbody.innerHTML = ""; tfoot.innerHTML = "";
             if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Data kosong.</td></tr>`; return; }
@@ -222,8 +222,27 @@
             arr.forEach(function(item, index) {
                 var tr = document.createElement("tr"); var isM = item.jenis === 'Pemasukan';
                 if (filterJenisSaatIni === "Semua") { if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } } else { akumulasiTotal += item.jumlah; }
+                
+                // --- KODE BARU: FORMAT TANGGAL INDONESIA TANPA JAM ---
+                var tanggalIndo = "-";
+                if (item.tanggal) {
+                    var objekTanggal = new Date(item.tanggalForm || item.tanggal);
+                    // Jika objek tanggal valid, ubah ke format lokal Indonesia
+                    if (!isNaN(objekTanggal.getTime())) {
+                        tanggalIndo = objekTanggal.toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    } else {
+                        tanggalIndo = item.tanggal; // Cadangan jika format error
+                    }
+                }
+                // -----------------------------------------------------
+
                 tr.innerHTML = `
-                    <td>${item.tanggal}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>
+                    <td>${tanggalIndo}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>
                     <td class="text-center action-col">
                         <button class="btn btn-sm btn-warning p-1 py-0 me-1" onclick="bukaEdit(${index})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger p-1 py-0" onclick="hapusData('${item.jenis}', ${item.idBaris})"><i class="bi bi-trash"></i></button>
@@ -231,9 +250,9 @@
                 `;
                 tbody.appendChild(tr);
             });
-            var labelTotal = "TOTAL SALDO AKHIR";
-            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN";
-            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN";
+            var labelTotal = "TOTAL SALDO AKHIR (YANG TAMPIL)";
+            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN (YANG TAMPIL)";
+            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN (YANG TAMPIL)";
             tfoot.innerHTML = `<tr><td colspan="4" class="fw-bold text-end">${labelTotal} :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td class="action-col"></td></tr>`;
         }
 
