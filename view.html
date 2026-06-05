@@ -103,25 +103,33 @@
         }
 
        function renderTabel(arr) {
-            var tbody = document.getElementById("tabel-body"); var tfoot = document.getElementById("tabel-foot");
+            var tbody = document.getElementById("tabel-body"); 
+            var tfoot = document.getElementById("tabel-foot");
+            if(!tbody) return;
             tbody.innerHTML = ""; if(tfoot) tfoot.innerHTML = "";
-            if(!arr || arr.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3">Kosong.</td></tr>`; return; }
             
-            var akumulasiTotal = 0; var filterJenisSaatIni = document.getElementById("f-jenis").value;
+            if(!arr || arr.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">Data kosong.</td></tr>`; 
+                return; 
+            }
+            
+            var akumulasiTotal = 0; 
+            var filterJenisSaatIni = document.getElementById("f-jenis") ? document.getElementById("f-jenis").value : "Semua";
             var nomorUrut = 1;
 
             arr.forEach(function(item) {
                 if (filterJenisSaatIni !== "Semua" && item.jenis !== filterJenisSaatIni) return;
+                
                 var isM = item.jenis === 'Pemasukan';
                 if (filterJenisSaatIni === "Semua") { if (isM) { akumulasiTotal += item.jumlah; } else { akumulasiTotal -= item.jumlah; } } else { akumulasiTotal += item.jumlah; }
+                
                 var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
                 var tr = document.createElement("tr");
-                // POSISI NO.REF SEKARANG ADA DI SETELAH TANGGAL
                 tr.innerHTML = `
                     <td>${nomorUrut++}</td>
                     <td style="white-space:nowrap">${tglIndo}</td>
-                    <td class="fw-bold text-muted">${item.noref}</td>
+                    <td class="fw-bold text-muted">${item.noref || "-"}</td>
                     <td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td>
                     <td><b>${item.kategori}</b></td>
                     <td>${item.keterangan}</td>
@@ -129,7 +137,14 @@
                 `;
                 tbody.appendChild(tr);
             });
-            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">TOTAL SALDO AKHIR :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            
+            if(tfoot) {
+                var labelTotal = "TOTAL SALDO AKHIR :";
+                if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN :";
+                if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN :";
+                // colspan="6" karena tidak ada kolom aksi di viewer
+                tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">${labelTotal}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            }
         }
 
         function renderJurnal(arr) {
