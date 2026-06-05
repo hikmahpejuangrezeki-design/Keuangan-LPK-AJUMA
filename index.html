@@ -250,9 +250,9 @@
                 `;
                 tbody.appendChild(tr);
             });
-            var labelTotal = "TOTAL SALDO AKHIR (YANG TAMPIL)";
-            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN (YANG TAMPIL)";
-            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN (YANG TAMPIL)";
+            var labelTotal = "TOTAL SALDO AKHIR";
+            if (filterJenisSaatIni === "Pemasukan") labelTotal = "TOTAL PEMASUKAN";
+            if (filterJenisSaatIni === "Pengeluaran") labelTotal = "TOTAL PENGELUARAN)";
             tfoot.innerHTML = `<tr><td colspan="4" class="fw-bold text-end">${labelTotal} :</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td><td class="action-col"></td></tr>`;
         }
 
