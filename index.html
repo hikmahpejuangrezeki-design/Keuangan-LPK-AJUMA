@@ -330,7 +330,7 @@
                     <td><span class="badge btn-xs ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td>
                     <td><b>${item.kategori}</b></td>
                     <td>${item.keterangan}</td>
-                    <td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>
+                    <td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}"style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>
                     <td class="text-center action-col">
                         <button class="btn btn-sm btn-warning p-1 py-0 me-1" onclick="bukaEdit(${index})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger p-1 py-0" onclick="hapusData('${item.jenis}', ${item.idBaris})"><i class="bi bi-trash"></i></button>
@@ -342,7 +342,7 @@
             var teksLabel = "TOTAL SALDO AKHIR :";
             if (filterJenisSaatIni === "Pemasukan") teksLabel = "TOTAL MASUK PERIODE :";
             if (filterJenisSaatIni === "Pengeluaran") teksLabel = "TOTAL KELUAR PERIODE :";
-            tfoot.innerHTML = `<tr><td colspan="7" class="fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            tfoot.innerHTML = `<tr><td colspan="7" class="fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning"style="white-space:nowrap;">${formatRupiah(akumulasiTotal)}</td></tr>`;
         }
 
         function renderJurnal(arr) {
@@ -361,21 +361,21 @@
                 if (item.jenis === "Pemasukan") {
     totalDebit += item.jumlah; totalKredit += item.jumlah;
     // Baris 1: Kas Utama LPK di sisi Debit
-    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end"style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
     
     // Baris 2: Nama akun Pendapatan lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
-    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end"style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
 } else {
     totalDebit += item.jumlah; totalKredit += item.jumlah;
     // Baris 1: Nama akun Beban lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
-    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+    trKas.innerHTML = `<td>${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end"style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
     
     // Baris 2: Kas Utama LPK di sisi Kredit
-    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(item.jumlah)}</td>`;
+    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end"style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
 }
                 jbody.appendChild(trKas); jbody.appendChild(trLawan);
             });
-            jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE JURNAL</td><td class="text-end text-success">${formatRupiah(totalDebit)}</td><td class="text-end text-success">${formatRupiah(totalKredit)}</td></tr>`;
+            jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE JURNAL</td><td class="text-end text-success"style="white-space:nowrap;">${formatRupiah(totalDebit)}</td><td class="text-end text-success"style="white-space:nowrap;">${formatRupiah(totalKredit)}</td></tr>`;
         }
 
         // FUNGSI GABUNGAN UNTUK FILTER BERDASARKAN BULAN SIKLUS, JENIS, DAN SEARCH BAR
@@ -443,15 +443,16 @@
             var tglInput = document.getElementById("e-tanggal").value;
             var noRefSekarang = document.getElementById("e-noref").value;
             
-            if (noRefSekarang === "" || noRefSekarang === "-") {
-                noRefSekarang = buatNoRefOtomatis(jenis, tglInput);
-            }
-            
-            var p = `aksi=edit&jenis=${jenis}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${tglInput}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}&noref=${noRefSekarang}`;
-            
-            const res = await panggilAPI(p);
-            if(res && res.hasil === "Sukses") {  instanceModal.hide(); segarkanSemuaData(); }
-        }
+            // PERBAIKAN DI SINI: Jika kosong, strip, ATAU masih pakai format lama (BKM/BKK), buat ulang otomatis!
+    if (noRefSekarang === "" || noRefSekarang === "-" || noRefSekarang.includes("BKM") || noRefSekarang.includes("BKK")) {
+        noRefSekarang = buatNoRefOtomatis(jenis, tglInput);
+    }
+    
+    var p = `aksi=edit&jenis=${jenis}&idBaris=${document.getElementById("e-idbaris").value}&tanggal=${tglInput}&kategori=${encodeURIComponent(document.getElementById("e-kategori").value)}&keterangan=${encodeURIComponent(document.getElementById("e-keterangan").value)}&jumlah=${document.getElementById("e-jumlah").value}&noref=${noRefSekarang}`;
+    
+    const res = await panggilAPI(p);
+    if(res && res.hasil === "Sukses") {  instanceModal.hide(); segarkanSemuaData(); }
+}
 
         async function hapusData(jenis, idBaris) { if(confirm("Hapus data?")) { const res = await panggilAPI(`aksi=hapus&jenis=${jenis}&idBaris=${idBaris}`); if(res && res.hasil === "Sukses") segarkanSemuaData(); } }
         function formatRupiah(n) { return "Rp " + parseFloat(n).toLocaleString('id-ID'); }
