@@ -49,7 +49,10 @@
     .kop-surat {
         display: block !important; /* Paksa KOP muncul di kertas */
     }
-    
+    .kop-surat img {
+        height: auto !important;
+        max-height: 120px !important; /* Batas aman tinggi logo agar tidak over */
+    }
     /* Opsional: Membuat margin kertas cetak jadi lebih rapi */
     @page {
         margin: 1.5cm;
@@ -103,10 +106,12 @@
         <div class="tab-content">
             <!-- TAB 1: REKAPITULASI ARUS KAS -->
 <div class="tab-pane fade show active" id="tab-rekap">
-       <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
-    <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -2px;">
-        
+        <div class="kop-surat d-flex align-items-center" style="width: 100%; padding: 10px 0; border-bottom: 3px double #000; margin-bottom: 20px;">
+    
+    <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; display: block;">
+    
+    <div class="flex-grow-1 text-center">
+        </div>
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
             <h4 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif;">LPK AJUMA</h4>
@@ -166,10 +171,15 @@
             </div>
 
             <div class="tab-pane fade" id="tab-jurnal">
-                   <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
-    <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -2px;">
-        
+                   <div class="kop-surat d-flex align-items-center" style="width: 100%; padding: 10px 0; border-bottom: 3px double #000; margin-bottom: 20px;">
+    
+    <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; display: block;">
+    
+    <div class="flex-grow-1 text-center">
+        </div>
+    
+
+                
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
             <h4 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif;">LPK AJUMA</h4>
