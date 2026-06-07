@@ -289,13 +289,25 @@ table thead th {
                                 <td>${item.keterangan}</td>
                                 <td style="white-space:nowrap; min-width: 160px;" class="fw-bold ${isM ? 'text-success':'text-danger'}">
                                 <div class="d-flex justify-content-between align-items-center w-100">
-                                <span>Rp. </span>
+                                <span>Rp.</span>
                                 <span>${Number(item.jumlah).toLocaleString('id-ID')}</span>
                                 </div>
                                </td>`;
                 tbody.appendChild(tr);
             });
-            tfoot.innerHTML = `<tr><td colspan="6" class="text-center fw-bold text-end">TOTAL SALDO AKHIR : </td><td style="white-space:nowrap" class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            tfoot.innerHTML = `
+    <tr class="table-light fw-bold align-middle">
+        <td colspan="6" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px;">TOTAL SALDO AKHIR :</td>
+        
+        <td style="white-space:nowrap; min-width: 160px;" class="text-success">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <span>Rp</span>
+                <span>${Number(totalSaldo).toLocaleString('id-ID')}</span>
+            </div>
+        </td>
+        <td class="d-print-none"></td>
+    </tr>
+`;
         }
 
        function renderJurnal(arr) {
