@@ -252,16 +252,35 @@
         function buatNoRefOtomatis(jenis, inputTanggal) {
             var d = new Date(inputTanggal);
             if (isNaN(d.getTime())) return "-";
-            var yy = d.getFullYear().toString().substring(2,4);
-            var mm = ("0" + (d.getMonth() + 1)).slice(-2);
-            var kodeBuku = (jenis === "Pemasukan") ? "BKM" : "BKK";
-            var pattern = kodeBuku + yy + mm;
             
-            var hitungBulanIni = masterData.filter(function(item) {
+            var tgl = d.getDate();
+            var bln = d.getMonth() + 1; // Bulan asli (1-12)
+            var thn = d.getFullYear();
+            
+            // LOGIKA SIKLUS: Jika tanggal 21 ke atas, nomor referensi maju ke bulan berikutnya
+            if (tgl >= 21) {
+                bln = bln + 1;
+                if (bln > 12) {
+                    bln = 1;
+                    thn = thn + 1; // Jika lewat Desember, tahunnya maju
+                }
+            }
+            
+            // Format tahun jadi 2 digit (misal: 2026 -> 26)
+            var yy = thn.toString().substring(2,4);
+            // Format bulan jadi 2 digit (misal: 6 -> 06)
+            var mm = ("0" + bln).slice(-2);
+            
+            // GANTI KODE MENJADI AJM (MASUK) & AJK (KELUAR)
+            var kodeBuku = (jenis === "Pemasukan") ? "AJUMA-M" : "AJUMA-K";
+            var pattern = kodeBuku + yy + mm; // Hasilnya misal: AJUMA2606
+            
+            // Hitung sudah ada berapa data dengan pola nomor ini di database
+            var hitungBulanSiklusIni = masterData.filter(function(item) {
                 return item.jenis === jenis && item.noref.startsWith(pattern);
             }).length;
             
-            var urutan = ("00" + (hitungBulanIni + 1)).slice(-3);
+            var urutan = ("00" + (hitungBulanSiklusIni + 1)).slice(-3);
             return pattern + "-" + urutan;
         }
 
@@ -323,7 +342,7 @@
             var teksLabel = "TOTAL SALDO AKHIR :";
             if (filterJenisSaatIni === "Pemasukan") teksLabel = "TOTAL MASUK PERIODE :";
             if (filterJenisSaatIni === "Pengeluaran") teksLabel = "TOTAL KELUAR PERIODE :";
-            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            tfoot.innerHTML = `<tr><td colspan="7" class="fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
         }
 
         function renderJurnal(arr) {
