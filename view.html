@@ -239,33 +239,51 @@
             tfoot.innerHTML = `<tr><td colspan="6" class="text-center fw-bold text-end">TOTAL SALDO AKHIR : </td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
         }
 
-        function renderJurnal(arr) {
-            var jbody = document.getElementById("jurnal-body"); var jfoot = document.getElementById("jurnal-foot");
-            jbody.innerHTML = ""; jfoot.innerHTML = "";
-            if(!arr || arr.length === 0) return;
-            var totalDebit = 0; var totalKredit = 0;
-            arr.forEach(function(item) {
-                var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-                var trKas = document.createElement("tr"); var trLawan = document.createElement("tr");
-                if (item.jenis === "Pemasukan") {
-    totalDebit += item.jumlah; totalKredit += item.jumlah;
-    // Baris 1: Kas Utama LPK di sisi Debit
-    trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end"style="white-space:nowrap">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-    
-    // Baris 2: Nama akun Pendapatan lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
-    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end"style="white-space:nowrap">${formatRupiah(item.jumlah)}</td>`;
-} else {
-    totalDebit += item.jumlah; totalKredit += item.jumlah;
-    // Baris 1: Nama akun Beban lebih bersih, Keterangan panjang ditaruh di bawahnya dengan huruf kecil (br + small)
-    trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end"style="white-space:nowrap">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-    
-    // Baris 2: Kas Utama LPK di sisi Kredit
-    trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end"style="white-space:nowrap">${formatRupiah(item.jumlah)}</td>`;
-}
-                jbody.appendChild(trKas); jbody.appendChild(trLawan);
-            });
-            jfoot.innerHTML = `<tr><td colspan="3" class="text-center">TOTAL BALANCE</td><td class="text-end text-success"style="white-space:nowrap">${formatRupiah(totalDebit)}</td><td class="text-end text-success"style="white-space:nowrap">${formatRupiah(totalKredit)}</td></tr>`;
+       function renderJurnal(arr) {
+    var jbody = document.getElementById("jurnal-body");
+    var jfoot = document.getElementById("jurnal-foot");
+    jbody.innerHTML = ""; jfoot.innerHTML = "";
+    if(!arr || arr.length === 0) { jbody.innerHTML = `<tr><td colspan="5" class="text-center py-2 text-muted">Jurnal kosong.</td></tr>`; return; }
+
+    // 1. RENDER SEMUA BARIS TERLEBIH DAHULU SEPERTI BIASA
+    arr.forEach(function(item) {
+        var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+        var trKas = document.createElement("tr");
+        var trLawan = document.createElement("tr");
+
+        if (item.jenis === "Pemasukan") {
+            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
+        } else {
+            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         }
+        jbody.appendChild(trKas); jbody.appendChild(trLawan);
+    });
+
+    // 2. HITUNG TOTAL HANYA DARI BARIS YANG SUDAH JADI DI TABEL
+    var totalDebit = 0;
+    var totalKredit = 0;
+
+    // Ambil semua elemen kolom debit yang baru dibuat, lalu jumlahkan nilainya
+    jbody.querySelectorAll(".jurnal-debit-val").forEach(function(el) {
+        totalDebit += parseFloat(el.getAttribute("data-nilai")) || 0;
+    });
+
+    // Ambil semua elemen kolom kredit yang baru dibuat, lalu jumlahkan nilainya
+    jbody.querySelectorAll(".jurnal-kredit-val").forEach(function(el) {
+        totalKredit += parseFloat(el.getAttribute("data-nilai")) || 0;
+    });
+
+    // 3. TAMPILKAN HASILNYA DI TFOOT
+    jfoot.innerHTML = `
+        <tr class="table-light fw-bold align-middle">
+            <td colspan="3" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px;">TOTAL BALANCE JURNAL :</td>
+            <td class="text-end text-success" style="white-space:nowrap;">${formatRupiah(totalDebit)}</td>
+            <td class="text-end text-success" style="white-space:nowrap;">${formatRupiah(totalKredit)}</td>
+        </tr>
+    `;
+}
 
        function filterTabel() {
             var selectBulan = document.getElementById("f-bulan");
