@@ -16,8 +16,28 @@
             th, td { border: 1px solid #000 !important; padding: 6px !important; }
             .tab-pane { display: none !important; opacity: 0 !important; }
             .tab-pane.active { display: block !important; opacity: 1 !important; }
+             /* 1. Paksa semua teks di dalam tabel menjadi warna hitam pekat */
+    table, 
+    table th, 
+    table td, 
+    table td *, 
+    .text-success, 
+    .text-danger, 
+    .text-warning, 
+    .text-muted {
+        color: #000000 !important; 
+    }
+
+    /* 2. Opsional: Hilangkan warna background badge (Masuk/Keluar) saat dicetak 
+       agar printer tidak tebal luntur, tulisan di dalamnya tetap hitam bersih */
+    .badge {
+        background-color: transparent !important;
+        border: 1px solid #000 !important; /* Memberi bingkai hitam tipis */
+        color: #000 !important;
+    }
         }
-        /* Aturan khusus saat dicetak ke kertas */
+       
+           /* Aturan khusus saat dicetak ke kertas */
 @media print {
     .kop-surat {
         display: block !important; /* Paksa KOP muncul di kertas */
@@ -78,7 +98,7 @@
 <div class="tab-pane fade show active" id="tab-rekap">
        <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
     <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -5px;">
+        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -3px;">
         
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
@@ -141,7 +161,7 @@
             <div class="tab-pane fade" id="tab-jurnal">
                    <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
     <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -5px;">
+        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px; margin-top: -3px;">
         
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
