@@ -189,7 +189,7 @@ table thead th {
                             <table class="table table-sm table-hover text-sm align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>No</th><th>Tanggal</th><th>No.Ref</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th class="text-end">Jumlah</th><th class="text-center action-col">Aksi</th>
+                                        <th>No</th><th>Tanggal</th><th>No.Ref</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th><th>Jumlah</th><th class="text-center action-col">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabel-body">
@@ -440,11 +440,11 @@ table thead th {
         var trLawan = document.createElement("tr");
 
         if (item.jenis === "Pemasukan") {
-            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
+            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         } else {
-            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
-            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
+            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class=" jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         }
         jbody.appendChild(trKas); jbody.appendChild(trLawan);
     });
