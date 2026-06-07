@@ -35,6 +35,21 @@
         display: none !important; /* Sembunyikan total di layar monitor */
     }
 }
+        @media print {
+    /* Kode KOP Surat yang tadi ... */
+    .kop-surat {
+        display: block !important;
+    }
+    
+    /* ⬇️ TAMBAHKAN KODE INI UNTUK MENJINAKKAN TFOOT ⬇️ */
+    table tfoot {
+        display: table-row-group !important; /* Memaksa tfoot bertingkah seperti body biasa */
+    }
+    
+    tr {
+        page-break-inside: avoid; /* Mencegah satu baris transaksi terpotong setengah di ujung kertas */
+    }
+}
     </style>
 </head>
 <body>
@@ -63,7 +78,7 @@
 <div class="tab-pane fade show active" id="tab-rekap">
        <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
     <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 80px; height: auto; margin-right: 20px;">
+        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px;">
         
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
@@ -126,7 +141,7 @@
             <div class="tab-pane fade" id="tab-jurnal">
                    <div class="kop-surat d-none d-print-block text-center mb-4" style="border-bottom: 3px double #000; padding-bottom: 10px;">
     <div class="d-flex align-items-center justify-content-center">
-        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 80px; height: auto; margin-right: 20px;">
+        <img src="logo-ajuma.png" alt="Logo LPK" style="width: 120px; height: auto; margin-right: 25px;">
         
         <div class="text-center">
             <h3 class="fw-bold m-0" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
