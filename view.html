@@ -236,7 +236,7 @@
                 tr.innerHTML = `<td>${nomorUrut++}</td><td style="white-space:nowrap">${tglIndo}</td><td class="fw-bold text-muted">${item.noref}</td><td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td><td><b>${item.kategori}</b></td><td>${item.keterangan}</td><td class="text-end fw-bold ${isM ? 'text-success':'text-danger'}">${formatRupiah(item.jumlah)}</td>`;
                 tbody.appendChild(tr);
             });
-            tfoot.innerHTML = `<tr><td colspan="6" class="fw-bold text-end">TOTAL SALDO AKHIR : </td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            tfoot.innerHTML = `<tr><td colspan="6" class="text-center fw-bold text-end">TOTAL SALDO AKHIR : </td><td class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
         }
 
         function renderJurnal(arr) {
