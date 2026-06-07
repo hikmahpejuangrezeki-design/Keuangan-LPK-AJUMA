@@ -411,7 +411,7 @@
             var teksLabel = "TOTAL SALDO AKHIR :  ";
             if (filterJenisSaatIni === "Pemasukan") teksLabel = "TOTAL MASUK PERIODE :";
             if (filterJenisSaatIni === "Pengeluaran") teksLabel = "TOTAL KELUAR PERIODE :";
-            tfoot.innerHTML = `<tr><td colspan="7"class="text-center fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning"style="white-space:nowrap;">${formatRupiah(akumulasiTotal)}</td></tr>`;
+            tfoot.innerHTML = `<tr><td colspan="6"class="text-center fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning"style="white-space:nowrap;">${formatRupiah(akumulasiTotal)}</td></tr>`;
         }
 
         function renderJurnal(arr) {
