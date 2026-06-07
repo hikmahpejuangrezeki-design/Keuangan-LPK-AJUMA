@@ -411,9 +411,12 @@
             var teksLabel = "TOTAL SALDO AKHIR :  ";
             if (filterJenisSaatIni === "Pemasukan") teksLabel = "TOTAL MASUK PERIODE :";
             if (filterJenisSaatIni === "Pengeluaran") teksLabel = "TOTAL KELUAR PERIODE :";
-            tfoot.innerHTML = `<tr><td colspan="6"class="text-center fw-bold text-end">${teksLabel}</td><td class="text-end fw-bold text-warning"style="white-space:nowrap;">${formatRupiah(akumulasiTotal)}</td></tr>`;
-        }
-
+            tfoot.innerHTML = `
+    <tr>
+        <td colspan="6" class="text-center text-end fw-bold">${teksLabel}</td>
+        <td class="text-end fw-bold text-warning" style="white-space:nowrap;">${formatRupiah(akumulasiTotal)}</td>
+        <td class="action-col d-print-none"></td> </tr>
+`;
         function renderJurnal(arr) {
             var jbody = document.getElementById("jurnal-body");
             var jfoot = document.getElementById("jurnal-foot");
