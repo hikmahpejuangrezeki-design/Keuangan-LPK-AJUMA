@@ -287,12 +287,12 @@ table thead th {
                                 <td><span class="badge ${isM ? 'bg-success':'bg-danger'}">${item.jenis === "Pemasukan" ? "Masuk":"Keluar"}</span></td>
                                 <td><b>${item.kategori}</b></td>
                                 <td>${item.keterangan}</td>
-                               <td style="white-space:nowrap;" class="fw-bold ${isM ? 'text-success':'text-danger'}">
-                              <div class="d-flex justify-content-between w-100">
-                             <span>haha</span>
-                            <span>${formatRupiah(item.jumlah).replace('Rp. ', '').trim()}</span>
-                          </div>
-                           </td>`;
+                                <td style="white-space:nowrap; min-width: 160px;" class="fw-bold ${isM ? 'text-success':'text-danger'}">
+                                <div class="d-flex justify-content-between align-items-center w-100">
+                                <span>Rp. </span>
+                                <span>${Number(item.jumlah).toLocaleString('id-ID')}</span>
+                                </div>
+                               </td>`;
                 tbody.appendChild(tr);
             });
             tfoot.innerHTML = `<tr><td colspan="6" class="text-center fw-bold text-end">TOTAL SALDO AKHIR : </td><td style="white-space:nowrap" class="text-end fw-bold text-warning">${formatRupiah(akumulasiTotal)}</td></tr>`;
