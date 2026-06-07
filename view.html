@@ -27,12 +27,19 @@
     .text-muted {
         color: #000000 !important; 
     }
+    td.text-muted, /* ⬅️ Mengunci paksa class abu-abu pada kolom No/Tgl */
+    td * {
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; /* Memaksa browser render warna hitam asli */
+        print-color-adjust: exact !important;
+    }
 
     /* 2. Opsional: Hilangkan warna background badge (Masuk/Keluar) saat dicetak 
        agar printer tidak tebal luntur, tulisan di dalamnya tetap hitam bersih */
     .badge {
         background-color: transparent !important;
-        border: 1px solid #000 !important; /* Memberi bingkai hitam tipis */
+        border: none !important;         /* ⬅️ Menghilangkan kotak bingkai */
+        box-shadow: none !important; 
         color: #000 !important;
     }
         }
