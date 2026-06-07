@@ -295,19 +295,44 @@ table thead th {
                                </td>`;
                 tbody.appendChild(tr);
             });
-           tfoot.innerHTML = `
-    <tr class="table-light fw-bold align-middle">
-        <td colspan="6" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px;">TOTAL SALDO AKHIR :</td>
-        
-        <td style="white-space:nowrap; min-width: 160px;" class="text-success">
-            <div class="d-flex justify-content-between align-items-center w-100" style="display: flex !important;">
-                <span>Rp</span>
-                <span>${(parseFloat(totalSaldo) || 0).toLocaleString('id-ID')}</span>
-            </div>
-        </td>
-        <td class="d-print-none"></td>
-    </tr>
-`;
+          var totalMasuk = 0;
+    var totalKeluar = 0;
+    if (arr && arr.length > 0) {
+        arr.forEach(function(item) {
+            var jml = parseFloat(item.jumlah) || 0;
+            if (item.jenis === "Pemasukan") {
+                totalMasuk += jml;
+            } else {
+                totalKeluar += jml;
+            }
+        });
+    }
+    var hitungSaldoAkhir = totalMasuk - totalKeluar;
+
+    // 2. Cetak ke tfoot menggunakan cara yang sangat aman agar tidak crash
+    var tfoot = document.getElementById("rekap-foot");
+    
+    // Jika ID rekap-foot tidak ketemu, cari tag tfoot pertama yang ada di dokumen
+    if (!tfoot) {
+        tfoot = document.querySelector("tfoot");
+    }
+
+    // Eksekusi cetak HANYA jika elemen tfoot-nya benar-benar ada di halaman
+    if (tfoot) {
+        tfoot.innerHTML = `
+            <tr class="table-light fw-bold align-middle">
+                <td colspan="6" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px; background-color: #f8f9fa !important; color: #000000 !important;">TOTAL SALDO AKHIR :</td>
+                
+                <td style="white-space:nowrap; min-width: 160px; background-color: #f8f9fa !important; color: #198754 !important;">
+                    <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important;">
+                        <span>Rp</span>
+                        <span>${(parseFloat(hitungSaldoAkhir) || 0).toLocaleString('id-ID')}</span>
+                    </div>
+                </td>
+                <td class="d-print-none" style="background-color: #f8f9fa !important;"></td>
+            </tr>
+        `;
+    }
         }
 
        function renderJurnal(arr) {
