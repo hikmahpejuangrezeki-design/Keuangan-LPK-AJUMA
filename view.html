@@ -320,23 +320,41 @@ table thead th {
         tfoot = document.querySelector("tfoot");
     }
 
-    // Eksekusi cetak HANYA jika elemen tfoot-nya benar-benar ada di halaman
     if (tfoot) {
+        // 1. BUAT KONDISI LOGIKA UNTUK MENYESUAIKAN TEKS LABEL DAN NILAI ANGKA
+        var labelTeks = "TOTAL SALDO AKHIR :";
+        var angkaTampilkan = hitungSaldoAkhir;
+        var warnaTeks = "#198754"; // Warna hijau standar
+
+        if (filterJenisSaatIni === "Pemasukan") {
+            labelTeks = "TOTAL PEMASUKAN :";
+            angkaTampilkan = totalMasuk;
+            warnaTeks = "#198754"; // Hijau untuk pemasukan
+        } else if (filterJenisSaatIni === "Pengeluaran") {
+            labelTeks = "TOTAL PENGELUARAN :";
+            angkaTampilkan = totalKeluar;
+            warnaTeks = "#dc3545"; // Merah untuk pengeluaran
+        } else {
+            // Jika memilih "Semua", jika saldonya minus otomatis teks berubah merah
+            if (hitungSaldoAkhir < 0) { warnaTeks = "#dc3545"; }
+        }
+
+        // 2. CETAK HASILNYA MENGGUNAKAN VARIABEL YANG DINAMIS
         tfoot.innerHTML = `
             <tr class="table-light fw-bold align-middle">
-                <td colspan="6" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px; background-color: #f8f9fa !important; color: #000000 !important;">TOTAL SALDO AKHIR :</td>
+                <td colspan="6" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px; background-color: #f8f9fa !important; color: #000000 !important;">${labelTeks}</td>
                 
-                <td style="white-space:nowrap; min-width: 160px; background-color: #f8f9fa !important; color: #198754 !important;">
+                <td style="white-space:nowrap; min-width: 160px; background-color: #f8f9fa !important; color: ${warnaTeks} !important;">
                     <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important;">
                         <span>Rp.</span>
-                        <span>${(parseFloat(hitungSaldoAkhir) || 0).toLocaleString('id-ID')}</span>
+                        <span>${(parseFloat(angkaTampilkan) || 0).toLocaleString('id-ID')}</span>
                     </div>
                 </td>
                 <td class="d-print-none" style="background-color: #f8f9fa !important;"></td>
             </tr>
         `;
     }
-        }
+}
 
        function renderJurnal(arr) {
     var jbody = document.getElementById("jurnal-body");
