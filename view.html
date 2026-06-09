@@ -211,6 +211,7 @@ table thead th {
                         <table class="table table-sm table-bordered text-sm align-middle">
                             <thead class="table-secondary text-center">
                                 <tr>
+                                    <th>No.</th>
                                     <th>Tanggal</th>
                                     <th>No. Ref</th>
                                     <th>Keterangan Akun</th>
@@ -342,7 +343,7 @@ table thead th {
     var jfoot = document.getElementById("jurnal-foot");
     jbody.innerHTML = ""; jfoot.innerHTML = "";
     if(!arr || arr.length === 0) { jbody.innerHTML = `<tr><td colspan="5" class="text-center py-2 text-muted">Jurnal kosong.</td></tr>`; return; }
-
+    var noUrut = 1;
     // 1. RENDER SEMUA BARIS TERLEBIH DAHULU SEPERTI BIASA
     arr.forEach(function(item) {
         var tglIndo = new Date(item.tanggalForm).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -350,13 +351,14 @@ table thead th {
         var trLawan = document.createElement("tr");
 
         if (item.jenis === "Pemasukan") {
-            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trKas.innerHTML = `<td>${noUrut}</td><td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
             trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         } else {
-            trKas.innerHTML = `<td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
+            trKas.innerHTML = `<td>${noUrut}</td><td style="white-space:nowrap">${tglIndo}</td><td class="text-muted">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size: 11px; color: #888; font-style: italic;">(${item.keterangan})</small></td><td class="text-end jurnal-debit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td><td class="text-end">-</td>`;
             trLawan.innerHTML = `<td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         }
         jbody.appendChild(trKas); jbody.appendChild(trLawan);
+        noUrut++;
     });
 
     // 2. HITUNG TOTAL HANYA DARI BARIS YANG SUDAH JADI DI TABEL
@@ -376,7 +378,7 @@ table thead th {
     // 3. TAMPILKAN HASILNYA DI TFOOT
     jfoot.innerHTML = `
         <tr class="table-light fw-bold align-middle">
-            <td colspan="3" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px;">TOTAL BALANCE JURNAL :</td>
+            <td colspan="4" class="text-end text-uppercase" style="letter-spacing: 0.5px; padding-right: 15px;">TOTAL BALANCE JURNAL :</td>
             <td class="text-end text-success" style="white-space:nowrap;">${formatRupiah(totalDebit)}</td>
             <td class="text-end text-success" style="white-space:nowrap;">${formatRupiah(totalKredit)}</td>
         </tr>
