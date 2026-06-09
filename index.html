@@ -315,7 +315,7 @@ table thead th {
 
         async function panggilAPI(param) {
             try {
-                const respons = await fetch(API_URL + "?" + param);
+                const respons = await fetch(API_URL + "&" + param);
                 return await respons.json();
             } catch (err) { return null; }
         }
