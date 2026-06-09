@@ -193,7 +193,7 @@ table thead th {
                                         <th>Tanggal</th>
                                         <th>No.Ref</th>
                                         <th>Jenis</th>
-                                        <th>Kategori</th>
+                                        <th>Kategori/Sumber</th>
                                         <th>Keterangan</th>
                                         <th>Jumlah</th>
                                         <th class="text-center action-col">Aksi</th>
@@ -242,7 +242,7 @@ table thead th {
                                         <th>No.</th>
                                         <th>Tanggal</th>
                                         <th>No. Ref</th>
-                                        <th>Keterangan Akun / Akumulasi</th>
+                                        <th>Keterangan Akun / Sumber</th>
                                         <th>Debit</th>
                                         <th>Kredit</th>
                                     </tr>
@@ -479,6 +479,7 @@ table thead th {
             <td class="jurnal-kredit-val" data-nilai="${item.jumlah}" style="white-space:nowrap;">${formatRupiah(item.jumlah)}</td>`;
         }
         jbody.appendChild(trKas); jbody.appendChild(trLawan);
+         noUrut++;
     });
 
     // 2. HITUNG TOTAL HANYA DARI BARIS YANG SUDAH JADI DI TABEL
