@@ -9,7 +9,7 @@
         body { background-color: #f3f4f6; font-family: Arial, sans-serif; }
         .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .table th { background-color: #4f46e5; color: white; font-weight: 600; text-transform: uppercase; font-size: 13px; }
-        .nav-tabs .nav-link.active { background-color: #4f46e5; color: white; font-bold: true; }
+        .mode-edit { background-color: #fff3cd !important; border: 2px solid #ffc107 !important; }
         @media print {
             body { background-color: #fff; }
             .no-print { display: none !important; }
@@ -25,19 +25,23 @@
 <div class="container my-4">
     <div class="text-center mb-4 no-print">
         <h2 class="fw-bold text-primary">PANEL ADMIN LPK AJUMA</h2>
-        <p class="text-muted">Input Transaksi & Laporan Keuangan Real-Time</p>
+        <p class="text-muted">Input, Edit Transaksi & Jurnal Otomatis</p>
     </div>
 
-    <!-- TAB INPUT TRANSAKSI (HANYA MUNCUL DI LAYAR) -->
-    <div class="card p-4 mb-4 no-print">
-        <h5 class="fw-bold mb-3 text-secondary">➕ Input Transaksi Baru</h5>
+    <!-- FORM INPUT / EDIT TRANSAKSI -->
+    <div id="box-form" class="card p-4 mb-4 no-print">
+        <h5 id="judul-form" class="fw-bold mb-3 text-secondary">➕ Input Transaksi Baru</h5>
         <form id="form-transaksi" onsubmit="simpanTransaksi(event)">
+            <!-- Hidden Input Pengendali Sistem -->
+            <input type="hidden" id="in-aksi" value="tambah">
+            <input type="hidden" id="in-rownum" value="">
+
             <div class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Jenis Transaksi</label>
                     <select id="in-jenis" class="form-select" required>
-                        <option value="Pemasukan">Pemasukan (Masuk ke Sheet Pemasukan)</option>
-                        <option value="Pengeluaran">Pengeluaran (Masuk ke Sheet Pengeluaran)</option>
+                        <option value="Pemasukan">Pemasukan (Sheet Pemasukan)</option>
+                        <option value="Pengeluaran">Pengeluaran (Sheet Pengeluaran)</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -46,7 +50,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">No. Referensi (No. Ref)</label>
-                    <input type="text" id="in-noref" class="form-control" placeholder="Contoh: AJUMA-M2606-002" required>
+                    <input type="text" id="in-noref" class="form-control bg-light" value="[Otomatis Oleh Sistem]" disabled>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small fw-bold">Kategori</label>
@@ -65,6 +69,7 @@
                     <input type="url" id="in-foto" class="form-control" placeholder="https://link-foto-drive.com">
                 </div>
                 <div class="col-12 text-end">
+                    <button type="button" id="btn-batal" class="btn btn-secondary fw-bold me-2" style="display:none;" onclick="resetFormKeAwal()">❌ Batal</button>
                     <button type="submit" id="btn-simpan" class="btn btn-primary fw-bold px-4">🚀 Simpan ke Spreadsheet</button>
                 </div>
             </div>
@@ -95,13 +100,8 @@
 
     <div id="status-app" class="alert alert-info text-center no-print" style="display: none;">Memuat data...</div>
 
-    <!-- AREA CETAK LAPORAN -->
+    <!-- AREA LAPORAN -->
     <div id="area-laporan">
-        <div class="text-center my-3 d-none d-print-block">
-            <h2 class="fw-bold">LPK AJUMA</h2>
-            <p>Laporan Jurnal Transaksi Keuangan</p>
-        </div>
-
         <!-- REKAP KATEGORI -->
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-3">I. REKAPITULASI PER KATEGORI</h5>
@@ -115,7 +115,7 @@
                         </tr>
                     </thead>
                     <tbody id="rekap-body">
-                        <tr><td colspan="3" class="text-center text-muted">Klik tombol Tampilkan Laporan terlebih dahulu.</td></tr>
+                        <tr><td colspan="3" class="text-center text-muted">Klik tombol Tampilkan Laporan.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -129,15 +129,16 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
-                            <th style="width: 15%">Tanggal</th>
+                            <th style="width: 12%">Tanggal</th>
                             <th style="width: 15%">No. Ref</th>
-                            <th style="width: 35%">Akun & Keterangan</th>
-                            <th style="width: 15%" class="text-end">Debit</th>
-                            <th style="width: 15%" class="text-end">Kredit</th>
+                            <th style="width: 33%">Akun & Keterangan</th>
+                            <th style="width: 13%" class="text-end">Debit</th>
+                            <th style="width: 13%" class="text-end">Kredit</th>
+                            <th style="width: 9%" class="text-center no-print">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="jurnal-body">
-                        <tr><td colspan="6" class="text-center text-muted">Klik tombol Tampilkan Laporan terlebih dahulu.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted">Klik tombol Tampilkan Laporan.</td></tr>
                     </tbody>
                     <tfoot id="jurnal-foot"></tfoot>
                 </table>
@@ -150,8 +151,8 @@
 </div>
 
 <script>
-    // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI
     const API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
+    let dataCacheGlobal = [];
 
     window.onload = function() {
         const hariIni = new Date().toISOString().split('T')[0];
@@ -165,48 +166,88 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID', { minimumFractionDigits: 0 });
     }
 
-    // FUNGSI UNTUK INPUT DATA BARU
+    // PROSES SIMPAN (BISA TAMBAH / EDIT)
     function simpanTransaksi(event) {
         event.preventDefault();
         const btnSimpan = document.getElementById("btn-simpan");
         btnSimpan.disabled = true;
-        btnSimpan.innerText = "Sedang Menyimpan...";
+        btnSimpan.innerText = "Sedang Memproses...";
 
         const payload = {
+            aksi: document.getElementById("in-aksi").value,
+            rowNum: document.getElementById("in-rownum").value,
             jenis: document.getElementById("in-jenis").value,
             tanggal: document.getElementById("in-tanggal").value,
-            noref: document.getElementById("in-noref").value,
+            noref: document.getElementById("in-noref").value, // Mengirim data ini (penting saat mode edit)
             kategori: document.getElementById("in-kategori").value,
             keterangan: document.getElementById("in-keterangan").value,
             jumlah: document.getElementById("in-jumlah").value,
             buktiFoto: document.getElementById("in-foto").value
         };
 
-        // Kirim data ke Apps Script via POST tanpa mengaktifkan preflight CORS
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        })
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(res => {
             alert(res.message);
             if(res.status === "success") {
-                document.getElementById("form-transaksi").reset();
-                document.getElementById("in-tanggal").value = new Date().toISOString().split('T')[0];
-                muatDataDariSheets(); // Refresh data jurnal otomatis setelah input sukses
+                resetFormKeAwal();
+                muatDataDariSheets();
             }
         })
         .catch(err => {
-            alert("Gagal menyimpan data, periksa koneksi internet atau deployment script Anda.");
+            alert("Gagal memproses data.");
             console.error(err);
         })
         .finally(() => {
             btnSimpan.disabled = false;
-            btnSimpan.innerText = "🚀 Simpan ke Spreadsheet";
         });
     }
 
-    // FUNGSI UNTUK MEMBACA DATA LAPORAN
+    // FUNGSI EDIT MODE
+    function pemicuEdit(indexCache) {
+        const item = dataCacheGlobal[indexCache];
+        
+        document.getElementById("box-form").classList.add("mode-edit");
+        document.getElementById("judul-form").innerHTML = `✏️ Edit Transaksi (${item.noref})`;
+        
+        document.getElementById("in-aksi").value = "edit";
+        document.getElementById("in-rownum").value = item.rowNum;
+        document.getElementById("in-jenis").value = item.jenis;
+        document.getElementById("in-jenis").disabled = true; 
+        
+        const formatTgl = new Date(item.tanggal).toISOString().split('T')[0];
+        document.getElementById("in-tanggal").value = formatTgl;
+        
+        // Memasukkan No Ref asli ke field tersembunyi agar tidak hilang saat ditimpa di sheet
+        document.getElementById("in-noref").value = item.noref; 
+        
+        document.getElementById("in-kategori").value = item.kategori;
+        document.getElementById("in-keterangan").value = item.keterangan;
+        document.getElementById("in-jumlah").value = item.jumlah;
+        document.getElementById("in-foto").value = item.buktiFoto;
+
+        document.getElementById("btn-batal").style.display = "inline-block";
+        document.getElementById("btn-simpan").className = "btn btn-warning fw-bold px-4";
+        document.getElementById("btn-simpan").innerText = "🔄 Perbarui Data Spreadsheet";
+        
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function resetFormKeAwal() {
+        document.getElementById("form-transaksi").reset();
+        document.getElementById("box-form").classList.remove("mode-edit");
+        document.getElementById("judul-form").innerHTML = "➕ Input Transaksi Baru";
+        document.getElementById("in-aksi").value = "tambah";
+        document.getElementById("in-rownum").value = "";
+        document.getElementById("in-jenis").disabled = false;
+        document.getElementById("in-noref").value = "[Otomatis Oleh Sistem]"; // Kembalikan ke teks otomatis
+        document.getElementById("in-tanggal").value = new Date().toISOString().split('T')[0];
+        document.getElementById("btn-batal").style.display = "none";
+        document.getElementById("btn-simpan").className = "btn btn-primary fw-bold px-4";
+        document.getElementById("btn-simpan").innerText = "🚀 Simpan ke Spreadsheet";
+    }
+
+    // TARIK DATA LAPORAN
     function muatDataDariSheets() {
         const tglAwal = document.getElementById("input-tgl-awal").value;
         const tglAkhir = document.getElementById("input-tgl-akhir").value;
@@ -222,6 +263,7 @@
             .then(response => {
                 statusBox.style.display = "none";
                 if (response.status === "success") {
+                    dataCacheGlobal = response.data;
                     olahragaData(response.data);
                 }
             })
@@ -240,7 +282,7 @@
         jbody.innerHTML = ""; jfoot.innerHTML = ""; rbody.innerHTML = ""; buktiContainer.innerHTML = "";
 
         if (!arr || arr.length === 0) {
-            jbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Tidak ada data transaksi di periode ini.</td></tr>`;
+            jbody.innerHTML = `<tr><td colspan="7" class="text-center py-3 text-muted">Tidak ada data transaksi.</td></tr>`;
             rbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Tidak ada rekap.</td></tr>`;
             return;
         }
@@ -250,7 +292,7 @@
         let daftarFotoBukti = [];
         let noUrut = 1;
 
-        arr.forEach(item => {
+        arr.forEach((item, index) => {
             let tglIndo = new Date(item.tanggal).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
             let jumlahNominal = parseFloat(item.jumlah) || 0;
             
@@ -264,12 +306,13 @@
 
             let trKas = document.createElement("tr");
             let trLawan = document.createElement("tr");
+            let tombolEditHtml = `<td rowspan="2" class="text-center align-middle no-print"><button class="btn btn-sm btn-outline-warning fw-bold text-dark" onclick="pemicuEdit(${index})">✏️ Edit</button></td>`;
 
             if (item.jenis === "Pemasukan") {
-                trKas.innerHTML = `<td>${noUrut}</td><td>${tglIndo}</td><td class="text-muted fw-bold">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(jumlahNominal)}</td><td class="text-end">-</td>`;
+                trKas.innerHTML = `<td>${noUrut}</td><td>${tglIndo}</td><td class="text-muted fw-bold">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(jumlahNominal)}</td><td class="text-end">-</td>${tombolEditHtml}`;
                 trLawan.innerHTML = `<td></td><td></td><td></td><td style="padding-left: 30px;" class="text-muted">Pendapatan ${item.kategori}<br><small style="font-size:11px;color:#888;">(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end">${formatRupiah(jumlahNominal)}</td>`;
             } else {
-                trKas.innerHTML = `<td>${noUrut}</td><td>${tglIndo}</td><td class="text-muted fw-bold">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size:11px;color:#888;">(${item.keterangan})</small></td><td class="text-end">${formatRupiah(jumlahNominal)}</td><td class="text-end">-</td>`;
+                trKas.innerHTML = `<td>${noUrut}</td><td>${tglIndo}</td><td class="text-muted fw-bold">${item.noref}</td><td>Beban ${item.kategori}<br><small style="font-size:11px;color:#888;">(${item.keterangan})</small></td><td class="text-end">${formatRupiah(jumlahNominal)}</td><td class="text-end">-</td>${tombolEditHtml}`;
                 trLawan.innerHTML = `<td></td><td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(jumlahNominal)}</td>`;
             }
             
@@ -283,6 +326,7 @@
                 <td colspan="4" class="text-end">TOTAL BALANCE JURNAL :</td>
                 <td class="text-end text-success">${formatRupiah(totalDebit)}</td>
                 <td class="text-end text-success">${formatRupiah(totalKredit)}</td>
+                <td class="no-print"></td>
             </tr>`;
 
         for (let kat in rekapKategori) {
