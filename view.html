@@ -44,11 +44,53 @@
 <body>
 
 <div class="container my-4">
-    <!-- HEADER MONITORING -->
-    <div class="text-center mb-4">
+   <!-- HEADER MONITORING (HANYA MUNCUL DI LAYAR HP/LAPTOP, TIDAK IKUT DICETAK) -->
+    <div class="text-center mb-4 no-print">
         <h2 class="fw-bold text-navy mb-0">📊 MONITORING KEUANGAN LPK AJUMA</h2>
         <p class="text-muted small mb-0">Halaman Khusus Tinjauan Data, Riwayat Transaksi & Pengajuan Dana</p>
     </div>
+
+    <!-- FILTER PERIODE & TOMBOL CETAK -->
+    <div class="card p-3 mb-4 no-print">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Mulai Tanggal</label>
+                <input type="date" id="input-tgl-awal" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Sampai Tanggal</label>
+                <input type="date" id="input-tgl-akhir" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <button onclick="muatDataMonitoring()" class="btn btn-primary w-100 fw-bold">🔍 Perbarui Tampilan</button>
+            </div>
+            <div class="col-md-3">
+                <button onclick="window.print()" class="btn btn-success w-100 fw-bold">🖨️ Cetak Laporan (PDF)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="status-app" class="alert alert-info text-center no-print" style="display: none;">Memuat data real-time dari pusat database...</div>
+
+    <!-- AREA LAPORAN -->
+    <div id="area-laporan">
+              <!-- KOP LAPORAN RESMI + LOGO KIRI -->
+        <div class="d-none d-print-block mb-4">
+            <div class="row align-items-center">
+                <!-- SISI LOGO -->
+                <div class="col-2 text-center">
+                    <!-- GANTI URL DI BAWAH DENGAN LINK LOGO LPK AJUMA ANDA -->
+                    <img src="logo-ajuma.png" alt="Logo LPK" style="width: 90px; height: 90px; object-fit: contain;">
+                </div>
+                <!-- SISI TEKS -->
+                <div class="col-10 text-center" style="padding-right: 15%;"> <!-- Padding kanan menjaga teks tetap center murni -->
+                    <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px;">LPK ANUGRAH JULIAN UTAMA</h3>
+                    <h5 class="fw-bold mb-1" style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;">LAPORAN RINCIAN KEUANGAN & JURNAL UMUM</h5>
+                    <p id="print-periode" class="mb-0 text-secondary small fw-bold"></p>
+                </div>
+            </div>
+            <hr style="border: 2px solid #000; opacity: 1; margin-top: 15px; margin-bottom: 20px;">
+        </div>
 
   <!-- FILTER PERIODE & TOMBOL CETAK -->
     <div class="card p-3 mb-4 no-print">
