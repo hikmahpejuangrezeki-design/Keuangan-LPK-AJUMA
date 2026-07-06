@@ -50,19 +50,23 @@
         <p class="text-muted small mb-0">Halaman Khusus Tinjauan Data, Riwayat Transaksi & Pengajuan Dana</p>
     </div>
 
-    <!-- FILTER PERIODE (No Login Required) -->
+  <!-- FILTER PERIODE & TOMBOL CETAK -->
     <div class="card p-3 mb-4 no-print">
         <div class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label small fw-bold">Mulai Tanggal</label>
                 <input type="date" id="input-tgl-awal" class="form-control">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label small fw-bold">Sampai Tanggal</label>
                 <input type="date" id="input-tgl-akhir" class="form-control">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <button onclick="muatDataMonitoring()" class="btn btn-primary w-100 fw-bold">🔍 Perbarui Tampilan</button>
+            </div>
+            <div class="col-md-3">
+                <!-- TOMBOL CETAK BARU -->
+                <button onclick="window.print()" class="btn btn-success w-100 fw-bold">🖨️ Cetak Laporan (PDF)</button>
             </div>
         </div>
     </div>
