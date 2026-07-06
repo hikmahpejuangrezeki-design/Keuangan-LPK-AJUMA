@@ -3,36 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Keuangan LPK AJUMA</title>
+    <title>Sistem Admin LPK AJUMA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: Arial, sans-serif; }
+        body { background-color: #f3f4f6; font-family: Arial, sans-serif; }
         .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .table th { background-color: #4f46e5; color: white; font-weight: 600; text-transform: uppercase; font-size: 13px; }
-        
+        .nav-tabs .nav-link.active { background-color: #4f46e5; color: white; font-bold: true; }
         @media print {
             body { background-color: #fff; }
             .no-print { display: none !important; }
             .card { box-shadow: none; }
             .halaman-bukti-cetak { page-break-before: always; margin-top: 0; }
-            .kartu-bukti { break-inside: avoid; }
         }
-
         .galeri-bukti { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
-        .kartu-bukti { border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; width: 280px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kartu-bukti { border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; width: 280px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="container my-4">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-indigo">LPK AJUMA</h2>
-        <p class="text-muted">Sistem Laporan Otomatis Berdasarkan Posisi Kolom</p>
+    <div class="text-center mb-4 no-print">
+        <h2 class="fw-bold text-primary">PANEL ADMIN LPK AJUMA</h2>
+        <p class="text-muted">Input Transaksi & Laporan Keuangan Real-Time</p>
     </div>
 
-    <!-- Filter Periode -->
+    <!-- TAB INPUT TRANSAKSI (HANYA MUNCUL DI LAYAR) -->
+    <div class="card p-4 mb-4 no-print">
+        <h5 class="fw-bold mb-3 text-secondary">➕ Input Transaksi Baru</h5>
+        <form id="form-transaksi" onsubmit="simpanTransaksi(event)">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Jenis Transaksi</label>
+                    <select id="in-jenis" class="form-select" required>
+                        <option value="Pemasukan">Pemasukan (Masuk ke Sheet Pemasukan)</option>
+                        <option value="Pengeluaran">Pengeluaran (Masuk ke Sheet Pengeluaran)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Tanggal</label>
+                    <input type="date" id="in-tanggal" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">No. Referensi (No. Ref)</label>
+                    <input type="text" id="in-noref" class="form-control" placeholder="Contoh: AJUMA-M2606-002" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Kategori</label>
+                    <input type="text" id="in-kategori" class="form-control" placeholder="Contoh: Dari YATEINU / ATK" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Keterangan</label>
+                    <input type="text" id="in-keterangan" class="form-control" placeholder="Detail transaksi..." required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Jumlah (Nominal Angka)</label>
+                    <input type="number" id="in-jumlah" class="form-control" placeholder="Contoh: 1500000" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Link Bukti Foto (Opsional)</label>
+                    <input type="url" id="in-foto" class="form-control" placeholder="https://link-foto-drive.com">
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" id="btn-simpan" class="btn btn-primary fw-bold px-4">🚀 Simpan ke Spreadsheet</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- FILTER PERIODE JURNAL -->
     <div class="card p-3 mb-4 no-print">
-        <h5 class="fw-bold mb-3 text-secondary">Tentukan Periode Laporan</h5>
+        <h5 class="fw-bold mb-3 text-secondary">🔍 Filter Laporan Jurnal</h5>
         <div class="row g-3 align-items-end">
             <div class="col-md-4">
                 <label class="form-label small fw-bold">Tanggal Awal</label>
@@ -43,19 +84,25 @@
                 <input type="date" id="input-tgl-akhir" class="form-control">
             </div>
             <div class="col-md-4">
-                <button onclick="muatDataDariSheets()" class="btn btn-primary w-100 fw-bold">Tampilkan Laporan</button>
+                <button onclick="muatDataDariSheets()" class="btn btn-dark w-100 fw-bold">Tampilkan & Refresh Laporan</button>
             </div>
         </div>
     </div>
 
-    <div class="d-flex justify-content-end gap-2 mb-3 no-print">
+    <div class="d-flex justify-content-end mb-3 no-print">
         <button onclick="window.print()" class="btn btn-success fw-bold">🖨️ Cetak / Simpan PDF</button>
     </div>
 
     <div id="status-app" class="alert alert-info text-center no-print" style="display: none;">Memuat data...</div>
 
+    <!-- AREA CETAK LAPORAN -->
     <div id="area-laporan">
-        <!-- I. REKAP KATEGORI -->
+        <div class="text-center my-3 d-none d-print-block">
+            <h2 class="fw-bold">LPK AJUMA</h2>
+            <p>Laporan Jurnal Transaksi Keuangan</p>
+        </div>
+
+        <!-- REKAP KATEGORI -->
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-3">I. REKAPITULASI PER KATEGORI</h5>
             <div class="table-responsive">
@@ -68,13 +115,13 @@
                         </tr>
                     </thead>
                     <tbody id="rekap-body">
-                        <tr><td colspan="3" class="text-center text-muted">Tentukan tanggal awal & akhir terlebih dahulu.</td></tr>
+                        <tr><td colspan="3" class="text-center text-muted">Klik tombol Tampilkan Laporan terlebih dahulu.</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- II. JURNAL DEBIT KREDIT -->
+        <!-- JURNAL UMUM -->
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-3">II. JURNAL UMUM (DEBIT KREDIT)</h5>
             <div class="table-responsive">
@@ -90,14 +137,14 @@
                         </tr>
                     </thead>
                     <tbody id="jurnal-body">
-                        <tr><td colspan="6" class="text-center text-muted">Tentukan tanggal awal & akhir terlebih dahulu.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted">Klik tombol Tampilkan Laporan terlebih dahulu.</td></tr>
                     </tbody>
                     <tfoot id="jurnal-foot"></tfoot>
                 </table>
             </div>
         </div>
 
-        <!-- III. BUKTI FOTO -->
+        <!-- LAMPIRAN FOTO -->
         <div id="lampiran-bukti"></div>
     </div>
 </div>
@@ -108,28 +155,67 @@
 
     window.onload = function() {
         const hariIni = new Date().toISOString().split('T')[0];
-        const awalBulan = new Date(new Date().getFullYear(), new Date().getMonth(), 2).toISOString().split('T')[0];
-        document.getElementById("input-tgl-awal").value = awalBulan;
+        document.getElementById("in-tanggal").value = hariIni;
+        document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01";
         document.getElementById("input-tgl-akhir").value = hariIni;
+        muatDataDariSheets();
     };
 
     function formatRupiah(angka) {
-        return "Rp " + parseFloat(angka).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return "Rp " + parseFloat(angka).toLocaleString('id-ID', { minimumFractionDigits: 0 });
     }
 
+    // FUNGSI UNTUK INPUT DATA BARU
+    function simpanTransaksi(event) {
+        event.preventDefault();
+        const btnSimpan = document.getElementById("btn-simpan");
+        btnSimpan.disabled = true;
+        btnSimpan.innerText = "Sedang Menyimpan...";
+
+        const payload = {
+            jenis: document.getElementById("in-jenis").value,
+            tanggal: document.getElementById("in-tanggal").value,
+            noref: document.getElementById("in-noref").value,
+            kategori: document.getElementById("in-kategori").value,
+            keterangan: document.getElementById("in-keterangan").value,
+            jumlah: document.getElementById("in-jumlah").value,
+            buktiFoto: document.getElementById("in-foto").value
+        };
+
+        // Kirim data ke Apps Script via POST tanpa mengaktifkan preflight CORS
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            if(res.status === "success") {
+                document.getElementById("form-transaksi").reset();
+                document.getElementById("in-tanggal").value = new Date().toISOString().split('T')[0];
+                muatDataDariSheets(); // Refresh data jurnal otomatis setelah input sukses
+            }
+        })
+        .catch(err => {
+            alert("Gagal menyimpan data, periksa koneksi internet atau deployment script Anda.");
+            console.error(err);
+        })
+        .finally(() => {
+            btnSimpan.disabled = false;
+            btnSimpan.innerText = "🚀 Simpan ke Spreadsheet";
+        });
+    }
+
+    // FUNGSI UNTUK MEMBACA DATA LAPORAN
     function muatDataDariSheets() {
         const tglAwal = document.getElementById("input-tgl-awal").value;
         const tglAkhir = document.getElementById("input-tgl-akhir").value;
         const statusBox = document.getElementById("status-app");
 
-        if (!tglAwal || !tglAkhir) {
-            alert("Harap tentukan tanggal awal dan akhir periode!");
-            return;
-        }
+        if (!tglAwal || !tglAkhir) return;
 
         statusBox.style.display = "block";
-        statusBox.className = "alert alert-warning text-center no-print";
-        statusBox.innerText = "Sedang menarik & menyelaraskan data kolom Pemasukan & Pengeluaran...";
+        statusBox.innerText = "Memperbarui data laporan jurnal...";
 
         fetch(`${API_URL}?awal=${tglAwal}&akhir=${tglAkhir}`)
             .then(res => res.json())
@@ -137,13 +223,10 @@
                 statusBox.style.display = "none";
                 if (response.status === "success") {
                     olahragaData(response.data);
-                } else {
-                    alert("Gagal memuat data: " + response.message);
                 }
             })
             .catch(err => {
-                statusBox.className = "alert alert-danger text-center no-print";
-                statusBox.innerText = "Koneksi Gagal. Pastikan URL Apps Script Web App Anda benar.";
+                statusBox.innerText = "Gagal memuat jurnal.";
                 console.error(err);
             });
     }
@@ -157,8 +240,8 @@
         jbody.innerHTML = ""; jfoot.innerHTML = ""; rbody.innerHTML = ""; buktiContainer.innerHTML = "";
 
         if (!arr || arr.length === 0) {
-            jbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Tidak ada data pada periode ini.</td></tr>`;
-            rbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Tidak ada data rekap.</td></tr>`;
+            jbody.innerHTML = `<tr><td colspan="6" class="text-center py-3 text-muted">Tidak ada data transaksi di periode ini.</td></tr>`;
+            rbody.innerHTML = `<tr><td colspan="3" class="text-center py-3 text-muted">Tidak ada rekap.</td></tr>`;
             return;
         }
 
@@ -171,19 +254,12 @@
             let tglIndo = new Date(item.tanggal).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
             let jumlahNominal = parseFloat(item.jumlah) || 0;
             
-            if (!rekapKategori[item.kategori]) {
-                rekapKategori[item.kategori] = { masuk: 0, keluar: 0 };
-            }
-            if (item.jenis === "Pemasukan") {
-                rekapKategori[item.kategori].masuk += jumlahNominal;
-            } else {
-                rekapKategori[item.kategori].keluar += jumlahNominal;
-            }
+            if (!rekapKategori[item.kategori]) { rekapKategori[item.kategori] = { masuk: 0, keluar: 0 }; }
+            if (item.jenis === "Pemasukan") { rekapKategori[item.kategori].masuk += jumlahNominal; } 
+            else { rekapKategori[item.kategori].keluar += jumlahNominal; }
 
             if (item.buktiFoto && item.buktiFoto.trim() !== "") {
-                daftarFotoBukti.push({
-                    no: noUrut, ref: item.noref, tgl: tglIndo, ket: item.keterangan, url: item.buktiFoto
-                });
+                daftarFotoBukti.push({ no: noUrut, ref: item.noref, tgl: tglIndo, ket: item.keterangan, url: item.buktiFoto });
             }
 
             let trKas = document.createElement("tr");
@@ -197,11 +273,8 @@
                 trLawan.innerHTML = `<td></td><td></td><td></td><td style="padding-left: 30px;" class="text-muted">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(jumlahNominal)}</td>`;
             }
             
-            totalDebit += jumlahNominal; 
-            totalKredit += jumlahNominal;
-
-            jbody.appendChild(trKas);
-            jbody.appendChild(trLawan);
+            totalDebit += jumlahNominal; totalKredit += jumlahNominal;
+            jbody.appendChild(trKas); jbody.appendChild(trLawan);
             noUrut++;
         });
 
@@ -219,12 +292,7 @@
         }
 
         if (daftarFotoBukti.length > 0) {
-            let htmlLampiran = `
-                <div class="halaman-bukti-cetak">
-                    <hr class="d-print-none mt-5">
-                    <h4 class="text-center fw-bold mb-4">LAMPIRAN BUKTI TRANSAKSI</h4>
-                    <div class="galeri-bukti">`;
-            
+            let htmlLampiran = `<div class="halaman-bukti-cetak"><hr class="d-print-none mt-5"><h4 class="text-center fw-bold mb-4">LAMPIRAN BUKTI TRANSAKSI</h4><div class="galeri-bukti">`;
             daftarFotoBukti.forEach(foto => {
                 htmlLampiran += `
                     <div class="kartu-bukti">
