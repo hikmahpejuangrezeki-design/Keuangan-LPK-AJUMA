@@ -22,29 +22,41 @@
         .img-bukti-file { width: 100%; height: 420px; object-fit: contain; margin: 10px 0; border-radius: 6px; background: #fafafa; }
 
        @media print {
-            /* 1. Sembunyikan elemen dekoratif & filter */
-            body { background-color: #fff; color: #000 !important; }
-            .no-print, .btn, .alert, label, input, button { display: none !important; }
-            .row.g-3.mb-4 { display: none !important; } /* Sembunyikan card dashboard berwarna */
+            /* 1. Sembunyikan elemen dekoratif, tombol, & filter */
+            body { background-color: #fff; color: #000000 !important; font-family: Arial, Helvetica, sans-serif; }
+            .no-print, .d-print-none, .btn, .alert, label, input, button { display: none !important; }
+            .row.g-3.mb-4 { display: none !important; } 
             
-            /* 2. Hilangkan icon/emoji di dalam tabel secara otomatis */
-            th, td { color: #000000 !important; }
-            th a, td a, .btn-outline-primary { display: none !important; } /* Sembunyikan tombol 🖼️ Bukti */
+            /* 2. Paksa semua warna font menjadi hitam murni & hilangkan emoji */
+            h2, h3, h5, h6, th, td, div, span, p, a, small, 
+            .text-success, .text-danger, .text-primary, .text-secondary, .text-muted { 
+                color: #000000 !important; 
+                background: none !important; 
+                background-color: transparent !important;
+            }
             
-            /* 3. Atur layout cetak agar formal */
-            h2, h3, h5, h6, div, span, p { color: #000000 !important; background: none !important; }
-            .table th { background-color: #ffffff !important; color: #000000 !important; border: 1px solid #000000 !important;}
-            .card { box-shadow: none; border: none !important; p-4: 0px !important; margin-bottom: 20px !important; page-break-inside: avoid; }
+            /* Sembunyikan ikon emoji kecil secara otomatis pada judul tabel rincian */
+            h6 { font-weight: bold !important; text-transform: uppercase; font-size: 14px; }
+            
+            /* 3. Atur tabel agar bergaris hitam tipis formal */
+            .table { border-collapse: collapse !important; width: 100% !important; margin-bottom: 15px !important; }
+            .table th { background-color: #ffffff !important; color: #000000 !important; border: 1px solid #000000 !important; font-weight: bold; }
+            .table td { border: 1px solid #000000 !important; color: #000000 !important; }
+            .card { box-shadow: none; border: none !important; padding: 0 !important; margin-bottom: 20px !important; }
+            
+            /* Atur pemotongan halaman */
             .halaman-jurnal-cetak, .halaman-pengajuan-cetak, .halaman-bukti-cetak { page-break-before: always !important; }
-            tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
-            table { page-break-inside: auto; border-collapse: collapse !important; }
+            tr { page-break-inside: avoid !important; }
+            table { page-break-inside: auto; }
             
-            /* 4. Layout Lampiran Bukti Fisik */
+            /* 4. Format Baris Total Angka */
+            .baris-subtotal, .table-light { font-weight: bold !important; background: none !important; border-top: 1px dashed #000000 !important; border-bottom: 1px dashed #000000 !important; }
+            .baris-total-akhir, .table-dark { font-weight: bold !important; font-size: 14px; border-top: 2px double #000000 !important; border-bottom: 2px double #000000 !important; color: #000000 !important; }
+            
+            /* 5. Layout Lampiran Bukti Fisik */
             .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: center !important; width: 100% !important;}
-            .kartu-bukti { width: 23% !important; max-width: 23% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 8px !important; background: #fff !important;}
+            .kartu-bukti { width: 23% !important; max-width: 23% !important; page-break-inside: avoid !important; border: 1px solid #000000 !important; padding: 8px !important; background: #fff !important;}
             .img-bukti-file { height: 340px !important; width: 100% !important; object-fit: contain !important; }
-            .baris-subtotal { font-weight: bold; border-top: 1px dashed #000 !important; border-bottom: 1px dashed #000 !important; }
-            .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000 !important; border-bottom: 2px double #000 !important; }
         }
     </style>
 </head>
@@ -79,54 +91,78 @@
 
     <div id="status-app" class="alert alert-info text-center d-print-none" style="display: none;">Memuat data real-time dari pusat database...</div>
 
-    <!-- AREA LAPORAN -->
+   <!-- AREA LAPORAN -->
     <div id="area-laporan">
-        <!-- KOP LAPORAN RESMI (INI YANG AKAN MUNCUL DI PDF BESERTA LOGO) -->
+        <!-- KOP LAPORAN RESMI DENGAN LOGO (MUNCUL SAAT CETAK) -->
         <div class="d-none d-print-block mb-4">
             <div class="row align-items-center" style="display: flex !important; flex-direction: row !important; align-items: center !important;">
                 <!-- SISI LOGO -->
-                <div style="width: 15%; text-center">
-                    <!-- Menggunakan logo.png lokal secara ketat -->
-                    <img src="logo-ajuma.png" alt="Logo LPK" style="width: 80px; height: 80px; object-fit: contain;" onerror="this.src='logo.jpg'">
+                <div style="width: 15%; text-align: center;">
+                    <img src="logo.png" alt="Logo LPK" style="width: 85px; height: 85px; object-fit: contain;" onerror="this.src='logo.jpg'">
                 </div>
                 <!-- SISI TEKS -->
-                <div style="width: 85%; text-align: center; padding-right: 50px;">
-                    <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px; margin: 0;">LPK ANUGRAH JULIAN UTAMA</h3>
-                    <h5 class="fw-bold mb-1" style="font-family: Arial, Helvetica, sans-serif; font-size: 16px; margin: 5px 0 0 0;">LAPORAN RINCIAN KEUANGAN & JURNAL UMUM</h5>
-                    <p id="print-periode" class="mb-0 text-secondary small fw-bold" style="margin: 5px 0 0 0;"></p>
+                <div style="width: 85%; text-align: center; padding-right: 60px;">
+                    <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px; margin: 0; font-size: 22px; color: #000;">LPK ANUGRAH JULIAN UTAMA</h3>
+                    <h5 class="fw-bold mb-1" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; margin: 5px 0 0 0; color: #000;">LAPORAN RINCIAN KEUANGAN & JURNAL UMUM</h5>
+                    <p id="print-periode" class="mb-0 small fw-bold" style="margin: 5px 0 0 0; color: #000;"></p>
                 </div>
             </div>
-            <hr style="border: 2px solid #000 !important; opacity: 1 !important; margin-top: 15px !important; margin-bottom: 20px !important;">
+            <hr style="border: 2px solid #000000 !important; opacity: 1 !important; margin-top: 15px !important; margin-bottom: 30px !important;">
         </div>
-  <!-- FILTER PERIODE & TOMBOL CETAK -->
-    <div class="card p-3 mb-4 no-print">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label small fw-bold">Mulai Tanggal</label>
-                <input type="date" id="input-tgl-awal" class="form-control">
+
+        <!-- DASHBOARD RINGKASAN DATA (HANYA LAYAR HP/LAPTOP) -->
+        <div class="row g-3 mb-4 d-print-none">
+            <div class="col-md-4">
+                <div class="card-stat bg-masuk">
+                    <small class="text-uppercase opacity-75">Total Pemasukan</small>
+                    <h3 id="stat-masuk" class="fw-bold mb-0">Rp 0</h3>
+                </div>
             </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold">Sampai Tanggal</label>
-                <input type="date" id="input-tgl-akhir" class="form-control">
+            <div class="col-md-4">
+                <div class="card-stat bg-keluar">
+                    <small class="text-uppercase opacity-75">Total Pengeluaran</small>
+                    <h3 id="stat-keluar" class="fw-bold mb-0">Rp 0</h3>
+                </div>
             </div>
-            <div class="col-md-3">
-                <button onclick="muatDataMonitoring()" class="btn btn-primary w-100 fw-bold">🔍 Perbarui Tampilan</button>
-            </div>
-            <div class="col-md-3">
-                <!-- TOMBOL CETAK BARU -->
-                <button onclick="window.print()" class="btn btn-success w-100 fw-bold">🖨️ Cetak Laporan (PDF)</button>
+            <div class="col-md-4">
+                <div class="card-stat bg-saldo">
+                    <small class="text-uppercase opacity-75">Saldo Akhir Periode</small>
+                    <h3 id="stat-saldo" class="fw-bold mb-0">Rp 0</h3>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="status-app" class="alert alert-info text-center no-print" style="display: none;">Memuat data real-time dari pusat database...</div>
-
-    <!-- AREA LAPORAN -->
-    <div id="area-laporan">
-        <div class="text-center my-3 d-none d-print-block">
-            <h2 class="fw-bold mb-0">LPK ANUGRAH JULIAN UTAMA</h2>
-            <p class="mb-0">Laporan Rincian Keuangan & Jurnal Umum</p>
-            <p id="print-periode" class="small"></p>
+        <!-- I. RINCIAN SELURUH TRANSAKSI -->
+        <div class="card p-4 mb-4" style="border: none;">
+            <h5 class="fw-bold mb-4 text-center" style="font-size: 16px; letter-spacing: 0.5px;">I. RINCIAN DAFTAR TRANSAKSI PERIODE</h5>
+            <div class="row g-4">
+                <div class="col-xl-6 border-end">
+                    <!-- Judul bersih tanpa emoji & otomatis hitam saat dicetak -->
+                    <h6 class="fw-bold text-success text-center mb-3">Rincian Catatan Pemasukan</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
+                            <thead>
+                                <tr><th>Tgl</th><th>Kategori</th><th>Keterangan</th><th class="text-end">Jumlah</th></tr>
+                            </thead>
+                            <tbody id="rinci-masuk-body"></tbody>
+                            <tbody id="rinci-masuk-foot" class="table-light fw-bold"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <!-- Judul bersih tanpa emoji & otomatis hitam saat dicetak -->
+                    <h6 class="fw-bold text-danger text-center mb-3">Rincian Catatan Pengeluaran</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
+                            <thead>
+                                <tr><th>Tgl</th><th>Kategori</th><th>Keterangan</th><th class="text-end">Jumlah</th></tr>
+                            </thead>
+                            <tbody id="rinci-keluar-body"></tbody>
+                            <tbody id="rinci-keluar-foot" class="table-light fw-bold"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- DASHBOARD RINGKASAN -->
