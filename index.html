@@ -8,7 +8,7 @@
     <style>
         body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; }
-        .table th { background-color: #4f46e5; color: white; font-weight: 600; text-transform: uppercase; font-size: 12px; border: none; }
+        .table th { background-color: #4f46e5; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; border: none; }
         .mode-edit { background-color: #fff3cd !important; border: 2px solid #ffc107 !important; }
         
         /* Dashboard Styling */
@@ -20,7 +20,7 @@
         @media print {
             body { background-color: #fff; }
             .no-print { display: none !important; }
-            .card { box-shadow: none; border: 1px solid #ddd; }
+            .card { box-shadow: none; border: 1px solid #ddd; margin-bottom: 15px !important; }
             .halaman-bukti-cetak { page-break-before: always; margin-top: 0; }
         }
         .galeri-bukti { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
@@ -131,25 +131,46 @@
         </div>
 
         <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-4 text-dark text-center">I. RINCIAN PER KATEGORI</h5>
-            <div class="row">
-                <div class="col-md-6 border-end">
-                    <h6 class="fw-bold text-success mb-3 text-center">Daftar Pemasukan</h6>
-                    <table class="table table-sm">
-                        <thead class="table-light">
-                            <tr><th>Kategori</th><th class="text-end">Jumlah</th></tr>
-                        </thead>
-                        <tbody id="rinci-masuk-body"></tbody>
-                    </table>
+            <h5 class="fw-bold mb-4 text-dark text-center">I. RINCIAN DAFTAR TRANSAKSI PERIODE</h5>
+            <div class="row g-4">
+                <div class="col-xl-6 border-end">
+                    <h6 class="fw-bold text-success mb-3 text-center">📋 Rincian Catatan Pemasukan</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
+                            <thead>
+                                <tr>
+                                    <th>Tgl</th>
+                                    <th>Kategori</th>
+                                    <th>Keterangan</th>
+                                    <th class="text-end">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rinci-masuk-body">
+                                <tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>
+                            </tbody>
+                            <tfoot id="rinci-masuk-foot" class="table-light fw-bold"></tfoot>
+                        </table>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <h6 class="fw-bold text-danger mb-3 text-center">Daftar Pengeluaran</h6>
-                    <table class="table table-sm">
-                        <thead class="table-light">
-                            <tr><th>Kategori</th><th class="text-end">Jumlah</th></tr>
-                        </thead>
-                        <tbody id="rinci-keluar-body"></tbody>
-                    </table>
+                
+                <div class="col-xl-6">
+                    <h6 class="fw-bold text-danger mb-3 text-center">📋 Rincian Catatan Pengeluaran</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
+                            <thead>
+                                <tr>
+                                    <th>Tgl</th>
+                                    <th>Kategori</th>
+                                    <th>Keterangan</th>
+                                    <th class="text-end">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rinci-keluar-body">
+                                <tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>
+                            </tbody>
+                            <tfoot id="rinci-keluar-foot" class="table-light fw-bold"></tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,59 +265,76 @@
         const jbody = document.getElementById("jurnal-body");
         const rMBody = document.getElementById("rinci-masuk-body");
         const rKBody = document.getElementById("rinci-keluar-body");
+        const rMFoot = document.getElementById("rinci-masuk-foot");
+        const rKFoot = document.getElementById("rinci-keluar-foot");
         const buktiContainer = document.getElementById("lampiran-bukti");
         
-        jbody.innerHTML = ""; rMBody.innerHTML = ""; rKBody.innerHTML = ""; buktiContainer.innerHTML = "";
+        jbody.innerHTML = ""; rMBody.innerHTML = ""; rKBody.innerHTML = ""; 
+        rMFoot.innerHTML = ""; rKFoot.innerHTML = ""; buktiContainer.innerHTML = "";
 
-        let rekapM = {}, rekapK = {};
+        let countM = 0, countK = 0;
         let tM = 0, tK = 0, tD = 0, tC = 0;
         let fotoBukti = [];
 
         arr.forEach((item, index) => {
             let jml = parseFloat(item.jumlah) || 0;
-            let tgl = new Date(item.tanggal).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+            let tglObj = new Date(item.tanggal);
+            let tglIndoShort = tglObj.toLocaleDateString('id-ID', { month: 'numeric', day: 'numeric' });
+            let tglIndoFull = tglObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
 
-            // Pengelompokan Rekap Rinci
+            // RENDER BARIS RINCIAN SATU PER SATU KE TABEL MASING-MASING
+            let trRinci = document.createElement("tr");
+            trRinci.innerHTML = `
+                <td>${tglIndoShort}</td>
+                <td class="fw-bold">${item.kategori}</td>
+                <td class="text-muted">${item.keterangan}</td>
+                <td class="text-end">${formatRupiah(jml)}</td>
+            `;
+
             if (item.jenis === "Pemasukan") {
-                rekapM[item.kategori] = (rekapM[item.kategori] || 0) + jml;
+                if(countM === 0) rMBody.innerHTML = ""; // Hapus placeholder "tidak ada data"
+                rMBody.appendChild(trRinci);
                 tM += jml;
+                countM++;
             } else {
-                rekapK[item.kategori] = (rekapK[item.kategori] || 0) + jml;
+                if(countK === 0) rKBody.innerHTML = ""; // Hapus placeholder
+                rKBody.appendChild(trRinci);
                 tK += jml;
+                countK++;
             }
 
             // Foto Bukti
             if (item.buktiFoto) fotoBukti.push({ no: index + 1, ref: item.noref, url: item.buktiFoto });
 
-            // Baris Jurnal
+            // Baris Jurnal Umum (Debit Kredit)
             let tr1 = document.createElement("tr");
             let tr2 = document.createElement("tr");
             let btnEdit = `<td rowspan="2" class="text-center no-print"><button class="btn btn-sm btn-light border" onclick="pemicuEdit(${index})">✏️</button></td>`;
 
             if (item.jenis === "Pemasukan") {
-                tr1.innerHTML = `<td>${index+1}</td><td>${tgl}</td><td class="fw-bold">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(jml)}</td><td class="text-end">-</td>${btnEdit}`;
+                tr1.innerHTML = `<td>${index+1}</td><td>${tglIndoFull}</td><td class="fw-bold">${item.noref}</td><td>Kas Utama LPK</td><td class="text-end">${formatRupiah(jml)}</td><td class="text-end">-</td>${btnEdit}`;
                 tr2.innerHTML = `<td></td><td></td><td></td><td class="text-muted" style="padding-left:25px">Pendapatan ${item.kategori}<br><small>(${item.keterangan})</small></td><td class="text-end">-</td><td class="text-end">${formatRupiah(jml)}</td>`;
             } else {
-                tr1.innerHTML = `<td>${index+1}</td><td>${tgl}</td><td class="fw-bold">${item.noref}</td><td>Beban ${item.kategori}<br><small>(${item.keterangan})</small></td><td class="text-end">${formatRupiah(jml)}</td><td class="text-end">-</td>${btnEdit}`;
+                tr1.innerHTML = `<td>${index+1}</td><td>${tglIndoFull}</td><td class="fw-bold">${item.noref}</td><td>Beban ${item.kategori}<br><small>(${item.keterangan})</small></td><td class="text-end">${formatRupiah(jml)}</td><td class="text-end">-</td>${btnEdit}`;
                 tr2.innerHTML = `<td></td><td></td><td></td><td class="text-muted" style="padding-left:25px">Kas Utama LPK</td><td class="text-end">-</td><td class="text-end">${formatRupiah(jml)}</td>`;
             }
             tD += jml; tC += jml;
             jbody.appendChild(tr1); jbody.appendChild(tr2);
         });
 
-        // Update Dashboard
+        // UPDATE DASHBOARD ATAS
         document.getElementById("stat-masuk").innerText = formatRupiah(tM);
         document.getElementById("stat-keluar").innerText = formatRupiah(tK);
         document.getElementById("stat-saldo").innerText = formatRupiah(tM - tK);
 
-        // Render Rincian Kategori
-        Object.keys(rekapM).forEach(k => rMBody.innerHTML += `<tr><td>${k}</td><td class="text-end fw-bold text-success">${formatRupiah(rekapM[k])}</td></tr>`);
-        Object.keys(rekapK).forEach(k => rKBody.innerHTML += `<tr><td>${k}</td><td class="text-end fw-bold text-danger">${formatRupiah(rekapK[k])}</td></tr>`);
+        // MENAMPILKAN BARIS TOTAL DI BAWAH SETELAH SELURUH TRANSAKSI DICATAT
+        rMFoot.innerHTML = `<tr><td colspan="3" class="text-end">TOTAL PEMASUKAN :</td><td class="text-end text-success">${formatRupiah(tM)}</td></tr>`;
+        rKFoot.innerHTML = `<tr><td colspan="3" class="text-end">TOTAL PENGELUARAN :</td><td class="text-end text-danger">${formatRupiah(tK)}</td></tr>`;
 
-        // Footer Jurnal
+        // Footer Jurnal Umum
         document.getElementById("jurnal-foot").innerHTML = `<tr class="table-light fw-bold"><td colspan="4" class="text-end">TOTAL BALANCE JURNAL</td><td class="text-end">${formatRupiah(tD)}</td><td class="text-end">${formatRupiah(tC)}</td><td class="no-print"></td></tr>`;
 
-        // Render Lampiran
+        // Render Lampiran Bukti
         if (fotoBukti.length > 0) {
             let h = `<div class="halaman-bukti-cetak"><h5 class="fw-bold text-center mb-4">III. LAMPIRAN BUKTI TRANSAKSI</h5><div class="galeri-bukti">`;
             fotoBukti.forEach(f => h += `<div class="kartu-bukti"><small class="d-block fw-bold text-primary">${f.ref}</small><img src="${f.url}" style="width:100%;height:150px;object-fit:contain;margin:10px 0;" onerror="this.src='https://placehold.co/150?text=Gagal+Muat'"><small class="text-muted">ID: ${f.no}</small></div>`);
