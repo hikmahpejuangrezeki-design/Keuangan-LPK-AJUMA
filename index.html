@@ -216,6 +216,26 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
     }
 
+    // FUNGSI CERDAS UNTUK KONVERSI LINK GDRIVE MENJADI LINK GAMBAR ASLI
+    function konversiLinkDrive(urlAsli) {
+        if (!urlAsli || urlAsli.trim() === "") return "";
+        let url = urlAsli.trim();
+        
+        // Pola ID file Google Drive
+        let fileId = "";
+        if (url.includes("/d/")) {
+            fileId = url.split("/d/")[1].split("/")[0];
+        } else if (url.includes("id=")) {
+            fileId = url.split("id=")[1].split("&")[0];
+        }
+        
+        if (fileId !== "") {
+            // Menggunakan uc?export=view&id agar gambar bisa langsung dirender oleh tag <img> HTML
+            return `https://docs.google.com/uc?export=view&id=${fileId}`;
+        }
+        return url; // Kembalikan url asal jika bukan link gdrive
+    }
+
     function simpanTransaksi(event) {
         event.preventDefault();
         const btn = document.getElementById("btn-simpan");
@@ -282,7 +302,6 @@
             let tglIndoShort = tglObj.toLocaleDateString('id-ID', { month: 'numeric', day: 'numeric' });
             let tglIndoFull = tglObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
 
-            // RENDER BARIS RINCIAN SATU PER SATU KE TABEL MASING-MASING
             let trRinci = document.createElement("tr");
             trRinci.innerHTML = `
                 <td>${tglIndoShort}</td>
@@ -292,21 +311,23 @@
             `;
 
             if (item.jenis === "Pemasukan") {
-                if(countM === 0) rMBody.innerHTML = ""; // Hapus placeholder "tidak ada data"
+                if(countM === 0) rMBody.innerHTML = "";
                 rMBody.appendChild(trRinci);
                 tM += jml;
                 countM++;
             } else {
-                if(countK === 0) rKBody.innerHTML = ""; // Hapus placeholder
+                if(countK === 0) rKBody.innerHTML = "";
                 rKBody.appendChild(trRinci);
                 tK += jml;
                 countK++;
             }
 
-            // Foto Bukti
-            if (item.buktiFoto) fotoBukti.push({ no: index + 1, ref: item.noref, url: item.buktiFoto });
+            // Memasukkan ke daftar foto lampiran (dengan konversi link otomatis)
+            if (item.buktiFoto && item.buktiFoto.trim() !== "") {
+                let linkGambarDirect = konversiLinkDrive(item.buktiFoto);
+                fotoBukti.push({ no: index + 1, ref: item.noref, url: linkGambarDirect });
+            }
 
-            // Baris Jurnal Umum (Debit Kredit)
             let tr1 = document.createElement("tr");
             let tr2 = document.createElement("tr");
             let btnEdit = `<td rowspan="2" class="text-center no-print"><button class="btn btn-sm btn-light border" onclick="pemicuEdit(${index})">✏️</button></td>`;
@@ -322,22 +343,19 @@
             jbody.appendChild(tr1); jbody.appendChild(tr2);
         });
 
-        // UPDATE DASHBOARD ATAS
         document.getElementById("stat-masuk").innerText = formatRupiah(tM);
         document.getElementById("stat-keluar").innerText = formatRupiah(tK);
         document.getElementById("stat-saldo").innerText = formatRupiah(tM - tK);
 
-        // MENAMPILKAN BARIS TOTAL DI BAWAH SETELAH SELURUH TRANSAKSI DICATAT
         rMFoot.innerHTML = `<tr><td colspan="3" class="text-end">TOTAL PEMASUKAN :</td><td class="text-end text-success">${formatRupiah(tM)}</td></tr>`;
         rKFoot.innerHTML = `<tr><td colspan="3" class="text-end">TOTAL PENGELUARAN :</td><td class="text-end text-danger">${formatRupiah(tK)}</td></tr>`;
 
-        // Footer Jurnal Umum
         document.getElementById("jurnal-foot").innerHTML = `<tr class="table-light fw-bold"><td colspan="4" class="text-end">TOTAL BALANCE JURNAL</td><td class="text-end">${formatRupiah(tD)}</td><td class="text-end">${formatRupiah(tC)}</td><td class="no-print"></td></tr>`;
 
         // Render Lampiran Bukti
         if (fotoBukti.length > 0) {
             let h = `<div class="halaman-bukti-cetak"><h5 class="fw-bold text-center mb-4">III. LAMPIRAN BUKTI TRANSAKSI</h5><div class="galeri-bukti">`;
-            fotoBukti.forEach(f => h += `<div class="kartu-bukti"><small class="d-block fw-bold text-primary">${f.ref}</small><img src="${f.url}" style="width:100%;height:150px;object-fit:contain;margin:10px 0;" onerror="this.src='https://placehold.co/150?text=Gagal+Muat'"><small class="text-muted">ID: ${f.no}</small></div>`);
+            fotoBukti.forEach(f => h += `<div class="kartu-bukti"><small class="d-block fw-bold text-primary">${f.ref}</small><img src="${f.url}" style="width:100%;height:150px;object-fit:contain;margin:10px 0;" onerror="this.src='https://placehold.co/150?text=Akses+Drive+Blocked'"><small class="text-muted">ID: ${f.no}</small></div>`);
             buktiContainer.innerHTML = h + `</div></div>`;
         }
     }
