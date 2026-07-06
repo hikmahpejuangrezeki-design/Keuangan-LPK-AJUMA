@@ -56,10 +56,32 @@
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Paksa Gambar Lampiran Cetak Menjadi Kecil & Hemat Kertas (3 Foto per Baris) */
-            .galeri-bukti { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; width: 100% !important; }
-            .kartu-bukti { width: 100% !important; max-width: 100% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 6px !important; margin-bottom: 0px !important; }
-            .img-bukti-file { height: 180px !important; max-height: 180px !important; width: 100% !important; object-fit: contain !important; border: 1px solid #eee !important; margin: 5px 0 !important; }
+            /* Desain Model Kolom Struk Belanja Ramping Berjejer */
+            .galeri-bukti { 
+                display: flex !important; 
+                flex-wrap: wrap !important; 
+                gap: 12px !important; 
+                justify-content: flex-start !important; 
+            }
+            .kartu-bukti { 
+                width: 18% !important; /* Membuat kotak menjadi ramping vertikal */
+                max-width: 18% !important; 
+                page-break-inside: avoid !important; 
+                border: 1px solid #000 !important; 
+                padding: 6px !important; 
+                margin-bottom: 10px !important; 
+                background: #fff !important;
+            }
+            .img-bukti-file { 
+                height: 240px !important; /* Memberikan ruang tinggi memanjang ke bawah seperti struk */
+                width: 100% !important; 
+                object-fit: contain !important; /* Gambar pas, tidak terpotong, dan tidak melar */
+                border-bottom: 1px dashed #000 !important; /* Efek garis potong struk di bawah gambar */
+                margin: 4px 0 !important; 
+            }
+            .kartu-bukti small {
+                font-size: 10px !important; /* Memperkecil teks keterangan nomor ref agar serasi */
+            }
         }
     </style>
 </head>
