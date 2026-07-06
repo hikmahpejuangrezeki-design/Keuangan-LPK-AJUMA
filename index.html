@@ -319,7 +319,22 @@
                 </table>
             </div>
         </div>
-
+        <!-- BLOK TANDA TANGAN FORMAL (OTOMATIS MUNCUL SAAT CETAK) -->
+        <div class="row mt-5 sub-halaman-cetak" style="margin-top: 80px !important; page-break-inside: avoid;">
+            <div class="col-6 text-center">
+                <p class="mb-0" style="font-size: 14px;">Dibuat Oleh,</p>
+                <br><br><br><br>
+                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">( _______________________ )</p>
+                <p class="text-muted small">Sekretaris LPK AJUMA</p>
+            </div>
+            <div class="col-6 text-center">
+                <p class="mb-0" style="font-size: 14px;">Tasikmalaya, <span id="cetak-tgl-ttd"></span></p>
+                <p class="mb-0 fw-bold" style="font-size: 14px;">Disetujui Oleh,</p>
+                <br><br><br><br>
+                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">( _______________________ )</p>
+                <p class="text-muted small">Ketua LPK AJUMA</p>
+            </div>
+        </div>
         <div id="lampiran-bukti"></div>
     </div>
 </div>
@@ -616,6 +631,9 @@
         const tglA = document.getElementById("input-tgl-awal").value;
         const tglB = document.getElementById("input-tgl-akhir").value;
         document.getElementById("print-periode").innerText = `Periode: ${tglA} s/d ${tglB}`;
+        // Mengubah format tanggal akhir periode (tglB) menjadi teks Indonesia untuk TTD
+const opsiTgl = { year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById("cetak-tgl-ttd").innerText = new Date(tglB).toLocaleDateString('id-ID', opsiTgl);
         const statusBox = document.getElementById("status-app");
         statusBox.style.display = "block";
 
