@@ -17,14 +17,47 @@
         .bg-keluar { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
         .bg-saldo { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         
+        /* Bukti Foto Styling (Tampilan Layar HP/Laptop) */
+        .galeri-bukti { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
+        .kartu-bukti { border: 1px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; width: 340px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .img-bukti-file { width: 100%; height: 420px; object-fit: contain; margin: 10px 0; border-radius: 6px; background: #fafafa; }
+
+        /* Class untuk menyembunyikan icon emoji khusus saat cetak */
+        .no-print-icon { display: inline; }
+
+        /* Aturan Khusus Saat Cetak Ke PDF / Printer */
         @media print {
-            body { background-color: #fff; }
+            body { background-color: #fff; color: #000 !important; }
             .no-print { display: none !important; }
-            .card { box-shadow: none; border: 1px solid #ddd; margin-bottom: 15px !important; }
-            .halaman-bukti-cetak { page-break-before: always; margin-top: 0; }
+            .no-print-icon { display: none !important; } /* Sembunyikan emoji/icon */
+            
+            /* Paksa semua teks berwarna menjadi hitam pekat */
+            h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary { 
+                color: #000000 !important; 
+            }
+            
+            /* Ubah background header tabel menjadi putih basah dengan border hitam tipis */
+            .table th { 
+                background-color: #ffffff !important; 
+                color: #000000 !important; 
+                border: 1px solid #000000 !important;
+            }
+            
+            .card { box-shadow: none; border: 1px solid #000; margin-bottom: 20px !important; page-break-inside: avoid; }
+            
+            /* Fitur Pemisah Halaman Otomatis */
+            .halaman-jurnal-cetak { page-break-before: always !important; margin-top: 0; }
+            .halaman-bukti-cetak { page-break-before: always !important; margin-top: 0; }
+            
+            /* Mencegah Baris Tabel Terpotong di Tengah Kertas */
+            tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
+            table { page-break-inside: auto; border-collapse: collapse !important; }
+            
+            /* Optimasi Layout Lampiran Foto (Menjadi Jauh Lebih Besar & Jelas) */
+            .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: space-between !important; }
+            .kartu-bukti { width: 48% !important; max-width: 48% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 12px !important; margin-bottom: 15px; }
+            .img-bukti-file { height: 550px !important; border: 1px solid #ccc; }
         }
-        .galeri-bukti { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
-        .kartu-bukti { border: 1px solid #ddd; border-radius: 8px; padding: 10px; background: #fff; width: 250px; text-align: center; }
     </style>
 </head>
 <body>
@@ -35,7 +68,6 @@
         <p class="text-muted small">Kelola Transaksi, Bukti Foto, & Laporan Terperinci</p>
     </div>
 
-    <!-- FORM INPUT / EDIT TRANSAKSI -->
     <div id="box-form" class="card p-4 mb-4 no-print">
         <h5 id="judul-form" class="fw-bold mb-3 text-secondary">➕ Input Transaksi Baru</h5>
         <form id="form-transaksi" onsubmit="simpanTransaksi(event)">
@@ -81,7 +113,6 @@
         </form>
     </div>
 
-    <!-- FILTER PERIODE -->
     <div class="card p-3 mb-4 no-print">
         <div class="row g-3 align-items-end">
             <div class="col-md-4">
@@ -104,7 +135,6 @@
 
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
-    <!-- AREA LAPORAN -->
     <div id="area-laporan">
         <div class="text-center my-3 d-none d-print-block">
             <h2 class="fw-bold mb-0">LPK AJUMA</h2>
@@ -112,7 +142,6 @@
             <p id="print-periode" class="small"></p>
         </div>
 
-        <!-- DASHBOARD RINGKASAN -->
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card-stat bg-masuk">
@@ -134,13 +163,11 @@
             </div>
         </div>
 
-        <!-- I. RINCIAN SELURUH TRANSAKSI DI PERIODE INI -->
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-4 text-dark text-center">I. RINCIAN DAFTAR TRANSAKSI PERIODE</h5>
             <div class="row g-4">
-                <!-- SEKTOR PEMASUKAN -->
                 <div class="col-xl-6 border-end">
-                    <h6 class="fw-bold text-success mb-3 text-center">📋 Rincian Catatan Pemasukan</h6>
+                    <h6 class="fw-bold text-success mb-3 text-center"><span class="no-print-icon">📋 </span>Rincian Catatan Pemasukan</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
                             <thead>
@@ -159,9 +186,8 @@
                     </div>
                 </div>
                 
-                <!-- SEKTOR PENGELUARAN -->
                 <div class="col-xl-6">
-                    <h6 class="fw-bold text-danger mb-3 text-center">📋 Rincian Catatan Pengeluaran</h6>
+                    <h6 class="fw-bold text-danger mb-3 text-center"><span class="no-print-icon">📋 </span>Rincian Catatan Pengeluaran</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
                             <thead>
@@ -182,8 +208,7 @@
             </div>
         </div>
 
-        <!-- II. JURNAL UMUM -->
-        <div class="card p-4 mb-4">
+        <div class="card p-4 mb-4 halaman-jurnal-cetak">
             <h5 class="fw-bold mb-4 text-dark text-center">II. JURNAL UMUM (DEBIT KREDIT)</h5>
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" style="font-size: 13px;">
@@ -204,7 +229,6 @@
             </div>
         </div>
 
-        <!-- LAMPIRAN FOTO BUKTI -->
         <div id="lampiran-bukti"></div>
     </div>
 </div>
@@ -225,7 +249,6 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
     }
 
-    // UPDATED: FUNGSI BENCHMARK COCOK UNTUK BYPASS BLOCK KEAMANAN GOOGLE DRIVE
     function konversiLinkDrive(urlAsli) {
         if (!urlAsli || urlAsli.trim() === "") return "";
         let url = urlAsli.trim();
@@ -238,7 +261,6 @@
         }
         
         if (fileId !== "") {
-            // Menggunakan endpoint thumbnail dengan lebar 1000px agar aman dari cookie block & loading cepat
             return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
         }
         return url;
@@ -331,7 +353,7 @@
             }
 
             if (item.buktiFoto && item.buktiFoto.trim() !== "") {
-                let linkGambarDirect = konversiLinkDrive(item.buktiFoto);
+                let linkGambarDirect = konversionsLinkDrive(item.buktiFoto);
                 fotoBukti.push({ no: index + 1, ref: item.noref, url: linkGambarDirect });
             }
 
@@ -362,7 +384,12 @@
         // Render Lampiran Bukti
         if (fotoBukti.length > 0) {
             let h = `<div class="halaman-bukti-cetak"><h5 class="fw-bold text-center mb-4">III. LAMPIRAN BUKTI TRANSAKSI</h5><div class="galeri-bukti">`;
-            fotoBukti.forEach(f => h += `<div class="kartu-bukti"><small class="d-block fw-bold text-primary">${f.ref}</small><img src="${f.url}" style="width:100%;height:150px;object-fit:contain;margin:10px 0;" onerror="this.src='https://placehold.co/150?text=Akses+Drive+Blocked'"><small class="text-muted">ID: ${f.no}</small></div>`);
+            fotoBukti.forEach(f => h += `
+                <div class="kartu-bukti">
+                    <small class="d-block fw-bold">${f.ref}</small>
+                    <img src="${f.url}" class="img-bukti-file" onerror="this.src='https://placehold.co/300x450?text=Akses+Drive+Blocked'">
+                    <small class="text-muted d-block mt-1">ID Transaksi: ${f.no}</small>
+                </div>`);
             buktiContainer.innerHTML = h + `</div></div>`;
         }
     }
