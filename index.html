@@ -80,6 +80,15 @@
             
             .baris-subtotal { font-weight: bold; background-color: #f8f9fa !important; border-top: 1px dashed #000 !important; border-bottom: 1px dashed #000 !important; }
             .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000 !important; border-bottom: 2px double #000 !important; }
+            .card, .row { 
+        page-break-inside: auto !important; 
+        break-inside: auto !important; 
+    }
+    
+    /* Bootstrap table-responsive default-nya memicu 'break-inside: avoid' di beberapa browser, kita netralkan */
+    .table-responsive { 
+        overflow: visible !important; 
+    }
         }
     </style>
 </head>
@@ -178,12 +187,12 @@
     <div id="area-laporan">
         <!-- KOP SURAT CETAK (UKURAN LOGO DIUPGRADE MENJADI 160px X 160px) -->
         <div class="d-none d-print-block">
-            <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-3 mb-4">
+            <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-2 mb-3">
                 <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 125px; height: 125px; object-fit: contain;">
                 <div class="text-center">
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LPK AJUMA</h1>
-                    <p class="mb-0 small text-muted" style="font-size: 11px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
+                    <p class="mb-0 small text-muted" style="font-size: 14px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
                 </div>
             </div>
             <!-- 2. Bagian Judul Laporan Spesifik (Sekarang Berada di Bawah Garis Kop) -->
@@ -324,28 +333,44 @@
             </div>
         </div>
 
-        <!-- AREA TANDA TANGAN -->
-        <div class="row mt-5 sub-halaman-cetak" style="margin-top: 80px !important; page-break-inside: avoid;">
-            <div class="col-4 text-center">
-                <p class="mb-0" style="font-size: 14px;">Dibuat Oleh,</p>
-                <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Fajar Maulana Yusuf</p>
-                <p class="text-muted small">Staff LPK AJUMA</p>
-            </div>
-            <div class="col-4 text-center">
-                <p class="mb-0" style="font-size: 14px;">Diperiksa Oleh,</p>
-                <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Asep Nanang Kurnia</p>
-                <p class="text-muted small">Sekretariat LPK AJUMA</p>
-            </div>
-            <div class="col-4 text-center">
-                <p class="mb-0" style="font-size: 14px;">Tasikmalaya, <span id="cetak-tgl-ttd"></span></p>
-                <p class="mb-0 fw-bold" style="font-size: 14px;">Mengetahui,</p>
-                <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Dra. Nina Resnawati</p>
-                <p class="text-muted small">Ketua LPK AJUMA</p>
-            </div>
+      <!-- BLOK TANDA TANGAN FORMAL 3 KOLOM SEJAJAR SINKRON -->
+<div class="mt-5" style="margin-top: 50px !important; page-break-inside: avoid;">
+    
+    <!-- 1. Baris Tanggal Mandiri (Di atas kolom, merapat ke kanan sejajar kolom Ketua) -->
+    <div style="text-align: right; padding-right: 6%; margin-bottom: 20px; font-size: 14px; color: #000;">
+        Tasikmalaya, <span id="cetak-tgl-ttd"></span>
+    </div>
+
+    <!-- 2. Baris Utama Grid Tanda Tangan (3 Kolom Sempurna) -->
+    <div class="row text-center" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
+        
+        <!-- Kolom 1: Pembuat -->
+        <div class="col-4" style="width: 33.33% !important;">
+            <p class="mb-0" style="font-size: 14px; color: #000;">Dibuat Oleh,</p>
+            <!-- Menggunakan tinggi statis (bukan <br>) menjamin posisi nama di bawah pasti sejajar lurus -->
+            <div style="height: 75px;"></div> 
+            <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px; color: #000;">Fajar Maulana Yusuf</p>
+            <p class="text-muted small mb-0">Staff LPK AJUMA</p>
         </div>
+
+        <!-- Kolom 2: Pemeriksa -->
+        <div class="col-4" style="width: 33.33% !important;">
+            <p class="mb-0" style="font-size: 14px; color: #000;">Diperiksa Oleh,</p>
+            <div style="height: 75px;"></div>
+            <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px; color: #000;">Asep Nanang Kurnia</p>
+            <p class="text-muted small mb-0">Sekretariat LPK AJUMA</p>
+        </div>
+
+        <!-- Kolom 3: Mengetahui (Ketua) -->
+        <div class="col-4" style="width: 33.33% !important;">
+            <p class="mb-0" style="font-size: 14px; color: #000; font-weight: bold;">Mengetahui,</p>
+            <div style="height: 75px;"></div>
+            <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px; color: #000;">Dra. Nina Resnawati</p>
+            <p class="text-muted small mb-0">Ketua LPK AJUMA</p>
+        </div>
+
+    </div>
+</div>
         <div id="lampiran-bukti"></div>
     </div>
 </div>
