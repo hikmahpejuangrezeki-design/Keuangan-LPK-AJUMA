@@ -25,11 +25,11 @@
         /* Class untuk menyembunyikan icon emoji khusus saat cetak */
         .no-print-icon { display: inline; }
 
-        /* Aturan Khusus Saat Cetak Ke PDF / Printer */
+       /* Aturan Khusus Saat Cetak Ke PDF / Printer */
         @media print {
             body { background-color: #fff; color: #000 !important; }
             .no-print { display: none !important; }
-            .no-print-icon { display: none !important; } /* Sembunyikan emoji/icon */
+            .no-print-icon { display: none !important; }
             
             /* Sembunyikan 3 Kotak Dashboard Atas Saat Dicetak */
             .row.g-3.mb-4 { display: none !important; }
@@ -56,10 +56,10 @@
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Optimasi Layout Lampiran Foto (Menjadi Jauh Lebih Besar & Jelas) */
-            .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: space-between !important; }
-            .kartu-bukti { width: 48% !important; max-width: 48% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 12px !important; margin-bottom: 15px; }
-            .img-bukti-file { height: 550px !important; border: 1px solid #ccc; }
+            /* Optimasi Layout Lampiran Foto (Ukuran Sedang & Lebih Rapi) */
+            .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 15px !important; justify-content: flex-start !important; }
+            .kartu-bukti { width: 31% !important; max-width: 31% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 10px !important; margin-bottom: 15px; }
+            .img-bukti-file { height: 320px !important; border: 1px solid #ccc; width: 100%; object-fit: contain; }
         }
     </style>
 </head>
