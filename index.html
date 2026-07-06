@@ -179,7 +179,7 @@
         <!-- KOP SURAT CETAK (UKURAN LOGO DIUPGRADE MENJADI 160px X 160px) -->
         <div class="d-none d-print-block">
             <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-3 mb-4">
-                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 150px; height: 150px; object-fit: contain;">
+                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 125px; height: 125px; object-fit: contain;">
                 <div class="text-center">
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LPK AJUMA</h1>
@@ -445,78 +445,66 @@
         return `${parseInt(bagian[2])} ${blnSingkat[parseInt(bagian[1]) - 1]}`;
     }
 
-    /* =========================================================
-       BARU: ADAPTOR PARSING OTOMATIS DATA DARI 3 SHEET TERPISAH
-       ========================================================= */
-    function muatDataDariSheets() {
-        const tglA = document.getElementById("input-tgl-awal").value;
-        const tglB = document.getElementById("input-tgl-akhir").value;
-        const statusApp = document.getElementById("status-app");
+  function muatDataDariSheets() {
+    const tglA = document.getElementById("input-tgl-awal").value;
+    const tglB = document.getElementById("input-tgl-akhir").value;
+    const statusApp = document.getElementById("status-app");
 
-        if (statusApp) {
-            statusApp.style.display = "block";
-            statusApp.innerText = "⏳ Memeriksa & menyegarkan data laporan kas...";
-        }
-        
-        if(tglA && tglB) {
-            const dA = formatTanggalIndo(tglA);
-            const dB = formatTanggalIndo(tglB);
-            document.getElementById("print-periode").innerText = `Periode Laporan: ${dA} s/d ${dB}`;
-            document.getElementById("cetak-tgl-ttd").innerText = dB; 
-        }
+    if (statusApp) {
+        statusApp.style.display = "block";
+        statusApp.innerText = "⏳ Memeriksa & menyegarkan data laporan kas...";
+    }
+    
+    // Sinkronisasi teks Periode Laporan & Tanggal Tanda Tangan di Admin
+    const printPeriode = document.getElementById("print-periode");
+    if (printPeriode) {
+        printPeriode.innerText = `Periode Laporan: ${tglA} s/ d ${tglB}`;
+    }
+    const cetakTglTtd = document.getElementById("cetak-tgl-ttd");
+    if (cetakTglTtd) {
+        const opsiTgl = { year: 'numeric', month: 'long', day: 'numeric' };
+        cetakTglTtd.innerText = new Date(tglB).toLocaleDateString('id-ID', opsiTgl);
+    }
 
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ aksi: "baca_kas", awal: tglA, akhir: tglB })
-        })
-        .then(res => res.json())
-        .then(data => {
-            let gabungan = [];
+    // KUNCI UTAMA: Mengikuti jalur GET Method yang digunakan oleh halaman monitoring
+    fetch(`${API_URL}?awal=${tglA}&akhir=${tglB}`)
+    .then(res => res.json())
+    .then(response => {
+        // Memeriksa status keberhasilan sesuai format database pusat LPK Ajuma
+        if (response && response.status === "success") {
             
-            // JIKA DATA DARI APPS SCRIPT BERBENTUK OBJEK GRUP (Pemasukan, Pengeluaran, Pengajuan)
-            if (data && typeof data === 'object' && !Array.isArray(data)) {
-                const listMasuk = data.Pemasukan || data.pemasukan || [];
-                const listKeluar = data.Pengeluaran || data.pengeluaran || [];
-                
-                listMasuk.forEach(item => {
-                    item.jenis = "Pemasukan";
-                    gabungan.push(item);
-                });
-                
-                listKeluar.forEach(item => {
-                    item.jenis = "Pengeluaran";
-                    gabungan.push(item);
-                });
-
-                const listPengajuan = data.Pengajuan || data.pengajuan;
-                if (listPengajuan && Array.isArray(listPengajuan)) {
-                    dataPengajuanLokal = listPengajuan;
-                    localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
-                    renderBukuPengajuanFisik();
-                }
-            } else if (Array.isArray(data)) {
-                // JIKA PADA KONDISI TERTENTU DATA SUDAH BERBENTUK ARRAY TUNGGAL
-                gabungan = data;
+            // 1. Ambil data transaksi utama (Pemasukan & Pengeluaran)
+            let gabungan = response.data || [];
+            
+            // Urutkan data secara kronologis berdasarkan tanggal transaksi
+            gabungan.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+            
+            // Masukkan data ke cache sistem admin dan jalankan fungsi render tabel kas
+            dataCacheGlobal = gabungan;
+            if (typeof renderDataKasUtama === "function") {
+                renderDataKasUtama();
             }
 
-            // Urutkan gabungan kronologis tanggal agar laporan sinkron
-            gabungan.sort((a, b) => {
-                const dA = new Date(a.tanggal || a.Tanggal || 0);
-                const dB = new Date(b.tanggal || b.Tanggal || 0);
-                return dA - dB;
-            });
-
-            dataCacheGlobal = gabungan;
-            renderDataKasUtama();
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Gagal sinkronisasi data dari Google Sheets. Periksa koneksi Web App Anda.");
-        })
-        .finally(() => {
-            if (statusApp) statusApp.style.display = "none";
-        });
-    }
+            // 2. Ambil data Buku Pengajuan Anggaran Dana jika ada
+            if (response.pengajuan) {
+                dataPengajuanLokal = response.pengajuan;
+                localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
+                if (typeof renderBukuPengajuanFisik === "function") {
+                    renderBukuPengajuanFisik();
+                }
+            }
+        } else {
+            console.warn("Respon server tidak menandakan success:", response);
+        }
+    })
+    .catch(err => {
+        console.error("Detail Error Sistem Admin:", err);
+        alert("Gagal sinkronisasi data dari Google Sheets. Periksa konsol browser.");
+    })
+    .finally(() => {
+        if (statusApp) statusApp.style.display = "none";
+    });
+}
 
     /* =========================================================
        BARU: COMPATIBILITY MODE UNTUK TOLERANSI HURUF KOLOM UTAMA
