@@ -56,7 +56,7 @@
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Desain Model Kolom Struk Belanja Ramping Berjejer */
+            /* Seting Ukuran Proporsional Layar HP (Pas 4 Foto Per Baris Kertas) */
             .galeri-bukti { 
                 display: flex !important; 
                 flex-wrap: wrap !important; 
@@ -64,23 +64,23 @@
                 justify-content: flex-start !important; 
             }
             .kartu-bukti { 
-                width: 18% !important; /* Membuat kotak menjadi ramping vertikal */
-                max-width: 18% !important; 
+                width: 23% !important; /* Pas untuk membagi 4 kolom dalam 1 halaman lebar */
+                max-width: 23% !important; 
                 page-break-inside: avoid !important; 
                 border: 1px solid #000 !important; 
-                padding: 6px !important; 
-                margin-bottom: 10px !important; 
+                padding: 8px !important; 
+                margin-bottom: 15px !important; 
                 background: #fff !important;
             }
             .img-bukti-file { 
-                height: 240px !important; /* Memberikan ruang tinggi memanjang ke bawah seperti struk */
+                height: 340px !important; /* Tinggi memanjang ke bawah menyerupai layar HP */
                 width: 100% !important; 
-                object-fit: contain !important; /* Gambar pas, tidak terpotong, dan tidak melar */
-                border-bottom: 1px dashed #000 !important; /* Efek garis potong struk di bawah gambar */
-                margin: 4px 0 !important; 
+                object-fit: contain !important; /* Foto bukti tidak melar atau terpotong */
+                border-bottom: 1px solid #eee !important; 
+                margin: 5px 0 !important; 
             }
             .kartu-bukti small {
-                font-size: 10px !important; /* Memperkecil teks keterangan nomor ref agar serasi */
+                font-size: 11px !important;
             }
         }
     </style>
