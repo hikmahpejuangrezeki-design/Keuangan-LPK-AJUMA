@@ -25,7 +25,7 @@
         /* Class untuk menyembunyikan icon emoji khusus saat cetak */
         .no-print-icon { display: inline; }
 
-       /* Aturan Khusus Saat Cetak Ke PDF / Printer */
+        /* Aturan Khusus Saat Cetak Ke PDF / Printer */
         @media print {
             body { background-color: #fff; color: #000 !important; }
             .no-print { display: none !important; }
@@ -56,10 +56,10 @@
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Optimasi Layout Lampiran Foto (Ukuran Sedang & Lebih Rapi) */
-            .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 15px !important; justify-content: flex-start !important; }
-            .kartu-bukti { width: 31% !important; max-width: 31% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 10px !important; margin-bottom: 15px; }
-            .img-bukti-file { height: 320px !important; border: 1px solid #ccc; width: 100%; object-fit: contain; }
+            /* Paksa Gambar Lampiran Cetak Menjadi Kecil & Hemat Kertas (3 Foto per Baris) */
+            .galeri-bukti { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; width: 100% !important; }
+            .kartu-bukti { width: 100% !important; max-width: 100% !important; page-break-inside: avoid !important; border: 1px solid #000 !important; padding: 6px !important; margin-bottom: 0px !important; }
+            .img-bukti-file { height: 180px !important; max-height: 180px !important; width: 100% !important; object-fit: contain !important; border: 1px solid #eee !important; margin: 5px 0 !important; }
         }
     </style>
 </head>
@@ -79,9 +79,13 @@
 
 <!-- CONTAINER UTAMA (DISYEMBUNYIKAN DI AWAL SEBELUM LOGIN) -->
 <div id="konten-utama" class="container my-4" style="display: none;">
-    <div class="text-center mb-4 no-print">
-        <h2 class="fw-bold text-primary">LPK AJUMA ADMIN</h2>
-        <p class="text-muted small">Kelola Transaksi, Bukti Foto, & Laporan Terperinci</p>
+    <div class="text-center mb-4 no-print d-flex justify-content-between align-items-center">
+        <div></div>
+        <div>
+            <h2 class="fw-bold text-primary mb-0">LPK AJUMA ADMIN</h2>
+            <p class="text-muted small mb-0">Kelola Transaksi, Bukti Foto, & Laporan Terperinci</p>
+        </div>
+        <button onclick="logoutManual()" class="btn btn-sm btn-outline-danger fw-bold">🔒 Keluar</button>
     </div>
 
     <!-- FORM INPUT / EDIT TRANSAKSI -->
@@ -260,18 +264,57 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
-    const KODE_RAHASIA = "ajuma2024"; // Sesuai kode sandi awal Anda
+    const KODE_RAHASIA = "ajuma2024"; 
+    const WAKTU_OTOMATIS_LOGOUT = 15 * 60 * 1000; // 15 Menit Tidak Aktif = Otomatis Keluar
     let dataCacheGlobal = [];
+    let timerMatiAktivitas;
+
+    // Sistem Cek Status saat Browser Di-reload
+    window.onload = function() {
+        if (sessionStorage.getItem("statusLoginAjuma") === "aktif") {
+            // Jika status masih aktif, langsung bypass masuk ke sistem
+            document.getElementById("screen-login").style.setProperty("display", "none", "important");
+            document.getElementById("konten-utama").style.display = "block";
+            inisialisasiSistem();
+            mulaiMataMataiAktivitas();
+        }
+    };
 
     function verifikasiSandi() {
         const inputan = document.getElementById("input-pass").value;
         if(inputan === KODE_RAHASIA) {
+            sessionStorage.setItem("statusLoginAjuma", "aktif");
             document.getElementById("screen-login").style.setProperty("display", "none", "important");
             document.getElementById("konten-utama").style.display = "block";
             inisialisasiSistem();
+            mulaiMataMataiAktivitas();
         } else {
             alert("Kode akses salah! Mohon periksa kembali.");
         }
+    }
+
+    // Fungsi Pengatur Waktu Otomatis Keluar jika Ditinggal Lama
+    function resetTimerAktivitas() {
+        clearTimeout(timerMatiAktivitas);
+        timerMatiAktivitas = setTimeout(function() {
+            alert("Sistem otomatis keluar karena Anda tidak aktif selama 15 menit.");
+            logoutManual();
+        }, WAKTU_OTOMATIS_LOGOUT);
+    }
+
+    function mulaiMataMataiAktivitas() {
+        resetTimerAktivitas();
+        // Deteksi jika kursor digeser, layar disentuh, atau tombol keyboard ditekan
+        window.onmousemove = resetTimerAktivitas;
+        window.onmousedown = resetTimerAktivitas;
+        window.onclick = resetTimerAktivitas;
+        window.onscroll = resetTimerAktivitas;
+        window.onkeypress = resetTimerAktivitas;
+    }
+
+    function logoutManual() {
+        sessionStorage.removeItem("statusLoginAjuma");
+        location.reload();
     }
 
     function inisialisasiSistem() {
