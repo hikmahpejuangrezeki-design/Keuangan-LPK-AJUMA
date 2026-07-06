@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Keuangan LPK AJUMA</title>
@@ -17,12 +17,11 @@
         .bg-keluar { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
         .bg-saldo { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
         
-        /* Bukti Foto Styling (Tampilan Layar HP/Laptop) */
+        /* Bukti Foto Styling */
         .galeri-bukti { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 20px; }
         .kartu-bukti { border: 1px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; width: 340px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .img-bukti-file { width: 100%; height: 420px; object-fit: contain; margin: 10px 0; border-radius: 6px; background: #fafafa; }
 
-        /* Class untuk menyembunyikan icon emoji khusus saat cetak */
         .no-print-icon { display: inline; }
 
         /* Aturan Khusus Saat Cetak Ke PDF / Printer */
@@ -31,17 +30,14 @@
             .no-print { display: none !important; }
             .no-print-icon { display: none !important; }
             
-            /* Sembunyikan 3 Kotak Dashboard Atas Saat Dicetak */
             .row.g-3.mb-4 { display: none !important; }
             
-            /* Paksa semua teks berwarna menjadi hitam pekat */
             h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
                 color: #000000 !important; 
                 background: none !important;
                 border: none !important;
             }
             
-            /* Ubah background header tabel menjadi putih basah dengan border hitam tipis */
             .table th { 
                 background-color: #ffffff !important; 
                 color: #000000 !important; 
@@ -50,16 +46,13 @@
             
             .card { box-shadow: none; border: 1px solid #000; margin-bottom: 20px !important; page-break-inside: avoid; }
             
-            /* Fitur Pemisah Halaman Otomatis */
             .halaman-jurnal-cetak { page-break-before: always !important; margin-top: 0; }
             .halaman-pengajuan-cetak { page-break-before: always !important; margin-top: 0; }
             .halaman-bukti-cetak { page-break-before: always !important; margin-top: 0; }
             
-            /* Mencegah Baris Tabel Terpotong di Tengah Kertas */
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Pengaturan Galeri Foto: Otomatis Rata Tengah Seukuran HP (Maksimal 4 Foto Per Baris Kertas) */
             .galeri-bukti { 
                 display: flex !important; 
                 flex-wrap: wrap !important; 
@@ -83,11 +76,8 @@
                 border-bottom: 1px solid #eee !important; 
                 margin: 5px 0 !important; 
             }
-            .kartu-bukti small {
-                font-size: 11px !important;
-            }
+            .kartu-bukti small { font-size: 11px !important; }
             
-            /* Pembukuan Gaya Buku Fisik */
             .baris-subtotal { font-weight: bold; background-color: #f8f9fa !important; border-top: 1px dashed #000 !important; border-bottom: 1px dashed #000 !important; }
             .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000 !important; border-bottom: 2px double #000 !important; }
         }
@@ -107,10 +97,8 @@
 </div>
 
 <div id="konten-utama" class="container my-4" style="display: none;">
-    <!-- HEADER ADMIN (DENGAN TEMPAT LOGO LAYAR SCREEN) -->
     <div class="mb-4 no-print d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm">
         <div class="d-flex align-items-center">
-            <!-- Ganti URL src di bawah ini dengan link Logo AJUMA Anda -->
             <img src="logo-ajuma.png" alt="Logo LPK" class="me-3 rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
             <div>
                 <h2 class="fw-bold text-primary mb-0" style="font-size: 22px;">LPK AJUMA ADMIN</h2>
@@ -188,19 +176,23 @@
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
     <div id="area-laporan">
-        <!-- FORMAL KOP SURAT LPK AJUMA (DIPERBESAR KHUSUS MUNCUL SAAT CETAK) -->
+        <!-- KOP SURAT CETAK (UKURAN LOGO DIUPGRADE MENJADI 160px X 160px) -->
         <div class="d-none d-print-block">
             <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-3 mb-4">
-                <!-- UKURAN LOGO DIBAWAH INI SUDAH DIPERBESAR MENJADI 130px -->
-                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 130px; height: 130px; object-fit: contain;">
+                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 160px; height: 160px; object-fit: contain;">
                 <div class="text-center">
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LPK AJUMA</h1>
-                    <p class="mb-0 fw-bold text-uppercase" style="font-size: 14px; color: #000 !important;">Laporan Rincian Keuangan & Jurnal Umum</p>
-                    <p class="mb-0 small text-muted" style="font-size: 11px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahiyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
+                    <p class="mb-0 small text-muted" style="font-size: 11px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
                     <p id="print-periode" class="small mb-0 fw-bold mt-1 text-primary"></p>
                 </div>
             </div>
+            <!-- 2. Bagian Judul Laporan Spesifik (Sekarang Berada di Bawah Garis Kop) -->
+            <div class="text-center mb-4 pt-2">
+                <h4 class="fw-bold text-uppercase mb-1" style="font-size: 15px; color: #000 !important; letter-spacing: 0.5px;">Laporan Rincian Keuangan & Jurnal Umum</h4>
+                <p id="print-periode" class="small mb-0 fw-bold text-secondary" style="font-size: 12px;"></p>
+            </div>
+        </div>
         </div>
 
         <div class="row g-3 mb-4">
@@ -333,7 +325,7 @@
             </div>
         </div>
 
-        <!-- BLOK TANDA TANGAN FORMAL 3 KOLOM -->
+        <!-- AREA TANDA TANGAN -->
         <div class="row mt-5 sub-halaman-cetak" style="margin-top: 80px !important; page-break-inside: avoid;">
             <div class="col-4 text-center">
                 <p class="mb-0" style="font-size: 14px;">Dibuat Oleh,</p>
@@ -344,14 +336,14 @@
             <div class="col-4 text-center">
                 <p class="mb-0" style="font-size: 14px;">Diperiksa Oleh,</p>
                 <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">( _______________________ )</p>
+                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Asep Nanang Kurnia</p>
                 <p class="text-muted small">Sekretariat LPK AJUMA</p>
             </div>
             <div class="col-4 text-center">
                 <p class="mb-0" style="font-size: 14px;">Tasikmalaya, <span id="cetak-tgl-ttd"></span></p>
                 <p class="mb-0 fw-bold" style="font-size: 14px;">Mengetahui,</p>
                 <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">( _______________________ )</p>
+                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Dra. Nina Resnawati</p>
                 <p class="text-muted small">Ketua LPK AJUMA</p>
             </div>
         </div>
@@ -421,7 +413,6 @@
         document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01"; 
         document.getElementById("input-tgl-akhir").value = hariIni;
         
-        // Isian Tanggal TTD Default Awal Buka Aplikasi
         document.getElementById("cetak-tgl-ttd").innerText = formatTanggalIndo(hariIni);
 
         muatDataDariSheets();
@@ -432,7 +423,6 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
     }
 
-    /* FORMAT DETEKSI TANGGAL MANUAL (MENCEGAH BUG INVALID DATE DI BROWSER HP/SAFARI) */
     function formatTanggalIndo(tglString) {
         if (!tglString) return "";
         let tglClean = tglString.split("T")[0];
@@ -457,7 +447,7 @@
     }
 
     /* =========================================================
-       1. AMBIL & PROSES DATA KAS UTAMA DARI GOOGLE SHEETS
+       BARU: ADAPTOR PARSING OTOMATIS DATA DARI 3 SHEET TERPISAH
        ========================================================= */
     function muatDataDariSheets() {
         const tglA = document.getElementById("input-tgl-awal").value;
@@ -482,7 +472,42 @@
         })
         .then(res => res.json())
         .then(data => {
-            dataCacheGlobal = Array.isArray(data) ? data : [];
+            let gabungan = [];
+            
+            // JIKA DATA DARI APPS SCRIPT BERBENTUK OBJEK GRUP (Pemasukan, Pengeluaran, Pengajuan)
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                const listMasuk = data.Pemasukan || data.pemasukan || [];
+                const listKeluar = data.Pengeluaran || data.pengeluaran || [];
+                
+                listMasuk.forEach(item => {
+                    item.jenis = "Pemasukan";
+                    gabungan.push(item);
+                });
+                
+                listKeluar.forEach(item => {
+                    item.jenis = "Pengeluaran";
+                    gabungan.push(item);
+                });
+
+                const listPengajuan = data.Pengajuan || data.pengajuan;
+                if (listPengajuan && Array.isArray(listPengajuan)) {
+                    dataPengajuanLokal = listPengajuan;
+                    localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
+                    renderBukuPengajuanFisik();
+                }
+            } else if (Array.isArray(data)) {
+                // JIKA PADA KONDISI TERTENTU DATA SUDAH BERBENTUK ARRAY TUNGGAL
+                gabungan = data;
+            }
+
+            // Urutkan gabungan kronologis tanggal agar laporan sinkron
+            gabungan.sort((a, b) => {
+                const dA = new Date(a.tanggal || a.Tanggal || 0);
+                const dB = new Date(b.tanggal || b.Tanggal || 0);
+                return dA - dB;
+            });
+
+            dataCacheGlobal = gabungan;
             renderDataKasUtama();
         })
         .catch(err => {
@@ -495,7 +520,7 @@
     }
 
     /* =========================================================
-       2. RENDER DASHBOARD & TABEL SECARA REAL-TIME
+       BARU: COMPATIBILITY MODE UNTUK TOLERANSI HURUF KOLOM UTAMA
        ========================================================= */
     function renderDataKasUtama() {
         const rMasukBody = document.getElementById("rinci-masuk-body");
@@ -514,53 +539,61 @@
         let buktiCards = "";
 
         dataCacheGlobal.forEach((item) => {
-            const jml = parseFloat(item.jumlah) || 0;
-            const tglIndo = formatTanggalIndoSingkat(item.tanggal);
+            // Pengondisian ekstra agar aman dari perbedaan huruf besar/kecil key JSON Apps Script
+            const jenis = item.jenis || item.Jenis || "";
+            const jml = parseFloat(item.jumlah || item.Jumlah || 0);
+            const kategori = item.kategori || item.Kategori || "";
+            const keterangan = item.keterangan || item.Keterangan || "";
+            const tanggalRaw = item.tanggal || item.Tanggal || "";
+            const noref = item.noref || item.Noref || item.NoRef || item.no_ref || "-";
+            const buktiFoto = item.buktiFoto || item.BuktiFoto || item.foto || item.Foto || "";
+
+            const tglIndo = formatTanggalIndoSingkat(tanggalRaw);
             
             const rowRinci = `
                 <tr>
                     <td class="text-center">${tglIndo}</td>
-                    <td>${item.kategori}</td>
-                    <td>${item.keterangan}</td>
+                    <td>${kategori}</td>
+                    <td>${keterangan}</td>
                     <td class="text-end">${formatRupiah(jml)}</td>
                 </tr>
             `;
 
-            if (item.jenis === "Pemasukan") {
+            if (jenis === "Pemasukan") {
                 tMasuk += jml;
                 rMasukBody.insertAdjacentHTML('beforeend', rowRinci);
-            } else if (item.jenis === "Pengeluaran") {
+            } else if (jenis === "Pengeluaran") {
                 tKeluar += jml;
                 rKeluarBody.insertAdjacentHTML('beforeend', rowRinci);
             }
 
-            const debitText = item.jenis === "Pemasukan" ? formatRupiah(jml) : "-";
-            const kreditText = item.jenis === "Pengeluaran" ? formatRupiah(jml) : "-";
+            const debitText = jenis === "Pemasukan" ? formatRupiah(jml) : "-";
+            const kreditText = jenis === "Pengeluaran" ? formatRupiah(jml) : "-";
             
             const rowJurnal = `
                 <tr>
                     <td class="text-center">${idxJurnal++}</td>
-                    <td class="text-center">${item.tanggal ? item.tanggal.split("T")[0] : ''}</td>
-                    <td class="text-center">${item.noref || '-'}</td>
+                    <td class="text-center">${tanggalRaw ? tanggalRaw.split("T")[0] : ''}</td>
+                    <td class="text-center">${noref}</td>
                     <td>
-                        <span class="${item.jenis === 'Pengeluaran' ? 'ps-3 text-muted' : 'fw-bold'}">${item.kategori}</span><br>
-                        <small class="text-secondary">${item.keterangan}</small>
+                        <span class="${jenis === 'Pengeluaran' ? 'ps-3 text-muted' : 'fw-bold'}">${kategori}</span><br>
+                        <small class="text-secondary">${keterangan}</small>
                     </td>
                     <td class="text-end">${debitText}</td>
                     <td class="text-end">${kreditText}</td>
                     <td class="text-center no-print">
-                        <button class="btn btn-sm btn-warning py-0 px-1" style="font-size:11px" onclick="aktifkanModeEdit('${item.rowNum}')">✏️ Edit</button>
+                        <button class="btn btn-sm btn-warning py-0 px-1" style="font-size:11px" onclick="aktifkanModeEdit('${item.rowNum || item.rowtext}')">✏️ Edit</button>
                     </td>
                 </tr>
             `;
             jBody.insertAdjacentHTML('beforeend', rowJurnal);
 
-            if (item.buktiFoto && item.buktiFoto.trim() !== "") {
-                const imgUrl = konversiLinkDrive(item.buktiFoto);
+            if (buktiFoto && buktiFoto.trim() !== "") {
+                const imgUrl = konversiLinkDrive(buktiFoto);
                 buktiCards += `
                     <div class="kartu-bukti">
-                        <small class="text-muted d-block">${item.tanggal ? item.tanggal.split("T")[0] : ''} - ${item.noref}</small>
-                        <strong class="d-block text-truncate" style="font-size:12px;">${item.keterangan}</strong>
+                        <small class="text-muted d-block">${tanggalRaw ? tanggalRaw.split("T")[0] : ''} - ${noref}</small>
+                        <strong class="d-block text-truncate" style="font-size:12px;">${keterangan}</strong>
                         <img src="${imgUrl}" class="img-bukti-file" alt="Bukti Kas">
                         <small class="text-primary fw-bold d-block mt-1">${formatRupiah(jml)}</small>
                     </div>
@@ -598,9 +631,6 @@
         }
     }
 
-    /* =========================================================
-       3. MODUL INPUT, EDIT & BATAL TRANSAKSI KAS UTAMA
-       ========================================================= */
     function simpanTransaksi(event) {
         event.preventDefault();
         const btn = document.getElementById("btn-simpan");
@@ -629,19 +659,19 @@
     }
 
     function aktifkanModeEdit(rowNum) {
-        const item = dataCacheGlobal.find(i => String(i.rowNum) === String(rowNum));
+        const item = dataCacheGlobal.find(i => String(i.rowNum || i.rowtext) === String(rowNum));
         if(!item) return;
 
         document.getElementById("judul-form").innerText = "✏️ Edit Transaksi Lama (Baris #" + rowNum + ")";
         document.getElementById("in-aksi").value = "edit";
         document.getElementById("in-rownum").value = rowNum;
-        document.getElementById("in-jenis").value = item.jenis;
-        document.getElementById("in-tanggal").value = item.tanggal ? item.tanggal.split("T")[0] : '';
-        document.getElementById("in-noref").value = item.noref;
-        document.getElementById("in-kategori").value = item.kategori;
-        document.getElementById("in-keterangan").value = item.keterangan;
-        document.getElementById("in-jumlah").value = item.jumlah;
-        document.getElementById("in-foto").value = item.buktiFoto;
+        document.getElementById("in-jenis").value = item.jenis || item.Jenis || "";
+        document.getElementById("in-tanggal").value = (item.tanggal || item.Tanggal) ? (item.tanggal || item.Tanggal).split("T")[0] : '';
+        document.getElementById("in-noref").value = item.noref || item.NoRef || "";
+        document.getElementById("in-kategori").value = item.kategori || item.Kategori || "";
+        document.getElementById("in-keterangan").value = item.keterangan || item.Keterangan || "";
+        document.getElementById("in-jumlah").value = item.jumlah || item.Jumlah || "";
+        document.getElementById("in-foto").value = item.buktiFoto || item.BuktiFoto || "";
 
         document.getElementById("btn-batal").style.display = "inline-block";
         document.getElementById("box-form").classList.add("mode-edit");
@@ -659,9 +689,6 @@
         document.getElementById("in-tanggal").value = new Date().toISOString().split('T')[0];
     }
 
-    /* =========================================================
-       4. MODUL MANAJEMEN PENGAJUAN ANGGARAN DANA MULTI-ITEM
-       ========================================================= */
     function tambahBarisItem() {
         const div = document.createElement('div');
         div.className = 'row g-2 baris-item mb-2';
@@ -747,8 +774,9 @@
 
         let kelompokNota = {};
         dataPengajuanLokal.forEach(item => {
-            if(!kelompokNota[item.id_group]) kelompokNota[item.id_group] = [];
-            kelompokNota[item.id_group].push(item);
+            const idG = item.id_group || item.id_Group || item.idGrup;
+            if(!kelompokNota[idG]) kelompokNota[idG] = [];
+            kelompokNota[idG].push(item);
         });
 
         pBody.innerHTML = "";
@@ -758,20 +786,26 @@
         for (let key in kelompokNota) {
             let items = kelompokNota[key];
             let totalSatuNota = 0;
-            let tglIndo = formatTanggalIndo(items[0].tanggal);
+            let tglIndo = formatTanggalIndo(items[0].tanggal || items[0].Tanggal);
 
             items.forEach((barang, index) => {
+                const sub = parseFloat(barang.subtotal || barang.Subtotal || 0);
+                const hrg = parseFloat(barang.harga || barang.Harga || 0);
+                const qty = parseFloat(barang.qty || barang.Qty || 0);
+                const kat = barang.kategori || barang.Kategori || "";
+                const rinc = barang.rincian || barang.Rincian || barang.item || "";
+
                 let tr = document.createElement("tr");
-                totalSatuNota += barang.subtotal;
+                totalSatuNota += sub;
 
                 tr.innerHTML = `
                     <td class="text-center">${index === 0 ? nomorUrutNota : ''}</td>
                     <td class="text-center">${index === 0 ? tglIndo : ''}</td>
-                    <td class="fw-bold">${index === 0 ? barang.kategori : ''}</td>
-                    <td>${barang.rincian}</td>
-                    <td class="text-end">${formatRupiah(barang.harga)}</td>
-                    <td class="text-center">${barang.qty}</td>
-                    <td class="text-end">${formatRupiah(barang.subtotal)}</td>
+                    <td class="fw-bold">${index === 0 ? kat : ''}</td>
+                    <td>${rinc}</td>
+                    <td class="text-end">${formatRupiah(hrg)}</td>
+                    <td class="text-center">${qty}</td>
+                    <td class="text-end">${formatRupiah(sub)}</td>
                 `;
                 pBody.appendChild(tr);
             });
@@ -779,19 +813,24 @@
             let trSub = document.createElement("tr");
             trSub.className = "baris-subtotal table-light";
             
-            let statusBadgeStyle = "text-warning";
-            if(items[0].status === "Disetujui") statusBadgeStyle = "text-success fw-bold";
-            if(items[0].status === "Ditolak") statusBadgeStyle = "text-danger fw-bold";
+            const curStatus = items[0].status || items[0].Status || "Diproses";
+            const pemoh = items[0].pemohon || items[0].Pemohon || "";
+            const katG = items[0].kategori || items[0].Kategori || "";
+            const idGrup = items[0].id_group || items[0].id_Group || "";
 
-            let aksiAdminControl = items[0].status === "Diproses" ? `
+            let statusBadgeStyle = "text-warning";
+            if(curStatus === "Disetujui") statusBadgeStyle = "text-success fw-bold";
+            if(curStatus === "Ditolak") statusBadgeStyle = "text-danger fw-bold";
+
+            let aksiAdminControl = curStatus === "Diproses" ? `
                 <div class="no-print mt-1">
-                    <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${items[0].id_group}', 'Disetujui')">✓ Setuju</button>
-                    <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${items[0].id_group}', 'Ditolak')">✕ Tolak</button>
+                    <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${idGrup}', 'Disetujui')">✓ Setuju</button>
+                    <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${idGrup}', 'Ditolak')">✕ Tolak</button>
                 </div>` : '';
 
             trSub.innerHTML = `
-                <td colspan="3" class="text-center small text-muted">Pemohon: ${items[0].pemohon} (<span class="${statusBadgeStyle}">${items[0].status}</span>)${aksiAdminControl}</td>
-                <td colspan="3" class="text-end fw-bold">SUB TOTAL KATEGORI [${items[0].kategori}] :</td>
+                <td colspan="3" class="text-center small text-muted">Pemohon: ${pemoh} (<span class="${statusBadgeStyle}">${curStatus}</span>)${aksiAdminControl}</td>
+                <td colspan="3" class="text-end fw-bold">SUB TOTAL KATEGORI [${katG}] :</td>
                 <td class="text-end fw-bold">${formatRupiah(totalSatuNota)}</td>
             `;
             pBody.appendChild(trSub);
@@ -811,7 +850,11 @@
 
     function eksekusiStatusPengajuan(idGroup, statusBaru) {
         dataPengajuanLokal = dataPengajuanLokal.map(item => {
-            if(item.id_group === idGroup) item.status = statusBaru;
+            const idG = item.id_group || item.id_Group || "";
+            if(idG === idGroup) {
+                item.status = statusBaru;
+                item.Status = statusBaru;
+            }
             return item;
         });
         localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
