@@ -25,7 +25,7 @@
         /* Class untuk menyembunyikan icon emoji khusus saat cetak */
         .no-print-icon { display: inline; }
 
-      /* Aturan Khusus Saat Cetak Ke PDF / Printer */
+     /* Aturan Khusus Saat Cetak Ke PDF / Printer */
         @media print {
             body { background-color: #fff; color: #000 !important; }
             .no-print { display: none !important; }
@@ -56,16 +56,16 @@
             tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
             table { page-break-inside: auto; border-collapse: collapse !important; }
             
-            /* Seting Ukuran Proporsional Layar HP (Pas 4 Foto Per Baris Kertas) */
+            /* Pengaturan Galeri Foto: Otomatis Rata Tengah (Center) */
             .galeri-bukti { 
-               display: flex !important; 
+                display: flex !important; 
                 flex-wrap: wrap !important; 
                 gap: 20px !important; /* Menambah jarak antar-foto agar sebaran halaman lebih pas */
                 justify-content: center !important; /* Ini yang membuat posisi foto otomatis ke tengah halaman */
                 width: 100% !important;
             }
             .kartu-bukti { 
-                width: 23% !important; /* Pas untuk membagi 4 kolom dalam 1 halaman lebar */
+                width: 23% !important; /* Maksimal 4 foto per baris */
                 max-width: 23% !important; 
                 page-break-inside: avoid !important; 
                 border: 1px solid #000 !important; 
@@ -74,9 +74,9 @@
                 background: #fff !important;
             }
             .img-bukti-file { 
-                height: 340px !important; /* Tinggi memanjang ke bawah menyerupai layar HP */
+                height: 340px !important; /* Ukuran pas layar HP vertikal */
                 width: 100% !important; 
-                object-fit: contain !important; /* Foto bukti tidak melar atau terpotong */
+                object-fit: contain !important; 
                 border-bottom: 1px solid #eee !important; 
                 margin: 5px 0 !important; 
             }
