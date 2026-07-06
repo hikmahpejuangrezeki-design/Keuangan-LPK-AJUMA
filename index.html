@@ -58,10 +58,11 @@
             
             /* Seting Ukuran Proporsional Layar HP (Pas 4 Foto Per Baris Kertas) */
             .galeri-bukti { 
-                display: flex !important; 
+               display: flex !important; 
                 flex-wrap: wrap !important; 
-                gap: 12px !important; 
-                justify-content: flex-start !important; 
+                gap: 20px !important; /* Menambah jarak antar-foto agar sebaran halaman lebih pas */
+                justify-content: center !important; /* Ini yang membuat posisi foto otomatis ke tengah halaman */
+                width: 100% !important;
             }
             .kartu-bukti { 
                 width: 23% !important; /* Pas untuk membagi 4 kolom dalam 1 halaman lebar */
@@ -69,7 +70,7 @@
                 page-break-inside: avoid !important; 
                 border: 1px solid #000 !important; 
                 padding: 8px !important; 
-                margin-bottom: 15px !important; 
+                margin-bottom: 20px !important; 
                 background: #fff !important;
             }
             .img-bukti-file { 
