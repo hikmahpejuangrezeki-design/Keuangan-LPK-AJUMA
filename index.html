@@ -31,6 +31,9 @@
             .no-print { display: none !important; }
             .no-print-icon { display: none !important; } /* Sembunyikan emoji/icon */
             
+            /* Sembunyikan 3 Kotak Dashboard Atas Saat Dicetak */
+            .row.g-3.mb-4 { display: none !important; }
+            
             /* Paksa semua teks berwarna menjadi hitam pekat */
             h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary { 
                 color: #000000 !important; 
@@ -62,12 +65,26 @@
 </head>
 <body>
 
-<div class="container my-4">
+<!-- SCREEN LOGIN KODE AKSES -->
+<div id="screen-login" class="container mt-5 no-print" style="max-width: 450px;">
+    <div class="card p-4 text-center">
+        <h4 class="fw-bold text-primary mb-3">🔑 Kode Akses Admin</h4>
+        <p class="text-muted small">Masukkan kode akses LPK AJUMA untuk mengelola sistem keuangan.</p>
+        <div class="mb-3">
+            <input type="password" id="input-pass" class="form-control form-control-lg text-center" placeholder="••••••••" onkeyup="if(event.key === 'Enter') verifikasiSandi()">
+        </div>
+        <button onclick="verifikasiSandi()" class="btn btn-primary btn-lg w-100 fw-bold">Masuk Sistem</button>
+    </div>
+</div>
+
+<!-- CONTAINER UTAMA (DISYEMBUNYIKAN DI AWAL SEBELUM LOGIN) -->
+<div id="konten-utama" class="container my-4" style="display: none;">
     <div class="text-center mb-4 no-print">
         <h2 class="fw-bold text-primary">LPK AJUMA ADMIN</h2>
         <p class="text-muted small">Kelola Transaksi, Bukti Foto, & Laporan Terperinci</p>
     </div>
 
+    <!-- FORM INPUT / EDIT TRANSAKSI -->
     <div id="box-form" class="card p-4 mb-4 no-print">
         <h5 id="judul-form" class="fw-bold mb-3 text-secondary">➕ Input Transaksi Baru</h5>
         <form id="form-transaksi" onsubmit="simpanTransaksi(event)">
@@ -113,6 +130,7 @@
         </form>
     </div>
 
+    <!-- FILTER PERIODE -->
     <div class="card p-3 mb-4 no-print">
         <div class="row g-3 align-items-end">
             <div class="col-md-4">
@@ -135,13 +153,15 @@
 
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
+    <!-- AREA LAPORAN -->
     <div id="area-laporan">
         <div class="text-center my-3 d-none d-print-block">
-            <h2 class="fw-bold mb-0">LPK AJUMA</h2>
+            <h2 class="fw-bold mb-0">LPK ANUGRAH JULIAN UTAMA</h2>
             <p class="mb-0">Laporan Rincian Keuangan & Jurnal Umum</p>
             <p id="print-periode" class="small"></p>
         </div>
 
+        <!-- DASHBOARD RINGKASAN (Hanya muncul di layar, otomatis hilang saat cetak) -->
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card-stat bg-masuk">
@@ -163,9 +183,11 @@
             </div>
         </div>
 
+        <!-- I. RINCIAN SELURUH TRANSAKSI DI PERIODE INI -->
         <div class="card p-4 mb-4">
             <h5 class="fw-bold mb-4 text-dark text-center">I. RINCIAN DAFTAR TRANSAKSI PERIODE</h5>
             <div class="row g-4">
+                <!-- SEKTOR PEMASUKAN -->
                 <div class="col-xl-6 border-end">
                     <h6 class="fw-bold text-success mb-3 text-center"><span class="no-print-icon">📋 </span>Rincian Catatan Pemasukan</h6>
                     <div class="table-responsive">
@@ -186,6 +208,7 @@
                     </div>
                 </div>
                 
+                <!-- SEKTOR PENGELUARAN -->
                 <div class="col-xl-6">
                     <h6 class="fw-bold text-danger mb-3 text-center"><span class="no-print-icon">📋 </span>Rincian Catatan Pengeluaran</h6>
                     <div class="table-responsive">
@@ -208,6 +231,7 @@
             </div>
         </div>
 
+        <!-- II. JURNAL UMUM -->
         <div class="card p-4 mb-4 halaman-jurnal-cetak">
             <h5 class="fw-bold mb-4 text-dark text-center">II. JURNAL UMUM (DEBIT KREDIT)</h5>
             <div class="table-responsive">
@@ -229,21 +253,34 @@
             </div>
         </div>
 
+        <!-- LAMPIRAN FOTO BUKTI -->
         <div id="lampiran-bukti"></div>
     </div>
 </div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbz4OcrI2bPpCn9I8o9kglApgptnTrsx9XfQWfQVD29LwfQt00Jkba0hlz80uxuQsnXG/exec";
+    const KODE_RAHASIA = "ajuma2024"; // Sesuai kode sandi awal Anda
     let dataCacheGlobal = [];
 
-    window.onload = function() {
+    function verifikasiSandi() {
+        const inputan = document.getElementById("input-pass").value;
+        if(inputan === KODE_RAHASIA) {
+            document.getElementById("screen-login").style.setProperty("display", "none", "important");
+            document.getElementById("konten-utama").style.display = "block";
+            inisialisasiSistem();
+        } else {
+            alert("Kode akses salah! Mohon periksa kembali.");
+        }
+    }
+
+    function inisialisasiSistem() {
         const hariIni = new Date().toISOString().split('T')[0];
         document.getElementById("in-tanggal").value = hariIni;
         document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01";
         document.getElementById("input-tgl-akhir").value = hariIni;
         muatDataDariSheets();
-    };
+    }
 
     function formatRupiah(angka) {
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
@@ -353,7 +390,7 @@
             }
 
             if (item.buktiFoto && item.buktiFoto.trim() !== "") {
-                let linkGambarDirect = konversionsLinkDrive(item.buktiFoto);
+                let linkGambarDirect = konversiLinkDrive(item.buktiFoto);
                 fotoBukti.push({ no: index + 1, ref: item.noref, url: linkGambarDirect });
             }
 
