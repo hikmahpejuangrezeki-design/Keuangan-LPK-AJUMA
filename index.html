@@ -188,11 +188,11 @@
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
     <div id="area-laporan">
-        <!-- FORMAL KOP SURAT LPK AJUMA (KHUSUS MUNCUL SAAT CETAK / PRINT) -->
+        <!-- FORMAL KOP SURAT LPK AJUMA (DIPERBESAR KHUSUS MUNCUL SAAT CETAK) -->
         <div class="d-none d-print-block">
             <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-3 mb-4">
-                <!-- Ganti URL src di bawah dengan logo beresolusi tinggi Anda -->
-                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 85px; height: 85px; object-fit: contain;">
+                <!-- UKURAN LOGO DIBAWAH INI SUDAH DIPERBESAR MENJADI 130px -->
+                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 130px; height: 130px; object-fit: contain;">
                 <div class="text-center">
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
                     <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LPK AJUMA</h1>
@@ -315,7 +315,7 @@
 
             <div class="table-responsive">
                 <table class="table table-bordered align-middle" style="font-size: 13px;">
-                    <thead class="table-dark">
+                    <thead>
                         <tr class="text-center">
                             <th style="width: 5%">No</th>
                             <th style="width: 12%">Tanggal</th>
@@ -333,7 +333,7 @@
             </div>
         </div>
 
-        <!-- BLOK TANDA TANGAN FORMAL 3 KOLOM (OTOMATIS MUNCUL SAAT CETAK) -->
+        <!-- BLOK TANDA TANGAN FORMAL 3 KOLOM -->
         <div class="row mt-5 sub-halaman-cetak" style="margin-top: 80px !important; page-break-inside: avoid;">
             <div class="col-4 text-center">
                 <p class="mb-0" style="font-size: 14px;">Dibuat Oleh,</p>
@@ -418,10 +418,10 @@
         const hariIni = new Date().toISOString().split('T')[0];
         document.getElementById("in-tanggal").value = hariIni;
         document.getElementById("peng-tgl").value = hariIni;
-        document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01"; // Awal Bulan Ini
+        document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01"; 
         document.getElementById("input-tgl-akhir").value = hariIni;
         
-        // Langsung isi ttd dengan tanggal hari ini saat pertama kali sistem dimuat
+        // Isian Tanggal TTD Default Awal Buka Aplikasi
         document.getElementById("cetak-tgl-ttd").innerText = formatTanggalIndo(hariIni);
 
         muatDataDariSheets();
@@ -432,24 +432,28 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
     }
 
-    /* =========================================================
-       FUNGSI BARU: FORMAT TANGGAL INDONESIA (ANTI-BUG BROWSER)
-       ========================================================= */
+    /* FORMAT DETEKSI TANGGAL MANUAL (MENCEGAH BUG INVALID DATE DI BROWSER HP/SAFARI) */
     function formatTanggalIndo(tglString) {
         if (!tglString) return "";
-        const bagian = tglString.split("-"); // Memecah YYYY-MM-DD
+        let tglClean = tglString.split("T")[0];
+        const bagian = tglClean.split("-");
         if (bagian.length !== 3) return tglString;
         
         const namaBulan = [
             "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"
         ];
+        return `${parseInt(bagian[2])} ${namaBulan[parseInt(bagian[1]) - 1]} ${bagian[0]}`;
+    }
+
+    function formatTanggalIndoSingkat(tglString) {
+        if (!tglString) return "";
+        let tglClean = tglString.split("T")[0];
+        const bagian = tglClean.split("-");
+        if (bagian.length !== 3) return tglString;
         
-        const tahun = bagian[0];
-        const bulan = namaBulan[parseInt(bagian[1]) - 1];
-        const tanggal = parseInt(bagian[2]);
-        
-        return `${tanggal} ${bulan} ${tahun}`;
+        const blnSingkat = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        return `${parseInt(bagian[2])} ${blnSingkat[parseInt(bagian[1]) - 1]}`;
     }
 
     /* =========================================================
@@ -465,15 +469,13 @@
             statusApp.innerText = "⏳ Memeriksa & menyegarkan data laporan kas...";
         }
         
-        // Perbarui teks dinamis periode cetak kop surat & tanggal ttd tanda tangan
         if(tglA && tglB) {
             const dA = formatTanggalIndo(tglA);
             const dB = formatTanggalIndo(tglB);
             document.getElementById("print-periode").innerText = `Periode Laporan: ${dA} s/d ${dB}`;
-            document.getElementById("cetak-tgl-ttd").innerText = dB; // Mengikuti tanggal filter akhir
+            document.getElementById("cetak-tgl-ttd").innerText = dB; 
         }
 
-        // Ambil data real-time dengan parameter filter tanggal ke Apps Script
         fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({ aksi: "baca_kas", awal: tglA, akhir: tglB })
@@ -485,7 +487,7 @@
         })
         .catch(err => {
             console.error(err);
-            alert("Gagal sinkronisasi data dari Google Sheets. Periksa koneksi atau setelan Web App Anda.");
+            alert("Gagal sinkronisasi data dari Google Sheets. Periksa koneksi Web App Anda.");
         })
         .finally(() => {
             if (statusApp) statusApp.style.display = "none";
@@ -493,7 +495,7 @@
     }
 
     /* =========================================================
-       2. RENDER DASHBOARD & TABEL JURNAL SECARA OTOMATIS
+       2. RENDER DASHBOARD & TABEL SECARA REAL-TIME
        ========================================================= */
     function renderDataKasUtama() {
         const rMasukBody = document.getElementById("rinci-masuk-body");
@@ -513,10 +515,8 @@
 
         dataCacheGlobal.forEach((item) => {
             const jml = parseFloat(item.jumlah) || 0;
-            const tglObj = new Date(item.tanggal);
-            const tglIndo = tglObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            const tglIndo = formatTanggalIndoSingkat(item.tanggal);
             
-            // Generate Baris Rincian Pemasukan / Pengeluaran
             const rowRinci = `
                 <tr>
                     <td class="text-center">${tglIndo}</td>
@@ -534,14 +534,13 @@
                 rKeluarBody.insertAdjacentHTML('beforeend', rowRinci);
             }
 
-            // Generate Baris Jurnal Umum (Sistem Rata Tengah pada Header/Kolom Tertentu)
             const debitText = item.jenis === "Pemasukan" ? formatRupiah(jml) : "-";
             const kreditText = item.jenis === "Pengeluaran" ? formatRupiah(jml) : "-";
             
             const rowJurnal = `
                 <tr>
                     <td class="text-center">${idxJurnal++}</td>
-                    <td class="text-center">${item.tanggal}</td>
+                    <td class="text-center">${item.tanggal ? item.tanggal.split("T")[0] : ''}</td>
                     <td class="text-center">${item.noref || '-'}</td>
                     <td>
                         <span class="${item.jenis === 'Pengeluaran' ? 'ps-3 text-muted' : 'fw-bold'}">${item.kategori}</span><br>
@@ -556,12 +555,11 @@
             `;
             jBody.insertAdjacentHTML('beforeend', rowJurnal);
 
-            // Kumpulkan Lampiran Dokumen Foto Bukti Fisik
             if (item.buktiFoto && item.buktiFoto.trim() !== "") {
                 const imgUrl = konversiLinkDrive(item.buktiFoto);
                 buktiCards += `
                     <div class="kartu-bukti">
-                        <small class="text-muted d-block">${item.tanggal} - ${item.noref}</small>
+                        <small class="text-muted d-block">${item.tanggal ? item.tanggal.split("T")[0] : ''} - ${item.noref}</small>
                         <strong class="d-block text-truncate" style="font-size:12px;">${item.keterangan}</strong>
                         <img src="${imgUrl}" class="img-bukti-file" alt="Bukti Kas">
                         <small class="text-primary fw-bold d-block mt-1">${formatRupiah(jml)}</small>
@@ -570,21 +568,17 @@
             }
         });
 
-        // Validasi jika tabel data kosong
         if (rMasukBody.innerHTML === "") rMasukBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>`;
         if (rKeluarBody.innerHTML === "") rKeluarBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>`;
         if (jBody.innerHTML === "") jBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Tidak ada data jurnal.</td></tr>`;
 
-        // Perbarui Angka Dashboard Atas
         document.getElementById("stat-masuk").innerText = formatRupiah(tMasuk);
         document.getElementById("stat-keluar").innerText = formatRupiah(tKeluar);
         document.getElementById("stat-saldo").innerText = formatRupiah(tMasuk - tKeluar);
 
-        // Pasang Total di Kaki Tabel Rincian
         document.getElementById("rinci-masuk-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pemasukan:</td><td class="text-end">${formatRupiah(tMasuk)}</td></tr>`;
         document.getElementById("rinci-keluar-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pengeluaran:</td><td class="text-end">${formatRupiah(tKeluar)}</td></tr>`;
         
-        // Pasang Total Balance di Kaki Tabel Jurnal Umum
         document.getElementById("jurnal-foot").innerHTML = `
             <tr class="table-light fw-bold text-dark border-top">
                 <td colspan="4" class="text-end text-uppercase">TOTAL BALANCE JURNAL:</td>
@@ -594,7 +588,6 @@
             </tr>
         `;
 
-        // Render otomatis galeri lampiran dokumen foto jika ada
         if (buktiCards !== "") {
             lampiran.innerHTML = `
                 <div class="card p-4 mt-4 halaman-bukti-cetak">
@@ -643,7 +636,7 @@
         document.getElementById("in-aksi").value = "edit";
         document.getElementById("in-rownum").value = rowNum;
         document.getElementById("in-jenis").value = item.jenis;
-        document.getElementById("in-tanggal").value = item.tanggal;
+        document.getElementById("in-tanggal").value = item.tanggal ? item.tanggal.split("T")[0] : '';
         document.getElementById("in-noref").value = item.noref;
         document.getElementById("in-kategori").value = item.kategori;
         document.getElementById("in-keterangan").value = item.keterangan;
@@ -734,7 +727,6 @@
         .then(res => res.json())
         .then(res => { alert(res.message); });
 
-        // Reset Formulir Pengajuan
         document.getElementById("peng-kat").value = "";
         document.getElementById('wrapper-item-pengajuan').innerHTML = `
             <div class="row g-2 baris-item mb-2">
@@ -766,8 +758,7 @@
         for (let key in kelompokNota) {
             let items = kelompokNota[key];
             let totalSatuNota = 0;
-            let tglObj = new Date(items[0].tanggal);
-            let tglIndo = tglObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+            let tglIndo = formatTanggalIndo(items[0].tanggal);
 
             items.forEach((barang, index) => {
                 let tr = document.createElement("tr");
