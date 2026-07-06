@@ -93,21 +93,22 @@
    <!-- AREA LAPORAN -->
     <div id="area-laporan">
         <!-- KOP LAPORAN RESMI DENGAN LOGO (MUNCUL SAAT CETAK) -->
-        <div class="d-none d-print-block mb-4">
-            <div class="row align-items-center" style="display: flex !important; flex-direction: row !important; align-items: center !important;">
-                <!-- SISI LOGO -->
-                <div style="width: 15%; text-align: center;">
-                    <img src="logo-ajuma.png" alt="Logo LPK" style="width: 85px; height: 85px; object-fit: contain;" onerror="this.src='logo.jpg'">
-                </div>
-                <!-- SISI TEKS -->
-                <div style="width: 85%; text-align: center; padding-right: 60px;">
-                    <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px; margin: 0; font-size: 22px; color: #000;">LPK ANUGRAH JULIAN UTAMA</h3>
-                    <h5 class="fw-bold mb-1" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; margin: 5px 0 0 0; color: #000;">LAPORAN RINCIAN KEUANGAN & JURNAL UMUM</h5>
-                    <p id="print-periode" class="mb-0 small fw-bold" style="margin: 5px 0 0 0; color: #000;"></p>
-                </div>
-            </div>
-            <hr style="border: 2px solid #000000 !important; opacity: 1 !important; margin-top: 15px !important; margin-bottom: 30px !important;">
+<div class="d-none d-print-block mb-4">
+    <div class="row align-items-center" style="display: flex !important; flex-direction: row !important; align-items: center !important;">
+        <!-- SISI LOGO (Diberi padding-left agar tidak terlalu mepet kiri dan ukuran disesuaikan) -->
+        <div style="width: 18%; text-align: left; padding-left: 30px;">
+            <img src="logo-ajuma.png" alt="Logo LPK" style="width: 100px; height: 100px; object-fit: contain;" onerror="this.src='logo-ajuma.jpg'">
         </div>
+        <!-- SISI TEKS (Diposisikan di tengah area sisa) -->
+        <div style="width: 82%; text-align: center; padding-right: 12%;">
+            <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px; margin: 0; font-size: 22px; color: #000;">LEMBAGA PRALTIHAN KERJA ANUGRAH JULIAN UTAMA</h3>
+            <h3 class="fw-bold mb-1" style="font-family: 'Times New Roman', Times, serif; letter-spacing: 1px; margin: 0; font-size: 22px; color: #000;">LPK AJUAMA</h3>
+            <h5 class="fw-bold mb-1" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; margin: 5px 0 0 0; color: #000;">LAPORAN RINCIAN KEUANGAN & JURNAL UMUM</h5>
+            <p id="print-periode" class="mb-0 small fw-bold" style="margin: 5px 0 0 0; color: #000;"></p>
+        </div>
+    </div>
+    <hr style="border: 2px solid #000000 !important; opacity: 1 !important; margin-top: 15px !important; margin-bottom: 30px !important;">
+</div>
 
         <!-- DASHBOARD RINGKASAN DATA (HANYA LAYAR HP/LAPTOP) -->
         <div class="row g-3 mb-4 d-print-none">
