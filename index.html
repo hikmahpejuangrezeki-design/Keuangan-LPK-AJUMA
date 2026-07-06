@@ -338,7 +338,7 @@
             <div class="col-4 text-center">
                 <p class="mb-0" style="font-size: 14px;">Dibuat Oleh,</p>
                 <br><br><br><br>
-                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">( _______________________ )</p>
+                <p class="mb-0 fw-bold text-decoration-underline" style="font-size: 14px;">Fajar Maulana Yusuf</p>
                 <p class="text-muted small">Staff LPK AJUMA</p>
             </div>
             <div class="col-4 text-center">
@@ -418,8 +418,12 @@
         const hariIni = new Date().toISOString().split('T')[0];
         document.getElementById("in-tanggal").value = hariIni;
         document.getElementById("peng-tgl").value = hariIni;
-        document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01";
+        document.getElementById("input-tgl-awal").value = hariIni.substring(0,8) + "01"; // Awal Bulan Ini
         document.getElementById("input-tgl-akhir").value = hariIni;
+        
+        // Langsung isi ttd dengan tanggal hari ini saat pertama kali sistem dimuat
+        document.getElementById("cetak-tgl-ttd").innerText = formatTanggalIndo(hariIni);
+
         muatDataDariSheets();
         renderBukuPengajuanFisik();
     }
@@ -428,12 +432,248 @@
         return "Rp " + parseFloat(angka).toLocaleString('id-ID');
     }
 
-    /* KONTROL INPUT MULTI-ITEM PENGAJUAN BARANG */
+    /* =========================================================
+       FUNGSI BARU: FORMAT TANGGAL INDONESIA (ANTI-BUG BROWSER)
+       ========================================================= */
+    function formatTanggalIndo(tglString) {
+        if (!tglString) return "";
+        const bagian = tglString.split("-"); // Memecah YYYY-MM-DD
+        if (bagian.length !== 3) return tglString;
+        
+        const namaBulan = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+        
+        const tahun = bagian[0];
+        const bulan = namaBulan[parseInt(bagian[1]) - 1];
+        const tanggal = parseInt(bagian[2]);
+        
+        return `${tanggal} ${bulan} ${tahun}`;
+    }
+
+    /* =========================================================
+       1. AMBIL & PROSES DATA KAS UTAMA DARI GOOGLE SHEETS
+       ========================================================= */
+    function muatDataDariSheets() {
+        const tglA = document.getElementById("input-tgl-awal").value;
+        const tglB = document.getElementById("input-tgl-akhir").value;
+        const statusApp = document.getElementById("status-app");
+
+        if (statusApp) {
+            statusApp.style.display = "block";
+            statusApp.innerText = "⏳ Memeriksa & menyegarkan data laporan kas...";
+        }
+        
+        // Perbarui teks dinamis periode cetak kop surat & tanggal ttd tanda tangan
+        if(tglA && tglB) {
+            const dA = formatTanggalIndo(tglA);
+            const dB = formatTanggalIndo(tglB);
+            document.getElementById("print-periode").innerText = `Periode Laporan: ${dA} s/d ${dB}`;
+            document.getElementById("cetak-tgl-ttd").innerText = dB; // Mengikuti tanggal filter akhir
+        }
+
+        // Ambil data real-time dengan parameter filter tanggal ke Apps Script
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ aksi: "baca_kas", awal: tglA, akhir: tglB })
+        })
+        .then(res => res.json())
+        .then(data => {
+            dataCacheGlobal = Array.isArray(data) ? data : [];
+            renderDataKasUtama();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Gagal sinkronisasi data dari Google Sheets. Periksa koneksi atau setelan Web App Anda.");
+        })
+        .finally(() => {
+            if (statusApp) statusApp.style.display = "none";
+        });
+    }
+
+    /* =========================================================
+       2. RENDER DASHBOARD & TABEL JURNAL SECARA OTOMATIS
+       ========================================================= */
+    function renderDataKasUtama() {
+        const rMasukBody = document.getElementById("rinci-masuk-body");
+        const rKeluarBody = document.getElementById("rinci-keluar-body");
+        const jBody = document.getElementById("jurnal-body");
+        const lampiran = document.getElementById("lampiran-bukti");
+
+        rMasukBody.innerHTML = "";
+        rKeluarBody.innerHTML = "";
+        jBody.innerHTML = "";
+        lampiran.innerHTML = "";
+
+        let tMasuk = 0;
+        let tKeluar = 0;
+        let idxJurnal = 1;
+        let buktiCards = "";
+
+        dataCacheGlobal.forEach((item) => {
+            const jml = parseFloat(item.jumlah) || 0;
+            const tglObj = new Date(item.tanggal);
+            const tglIndo = tglObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+            
+            // Generate Baris Rincian Pemasukan / Pengeluaran
+            const rowRinci = `
+                <tr>
+                    <td class="text-center">${tglIndo}</td>
+                    <td>${item.kategori}</td>
+                    <td>${item.keterangan}</td>
+                    <td class="text-end">${formatRupiah(jml)}</td>
+                </tr>
+            `;
+
+            if (item.jenis === "Pemasukan") {
+                tMasuk += jml;
+                rMasukBody.insertAdjacentHTML('beforeend', rowRinci);
+            } else if (item.jenis === "Pengeluaran") {
+                tKeluar += jml;
+                rKeluarBody.insertAdjacentHTML('beforeend', rowRinci);
+            }
+
+            // Generate Baris Jurnal Umum (Sistem Rata Tengah pada Header/Kolom Tertentu)
+            const debitText = item.jenis === "Pemasukan" ? formatRupiah(jml) : "-";
+            const kreditText = item.jenis === "Pengeluaran" ? formatRupiah(jml) : "-";
+            
+            const rowJurnal = `
+                <tr>
+                    <td class="text-center">${idxJurnal++}</td>
+                    <td class="text-center">${item.tanggal}</td>
+                    <td class="text-center">${item.noref || '-'}</td>
+                    <td>
+                        <span class="${item.jenis === 'Pengeluaran' ? 'ps-3 text-muted' : 'fw-bold'}">${item.kategori}</span><br>
+                        <small class="text-secondary">${item.keterangan}</small>
+                    </td>
+                    <td class="text-end">${debitText}</td>
+                    <td class="text-end">${kreditText}</td>
+                    <td class="text-center no-print">
+                        <button class="btn btn-sm btn-warning py-0 px-1" style="font-size:11px" onclick="aktifkanModeEdit('${item.rowNum}')">✏️ Edit</button>
+                    </td>
+                </tr>
+            `;
+            jBody.insertAdjacentHTML('beforeend', rowJurnal);
+
+            // Kumpulkan Lampiran Dokumen Foto Bukti Fisik
+            if (item.buktiFoto && item.buktiFoto.trim() !== "") {
+                const imgUrl = konversiLinkDrive(item.buktiFoto);
+                buktiCards += `
+                    <div class="kartu-bukti">
+                        <small class="text-muted d-block">${item.tanggal} - ${item.noref}</small>
+                        <strong class="d-block text-truncate" style="font-size:12px;">${item.keterangan}</strong>
+                        <img src="${imgUrl}" class="img-bukti-file" alt="Bukti Kas">
+                        <small class="text-primary fw-bold d-block mt-1">${formatRupiah(jml)}</small>
+                    </div>
+                `;
+            }
+        });
+
+        // Validasi jika tabel data kosong
+        if (rMasukBody.innerHTML === "") rMasukBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>`;
+        if (rKeluarBody.innerHTML === "") rKeluarBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>`;
+        if (jBody.innerHTML === "") jBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Tidak ada data jurnal.</td></tr>`;
+
+        // Perbarui Angka Dashboard Atas
+        document.getElementById("stat-masuk").innerText = formatRupiah(tMasuk);
+        document.getElementById("stat-keluar").innerText = formatRupiah(tKeluar);
+        document.getElementById("stat-saldo").innerText = formatRupiah(tMasuk - tKeluar);
+
+        // Pasang Total di Kaki Tabel Rincian
+        document.getElementById("rinci-masuk-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pemasukan:</td><td class="text-end">${formatRupiah(tMasuk)}</td></tr>`;
+        document.getElementById("rinci-keluar-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pengeluaran:</td><td class="text-end">${formatRupiah(tKeluar)}</td></tr>`;
+        
+        // Pasang Total Balance di Kaki Tabel Jurnal Umum
+        document.getElementById("jurnal-foot").innerHTML = `
+            <tr class="table-light fw-bold text-dark border-top">
+                <td colspan="4" class="text-end text-uppercase">TOTAL BALANCE JURNAL:</td>
+                <td class="text-end text-success">${formatRupiah(tMasuk)}</td>
+                <td class="text-end text-danger">${formatRupiah(tKeluar)}</td>
+                <td class="no-print"></td>
+            </tr>
+        `;
+
+        // Render otomatis galeri lampiran dokumen foto jika ada
+        if (buktiCards !== "") {
+            lampiran.innerHTML = `
+                <div class="card p-4 mt-4 halaman-bukti-cetak">
+                    <h5 class="fw-bold mb-4 text-dark text-center">IV. LAMPIRAN BUKU DOKUMENTASI FOTO BUKTI FISIK</h5>
+                    <div class="galeri-bukti">${buktiCards}</div>
+                </div>
+            `;
+        }
+    }
+
+    /* =========================================================
+       3. MODUL INPUT, EDIT & BATAL TRANSAKSI KAS UTAMA
+       ========================================================= */
+    function simpanTransaksi(event) {
+        event.preventDefault();
+        const btn = document.getElementById("btn-simpan");
+        btn.disabled = true; btn.innerText = "Memproses...";
+
+        const payload = {
+            aksi: document.getElementById("in-aksi").value,
+            rowNum: document.getElementById("in-rownum").value,
+            jenis: document.getElementById("in-jenis").value,
+            tanggal: document.getElementById("in-tanggal").value,
+            noref: document.getElementById("in-noref").value,
+            kategori: document.getElementById("in-kategori").value,
+            keterangan: document.getElementById("in-keterangan").value,
+            jumlah: document.getElementById("in-jumlah").value,
+            buktiFoto: document.getElementById("in-foto").value
+        };
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(res => {
+            alert(res.message);
+            if(res.status === "success") { resetFormKeAwal(); muatDataDariSheets(); }
+        })
+        .catch(err => alert("Gagal menyimpan data ke sistem."))
+        .finally(() => { btn.disabled = false; btn.innerText = "🚀 Simpan Data"; });
+    }
+
+    function aktifkanModeEdit(rowNum) {
+        const item = dataCacheGlobal.find(i => String(i.rowNum) === String(rowNum));
+        if(!item) return;
+
+        document.getElementById("judul-form").innerText = "✏️ Edit Transaksi Lama (Baris #" + rowNum + ")";
+        document.getElementById("in-aksi").value = "edit";
+        document.getElementById("in-rownum").value = rowNum;
+        document.getElementById("in-jenis").value = item.jenis;
+        document.getElementById("in-tanggal").value = item.tanggal;
+        document.getElementById("in-noref").value = item.noref;
+        document.getElementById("in-kategori").value = item.kategori;
+        document.getElementById("in-keterangan").value = item.keterangan;
+        document.getElementById("in-jumlah").value = item.jumlah;
+        document.getElementById("in-foto").value = item.buktiFoto;
+
+        document.getElementById("btn-batal").style.display = "inline-block";
+        document.getElementById("box-form").classList.add("mode-edit");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetFormKeAwal() {
+        document.getElementById("judul-form").innerText = "➕ Input Transaksi Baru (Buku Kas Utama)";
+        document.getElementById("form-transaksi").reset();
+        document.getElementById("in-aksi").value = "tambah";
+        document.getElementById("in-rownum").value = "";
+        document.getElementById("in-noref").value = "[Otomatis]";
+        document.getElementById("btn-batal").style.display = "none";
+        document.getElementById("box-form").classList.remove("mode-edit");
+        document.getElementById("in-tanggal").value = new Date().toISOString().split('T')[0];
+    }
+
+    /* =========================================================
+       4. MODUL MANAJEMEN PENGAJUAN ANGGARAN DANA MULTI-ITEM
+       ========================================================= */
     function tambahBarisItem() {
         const div = document.createElement('div');
         div.className = 'row g-2 baris-item mb-2';
         div.innerHTML = `
-            <div class="col-md-5"><input type="text" class="form-control form-control-sm item-nama" placeholder="Nama Barang / Rincian Spesifik..." required></div>
+            <div class="col-md-5"><input type="text" class="form-control form-control-sm item-nama" placeholder="Nama Barang / Rincian Spesifik" required></div>
             <div class="col-md-3"><input type="number" class="form-control form-control-sm item-harga" placeholder="Harga Satuan (Rp)" required></div>
             <div class="col-md-2"><input type="number" class="form-control form-control-sm item-qty" placeholder="Qty" required></div>
             <div class="col-md-2"><button type="button" class="btn btn-sm btn-danger w-100" onclick="hapusBarisItem(this)">Hapus</button></div>
@@ -447,7 +687,6 @@
         else { alert("Minimal harus mengisi satu rincian barang!"); }
     }
 
-    /* PROSES SIMPAN PENGAJUAN BERJENJANG */
     function prosesSimpanPengajuan() {
         const tgl = document.getElementById("peng-tgl").value;
         const pemohon = document.getElementById("peng-nama").value;
@@ -485,21 +724,17 @@
             itemsToSend.push(itemData);
         });
 
-        // Simpan cadangan lokal ke browser
         localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
-        
-        // Kirim Array Data secara real-time ke Google Sheets
+        renderBukuPengajuanFisik();
+
         fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({ aksi: "tambah_pengajuan", items: itemsToSend })
         })
         .then(res => res.json())
-        .then(res => {
-            alert(res.message);
-            muatDataDariSheets(); // Sinkronisasi ulang data terbaru dari Sheets
-        });
+        .then(res => { alert(res.message); });
 
-        // Reset Form ke Tampilan Awal
+        // Reset Formulir Pengajuan
         document.getElementById("peng-kat").value = "";
         document.getElementById('wrapper-item-pengajuan').innerHTML = `
             <div class="row g-2 baris-item mb-2">
@@ -511,7 +746,6 @@
         `;
     }
 
-    /* RENDER TABEL FORMAT BUKU PENGAJUAN FISIK */
     function renderBukuPengajuanFisik() {
         const pBody = document.getElementById("pengajuan-body");
         if(dataPengajuanLokal.length === 0) {
@@ -539,16 +773,9 @@
                 let tr = document.createElement("tr");
                 totalSatuNota += barang.subtotal;
 
-                // Teks Tombol Kontrol Persetujuan Admin (Hanya Muncul di Layar Web)
-                let aksiAdmin = barang.status === "Diproses" ? `
-                    <div class="no-print mt-1">
-                        <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${barang.id_group}', 'Disetujui')">✓ Setuju</button>
-                        <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${barang.id_group}', 'Ditolak')">✕ Tolak</button>
-                    </div>` : '';
-
                 tr.innerHTML = `
-                    <td>${index === 0 ? nomorUrutNota : ''}</td>
-                    <td>${index === 0 ? tglIndo : ''}</td>
+                    <td class="text-center">${index === 0 ? nomorUrutNota : ''}</td>
+                    <td class="text-center">${index === 0 ? tglIndo : ''}</td>
                     <td class="fw-bold">${index === 0 ? barang.kategori : ''}</td>
                     <td>${barang.rincian}</td>
                     <td class="text-end">${formatRupiah(barang.harga)}</td>
@@ -591,7 +818,6 @@
         pBody.appendChild(trGrand);
     }
 
-    /* UPDATE STATUS BERKAS PENGAJUAN OLEH ADMIN */
     function eksekusiStatusPengajuan(idGroup, statusBaru) {
         dataPengajuanLokal = dataPengajuanLokal.map(item => {
             if(item.id_group === idGroup) item.status = statusBaru;
@@ -610,7 +836,6 @@
         });
     }
 
-    /* KONTROL BACKEND KAS UTAMA (JURNAL & REKAP) */
     function konversiLinkDrive(urlAsli) {
         if (!urlAsli || urlAsli.trim() === "") return "";
         let url = urlAsli.trim();
@@ -619,40 +844,6 @@
         else if (url.includes("id=")) { fileId = url.split("id=")[1].split("&")[0]; }
         if (fileId !== "") { return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`; }
         return url;
-    }
-
-    function simpanTransaksi(event) {
-        event.preventDefault();
-        const btn = document.getElementById("btn-simpan");
-        btn.disabled = true; btn.innerText = "Memproses...";
-
-        const payload = {
-            aksi: document.getElementById("in-aksi").value,
-            rowNum: document.getElementById("in-rownum").value,
-            jenis: document.getElementById("in-jenis").value,
-            tanggal: document.getElementById("in-tanggal").value,
-            noref: document.getElementById("in-noref").value,
-            kategori: document.getElementById("in-kategori").value,
-            keterangan: document.getElementById("in-keterangan").value,
-            jumlah: document.getElementById("in-jumlah").value,
-            buktiFoto: document.getElementById("in-foto").value
-        };
-
-        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(res => res.json())
-        .then(res => {
-            alert(res.message);
-            if(res.status === "success") { resetFormKeAwal(); muatDataDariSheets(); }
-        })
-        .finally(() => { btn.disabled = false; });
-    }
-
-    function muatDataDariSheets() {
-        const tglA = document.getElementById("input-tgl-awal").value;
-        const tglB = document.getElementById("input-tgl-akhir").value;
-        
-        // LANJUTKAN KODE INTEGRASI SINKRONISASI SHEETS ANDA DI SINI
-        console.log("Memuat data periode: " + tglA + " s/d " + tglB);
     }
 </script>
 </body>
