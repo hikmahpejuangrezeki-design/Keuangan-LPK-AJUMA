@@ -688,10 +688,11 @@
                 const imgUrl = konversiLinkDrive(buktiFoto);
                 buktiCards += `
                     <div class="kartu-bukti">
-                        <small class="text-muted d-block">${tanggalRaw ? tanggalRaw.split("T")[0] : ''} - ${noref}</small>
+                        <small class="text-muted d-block">${noref}</small>
                         <strong class="d-block text-truncate" style="font-size:12px;">${keterangan}</strong>
                         <img src="${imgUrl}" class="img-bukti-file" alt="Bukti Kas">
                         <small class="text-primary fw-bold d-block mt-1">${formatRupiah(jml)}</small>
+                        <small class="text-muted d-block">${tanggalRaw ? tanggalRaw.split("T")[0] : ''}</small>
                     </div>
                 `;
             }
