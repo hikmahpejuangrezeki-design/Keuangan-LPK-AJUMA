@@ -24,18 +24,15 @@
 
         .no-print-icon { display: inline; }
 
-       /* Aturan Khusus Saat Cetak Ke PDF / Printer */
-@media print {
-    /* MEMBERIKAN MARGIN AMAN PADA KERTAS AGAR KOP & LOGO TIDAK TERPOTONG */
+   @media print {
+    /* MEMBERIKAN AREA AMAN CETAK PADA KERTAS */
     @page {
-        margin: 15mm 15mm 15mm 15mm; /* Jarak aman atas, kanan, bawah, kiri */
+        margin: 15mm 15mm 15mm 15mm;
     }
 
     body { 
         background-color: #ffffff; 
         color: #000000 !important; 
-        margin: 0 !important;
-        padding: 0 !important;
     }
     
     .no-print { display: none !important; }
@@ -43,25 +40,32 @@
     .no-print-btn { display: none !important; }
     .row.g-3.mb-4 { display: none !important; }
     
-    /* FIX HITAM FORMAL: Memastikan semua teks hitam pekat */
+    /* FIX HITAM FORMAL: Memaksa warna tulisan hitam */
     h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
         color: #000000 !important; 
     }
     
-    /* Teks status khusus cetak wajib muncul */
+    /* FIX STATUS DIPROSES: Sembunyikan di monitor, tapi wajib tampil hitam tebal saat dicetak */
     .status-text-print {
-        display: inline !important;
+        display: inline-block !important;
         color: #000000 !important;
         font-weight: bold !important;
     }
 
-    /* FIX GARIS KOTAK LUAR: Menghilangkan border pada card agar tidak ada pembungkus kotak luar */
+    /* FIX KOP MEPET: Memberikan ruang dorong ke kanan khusus untuk komponen Header/Kop Surat */
+    .header, .kop-surat, [class*="header"], [class*="kop"] {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    /* Menghilangkan garis pembungkus kotak luar (.card) */
     .card { 
         box-shadow: none !important; 
         border: none !important; 
         background: transparent !important;
         margin-bottom: 20px !important; 
-        page-break-inside: auto; 
     }
     
     .card-body {
@@ -69,12 +73,12 @@
         margin: 0 !important;
     }
     
-    /* Pengaturan Halaman Cetak */
-    .halaman-jurnal-cetak { page-break-before: always !important; margin-top: 0; }
-    .halaman-pengajuan-cetak { page-break-before: always !important; margin-top: 0; }
-    .halaman-bukti-cetak { page-break-before: always !important; margin-top: 0; }
+    /* Pengaturan Halaman */
+    .halaman-jurnal-cetak { page-break-before: always !important; }
+    .halaman-pengajuan-cetak { page-break-before: always !important; }
+    .halaman-bukti-cetak { page-break-before: always !important; }
     
-    /* Pengaturan Dasar Tabel & Baris */
+    /* Aturan Tabel */
     table { 
         page-break-inside: auto; 
         border-collapse: collapse !important; 
@@ -84,65 +88,41 @@
         page-break-inside: avoid !important; 
         break-inside: avoid !important; 
     }
-    
-    /* Hanya berikan border pada header dan sel dalam tabel */
     .table th, .table td, table th, table td { 
         border: 1px solid #000000 !important;
         background-color: #ffffff !important;
     }
     
-    /* Bagian Bukti Fisik */
-    .galeri-bukti { 
-        display: flex !important; 
-        flex-wrap: wrap !important; 
-        gap: 20px !important; 
-        justify-content: center !important; 
-        width: 100% !important;
-    }
-    .kartu-bukti { 
-        width: 23% !important; 
-        max-width: 23% !important; 
-        page-break-inside: avoid !important; 
-        border: 1px solid #000000 !important; 
-        padding: 8px !important; 
-        margin-bottom: 20px !important; 
-        background: #ffffff !important;
-    }
-    .img-bukti-file { 
-        height: 340px !important; 
-        width: 100% !important; 
-        object-fit: contain !important; 
-        border-bottom: 1px solid #000000 !important; 
-        margin: 5px 0 !important; 
-    }
-    .kartu-bukti small { font-size: 11px !important; }
+    /* Galeri Bukti */
+    .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: center !important; width: 100% !important; }
+    .kartu-bukti { width: 23% !important; max-width: 23% !important; page-break-inside: avoid !important; border: 1px solid #000000 !important; padding: 8px !important; background: #ffffff !important; }
+    .img-bukti-file { height: 340px !important; width: 100% !important; object-fit: contain !important; border-bottom: 1px solid #000000 !important; }
     
-    /* Desain garis subtotal dan total */
+    /* Garis tabel pengajuan */
     .baris-subtotal { font-weight: bold; border-top: 1px dashed #000000 !important; border-bottom: 1px dashed #000000 !important; }
     .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000000 !important; border-bottom: 2px double #000000 !important; }
     
-    .keep-with-next {
-        page-break-after: avoid !important;
-        break-after: avoid !important;
-    }
-
-    /* FIX MEPET KIRI & ATAS: Mengembalikan ukuran kontainer ke lebar penuh dengan margin kertas baru */
+    /* Lebar Kontainer Penuh */
     .container, .container-fluid {
         width: 100% !important;
         max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
     }
-
     .table-responsive {
         overflow: visible !important;
         display: block !important;
         width: 100% !important;
     }
-
-    /* Lebar kolom otomatis mengikuti ruang kertas secara proporsional */
     table {
         table-layout: auto !important;
+    }
+}
+
+/* Sembunyikan teks cetak status "Diproses" saat aplikasi sedang dibuka normal di layar komputer/HP */
+@media screen {
+    .status-text-print {
+        display: none !important;
     }
 }
     </style>
@@ -837,9 +817,8 @@
         `;
     }
 
-    function renderBukuPengajuanFisik() {
+   function renderBukuPengajuanFisik() {
     const pBody = document.getElementById("pengajuan-body");
-    // Perubahan: Menyesuaikan colspan menjadi 8 karena kolom bertambah satu
     if(dataPengajuanLokal.length === 0) {
         pBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted small">Belum ada riwayat berkas pengajuan anggaran dana.</td></tr>`;
         return;
@@ -868,29 +847,32 @@
             const kat = barang.kategori || barang.Kategori || "";
             const rinc = barang.rincian || barang.Rincian || barang.item || "";
             
-            // Mengambil status spesifik milik item barang ini (Default: Diproses)
             const itemStatus = barang.status || barang.Status || "Diproses";
             const idGrup = barang.id_group || barang.id_Group || "";
 
             let tr = document.createElement("tr");
             
-            // Kalkulasi subtotal nota hanya menjumlahkan item yang "Diproses" atau "Disetujui" (Abaikan jika "Ditolak")
             if (itemStatus !== "Ditolak") {
                 totalSatuNota += sub;
             }
 
-            // Atur gaya teks badge status per item
             let statusStyle = "text-warning";
             if(itemStatus === "Disetujui") statusStyle = "text-success fw-bold";
             if(itemStatus === "Ditolak") statusStyle = "text-danger fw-bold";
 
-            // Membuat kontrol tombol aksi khusus jika item masih bertanda "Diproses"
-            // Mengirimkan parameter id_group DAN nama rincian barang ke fungsi eksekusi
-            let aksiItemControl = itemStatus === "Diproses" ? `
-                <div class="no-print btn-group btn-group-sm">
-                    <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Disetujui')">✓</button>
-                    <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Ditolak')">✕</button>
-                </div>` : `<span class="${statusStyle}" style="font-size:11px">${itemStatus}</span>`;
+            // SOLUSI STATUS: Menambahkan teks cadangan "Diproses" khusus untuk mesin printer
+            let aksiItemControl = "";
+            if (itemStatus === "Diproses") {
+                aksiItemControl = `
+                    <div class="no-print btn-group btn-group-sm">
+                        <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Disetujui')">✓</button>
+                        <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Ditolak')">✕</button>
+                    </div>
+                    <span class="status-text-print" style="font-size:11px;">Diproses</span>
+                `;
+            } else {
+                aksiItemControl = `<span class="${statusStyle}" style="font-size:11px">${itemStatus}</span>`;
+            }
 
             tr.innerHTML = `
                 <td class="text-center">${index === 0 ? nomorUrutNota : ''}</td>
@@ -905,7 +887,6 @@
             pBody.appendChild(tr);
         });
 
-        // Merender baris subtotal kelompok (Sekarang bersih dari tombol aksi)
         let trSub = document.createElement("tr");
         trSub.className = "baris-subtotal table-light";
         
@@ -916,14 +897,14 @@
             <td colspan="4" class="small text-muted ps-3">Pemohon: <strong>${pemoh}</strong></td>
             <td colspan="2" class="text-end fw-bold">SUB TOTAL KATEGORI [${katG}] :</td>
             <td class="text-end fw-bold">${formatRupiah(totalSatuNota)}</td>
-            <td></td> `;
+            <td></td>
+        `;
         pBody.appendChild(trSub);
 
         grandTotalSemuaNota += totalSatuNota;
         nomorUrutNota++;
     }
 
-    // Merender baris Grand Total Akhir
     let trGrand = document.createElement("tr");
     trGrand.className = "baris-total-akhir table-dark text-white fw-bold";
     trGrand.innerHTML = `
