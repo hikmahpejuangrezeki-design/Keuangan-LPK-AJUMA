@@ -89,6 +89,46 @@
     .table-responsive { 
         overflow: visible !important; 
     }
+            /* Menjaga judul tabel agar selalu gandeng dengan tabel di bawahnya */
+    .keep-with-next {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    /* Memastikan tabel tidak terpotong di tengah baris yang canggung */
+    table, tr {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+    }
+    
+    tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+            /* Memaksa kontainer dan tabel menggunakan lebar penuh kertas */
+    .container, .container-fluid, .card, .card-body {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Menghilangkan fungsi scrollbar Bootstrap khusus saat cetak */
+    .table-responsive {
+        overflow: visible !important;
+        display: block !important;
+        width: 100% !important;
+    }
+
+    table {
+        width: 100% !important;
+        table-layout: fixed !important; /* Memaksa kolom membagi ruang secara proporsional */
+    }
+
+    /* Contoh pengaturan lebar kolom tabel agar proporsional di potrait maupun landscape */
+    table th:nth-child(1), table td:nth-child(1) { width: 10% !important; } /* Kolom TGL */
+    table th:nth-child(2), table td:nth-child(2) { width: 20% !important; } /* Kolom KATEGORI */
+    table th:nth-child(3), table td:nth-child(3) { width: 50% !important; } /* Kolom KETERANGAN */
+    table th:nth-child(4), table td:nth-child(4) { width: 20% !important; } /* Kolom JUMLAH */
         }
     </style>
 </head>
@@ -184,24 +224,28 @@
 
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
-    <div id="area-laporan">
-        <!-- KOP SURAT CETAK (UKURAN LOGO DIUPGRADE MENJADI 160px X 160px) -->
-        <div class="d-none d-print-block">
-            <div class="d-flex align-items-center justify-content-center border-bottom border-4 border-dark pb-2 mb-3">
-                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" class="me-4" style="width: 125px; height: 125px; object-fit: contain; margin-left: -30px !important;">
-                <div class="text-center">
-                    <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
-                    <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important;">LPK AJUMA</h1>
-                    <p class="mb-0 small text-muted" style="font-size: 14px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
-                </div>
+   <div id="area-laporan">
+    <div class="d-none d-print-block">
+        <div class="d-flex align-items-center justify-content-start border-bottom border-4 border-dark pb-1 mb-3 w-100">
+            
+            <div class="flex-shrink-0">
+                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" style="width: 125px; height: 125px; object-fit: contain; margin-left: -30px !important;">
             </div>
-            <!-- 2. Bagian Judul Laporan Spesifik (Sekarang Berada di Bawah Garis Kop) -->
-            <div class="text-center mb-4 pt-2">
-                <h4 class="fw-bold text-uppercase mb-1" style="font-size: 15px; color: #000 !important; letter-spacing: 0.5px;">Laporan Rincian Keuangan & Jurnal Umum</h4>
-                <p id="print-periode" class="small mb-0 fw-bold mt-1 text-primary"></p>
+            
+            <div class="w-100 text-center" style="padding-right: 95px;">
+                <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important; line-height: 1.2;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
+                <h1 class="fw-bold mb-0" style="font-size: 22px; letter-spacing: 0.5px; color: #000 !important; line-height: 1.2;">LPK AJUMA</h1>
+                <p class="mb-0 small text-muted mt-1" style="font-size: 14px; color: #555 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
             </div>
+
         </div>
+
+        <div class="text-center mb-4 pt-2">
+            <h4 class="fw-bold text-uppercase mb-1" style="font-size: 15px; color: #000 !important; letter-spacing: 0.5px;">Laporan Rincian Keuangan & Jurnal Umum</h4>
+            <p id="print-periode" class="small mb-0 fw-bold mt-1 text-primary"></p>
         </div>
+    </div>
+</div>
 
         <div class="row g-3 mb-4">
             <div class="col-md-4">
@@ -248,7 +292,7 @@
                 </div>
                 
                 <div class="col-xl-6">
-                    <h6 class="fw-bold text-danger mb-3 text-start"><span class="no-print-icon">📋 </span>Rincian Catatan Pengeluaran</h6>
+                    <h6 class="fw-bold text-danger mb-3 text-start keep-with-next"><span class="no-print-icon">📋 </span>Rincian Catatan Pengeluaran</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-striped align-middle" style="font-size: 12px;">
                             <thead>
@@ -327,7 +371,7 @@
                         </tr>
                     </thead>
                     <tbody id="pengajuan-body">
-                        <tr><td colspan="7" class="text-center text-muted small">Belum ada riwayat berkas pengajuan anggaran dana.</td></tr>
+                        <tr><td colspan="8" class="text-center text-muted small">Belum ada riwayat berkas pengajuan anggaran dana.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -778,109 +822,141 @@
     }
 
     function renderBukuPengajuanFisik() {
-        const pBody = document.getElementById("pengajuan-body");
-        if(dataPengajuanLokal.length === 0) {
-            pBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted small">Belum ada riwayat berkas pengajuan anggaran dana.</td></tr>`;
-            return;
-        }
+    const pBody = document.getElementById("pengajuan-body");
+    // Perubahan: Menyesuaikan colspan menjadi 8 karena kolom bertambah satu
+    if(dataPengajuanLokal.length === 0) {
+        pBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted small">Belum ada riwayat berkas pengajuan anggaran dana.</td></tr>`;
+        return;
+    }
 
-        let kelompokNota = {};
-        dataPengajuanLokal.forEach(item => {
-            const idG = item.id_group || item.id_Group || item.idGrup;
-            if(!kelompokNota[idG]) kelompokNota[idG] = [];
-            kelompokNota[idG].push(item);
-        });
+    let kelompokNota = {};
+    dataPengajuanLokal.forEach(item => {
+        const idG = item.id_group || item.id_Group || item.idGrup;
+        if(!kelompokNota[idG]) kelompokNota[idG] = [];
+        kelompokNota[idG].push(item);
+    });
 
-        pBody.innerHTML = "";
-        let nomorUrutNota = 1;
-        let grandTotalSemuaNota = 0;
+    pBody.innerHTML = "";
+    let nomorUrutNota = 1;
+    let grandTotalSemuaNota = 0;
 
-        for (let key in kelompokNota) {
-            let items = kelompokNota[key];
-            let totalSatuNota = 0;
-            let tglIndo = formatTanggalIndo(items[0].tanggal || items[0].Tanggal);
+    for (let key in kelompokNota) {
+        let items = kelompokNota[key];
+        let totalSatuNota = 0;
+        let tglIndo = formatTanggalIndo(items[0].tanggal || items[0].Tanggal);
 
-            items.forEach((barang, index) => {
-                const sub = parseFloat(barang.subtotal || barang.Subtotal || 0);
-                const hrg = parseFloat(barang.harga || barang.Harga || 0);
-                const qty = parseFloat(barang.qty || barang.Qty || 0);
-                const kat = barang.kategori || barang.Kategori || "";
-                const rinc = barang.rincian || barang.Rincian || barang.item || "";
-
-                let tr = document.createElement("tr");
-                totalSatuNota += sub;
-
-                tr.innerHTML = `
-                    <td class="text-center">${index === 0 ? nomorUrutNota : ''}</td>
-                    <td class="text-center">${index === 0 ? tglIndo : ''}</td>
-                    <td class="fw-bold">${index === 0 ? kat : ''}</td>
-                    <td>${rinc}</td>
-                    <td class="text-end">${formatRupiah(hrg)}</td>
-                    <td class="text-center">${qty}</td>
-                    <td class="text-end">${formatRupiah(sub)}</td>
-                `;
-                pBody.appendChild(tr);
-            });
-
-            let trSub = document.createElement("tr");
-            trSub.className = "baris-subtotal table-light";
+        items.forEach((barang, index) => {
+            const sub = parseFloat(barang.subtotal || barang.Subtotal || 0);
+            const hrg = parseFloat(barang.harga || barang.Harga || 0);
+            const qty = parseFloat(barang.qty || barang.Qty || 0);
+            const kat = barang.kategori || barang.Kategori || "";
+            const rinc = barang.rincian || barang.Rincian || barang.item || "";
             
-            const curStatus = items[0].status || items[0].Status || "Diproses";
-            const pemoh = items[0].pemohon || items[0].Pemohon || "";
-            const katG = items[0].kategori || items[0].Kategori || "";
-            const idGrup = items[0].id_group || items[0].id_Group || "";
+            // Mengambil status spesifik milik item barang ini (Default: Diproses)
+            const itemStatus = barang.status || barang.Status || "Diproses";
+            const idGrup = barang.id_group || barang.id_Group || "";
 
-            let statusBadgeStyle = "text-warning";
-            if(curStatus === "Disetujui") statusBadgeStyle = "text-success fw-bold";
-            if(curStatus === "Ditolak") statusBadgeStyle = "text-danger fw-bold";
-
-            let aksiAdminControl = curStatus === "Diproses" ? `
-                <div class="no-print mt-1">
-                    <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${idGrup}', 'Disetujui')">✓ Setuju</button>
-                    <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusPengajuan('${idGrup}', 'Ditolak')">✕ Tolak</button>
-                </div>` : '';
-
-            trSub.innerHTML = `
-                <td colspan="3" class="text-center small text-muted">Pemohon: ${pemoh} (<span class="${statusBadgeStyle}">${curStatus}</span>)${aksiAdminControl}</td>
-                <td colspan="3" class="text-end fw-bold">SUB TOTAL KATEGORI [${katG}] :</td>
-                <td class="text-end fw-bold">${formatRupiah(totalSatuNota)}</td>
-            `;
-            pBody.appendChild(trSub);
-
-            grandTotalSemuaNota += totalSatuNota;
-            nomorUrutNota++;
-        }
-
-        let trGrand = document.createElement("tr");
-        trGrand.className = "baris-total-akhir table-dark text-white fw-bold";
-        trGrand.innerHTML = `
-            <td colspan="6" class="text-end text-uppercase">TOTAL KESELURUHAN PENGAJUAN :</td>
-            <td class="text-end">${formatRupiah(grandTotalSemuaNota)}</td>
-        `;
-        pBody.appendChild(trGrand);
-    }
-
-    function eksekusiStatusPengajuan(idGroup, statusBaru) {
-        dataPengajuanLokal = dataPengajuanLokal.map(item => {
-            const idG = item.id_group || item.id_Group || "";
-            if(idG === idGroup) {
-                item.status = statusBaru;
-                item.Status = statusBaru;
+            let tr = document.createElement("tr");
+            
+            // Kalkulasi subtotal nota hanya menjumlahkan item yang "Diproses" atau "Disetujui" (Abaikan jika "Ditolak")
+            if (itemStatus !== "Ditolak") {
+                totalSatuNota += sub;
             }
-            return item;
+
+            // Atur gaya teks badge status per item
+            let statusStyle = "text-warning";
+            if(itemStatus === "Disetujui") statusStyle = "text-success fw-bold";
+            if(itemStatus === "Ditolak") statusStyle = "text-danger fw-bold";
+
+            // Membuat kontrol tombol aksi khusus jika item masih bertanda "Diproses"
+            // Mengirimkan parameter id_group DAN nama rincian barang ke fungsi eksekusi
+            let aksiItemControl = itemStatus === "Diproses" ? `
+                <div class="no-print btn-group btn-group-sm">
+                    <button class="btn btn-xs btn-success py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Disetujui')">✓</button>
+                    <button class="btn btn-xs btn-danger py-0 px-1" style="font-size:10px" onclick="eksekusiStatusItemPengajuan('${idGrup}', '${rinc.replace(/'/g, "\\'")}', 'Ditolak')">✕</button>
+                </div>` : `<span class="${statusStyle}" style="font-size:11px">${itemStatus}</span>`;
+
+            tr.innerHTML = `
+                <td class="text-center">${index === 0 ? nomorUrutNota : ''}</td>
+                <td class="text-center">${index === 0 ? tglIndo : ''}</td>
+                <td class="fw-bold text-center">${index === 0 ? kat : ''}</td>
+                <td>${rinc}</td>
+                <td class="text-end">${formatRupiah(hrg)}</td>
+                <td class="text-center">${qty}</td>
+                <td class="text-end">${formatRupiah(sub)}</td>
+                <td class="text-center">${aksiItemControl}</td>
+            `;
+            pBody.appendChild(tr);
         });
-        localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
+
+        // Merender baris subtotal kelompok (Sekarang bersih dari tombol aksi)
+        let trSub = document.createElement("tr");
+        trSub.className = "baris-subtotal table-light";
         
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ aksi: "update_status_pengajuan", id_group: idGroup, status: statusBaru })
-        })
-        .then(res => res.json())
-        .then(res => {
-            alert(res.message);
-            renderBukuPengajuanFisik();
-        });
+        const pemoh = items[0].pemohon || items[0].Pemohon || "";
+        const katG = items[0].kategori || items[0].Kategori || "";
+
+        trSub.innerHTML = `
+            <td colspan="4" class="small text-muted ps-3">Pemohon: <strong>${pemoh}</strong></td>
+            <td colspan="2" class="text-end fw-bold">SUB TOTAL KATEGORI [${katG}] :</td>
+            <td class="text-end fw-bold">${formatRupiah(totalSatuNota)}</td>
+            <td></td> `;
+        pBody.appendChild(trSub);
+
+        grandTotalSemuaNota += totalSatuNota;
+        nomorUrutNota++;
     }
+
+    // Merender baris Grand Total Akhir
+    let trGrand = document.createElement("tr");
+    trGrand.className = "baris-total-akhir table-dark text-white fw-bold";
+    trGrand.innerHTML = `
+        <td colspan="6" class="text-end text-uppercase">TOTAL KESELURUHAN PENGAJUAN :</td>
+        <td class="text-end">${formatRupiah(grandTotalSemuaNota)}</td>
+        <td></td>
+    `;
+    pBody.appendChild(trGrand);
+}
+
+    function eksekusiStatusItemPengajuan(idGroup, rincianBarang, statusBaru) {
+    // 1. Update data di cache LocalStorage secara spesifik per item barang
+    dataPengajuanLokal = dataPengajuanLokal.map(item => {
+        const idG = item.id_group || item.id_Group || "";
+        const rinc = item.rincian || item.Rincian || item.item || "";
+        
+        // Kunci target: Mencocokkan nomor dokumen DAN rincian nama barangnya
+        if(idG === idGroup && rinc === rincianBarang) {
+            item.status = statusBaru;
+            item.Status = statusBaru;
+        }
+        return item;
+    });
+    
+    localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
+    
+    // Render ulang tampilan tabel agar langsung berubah di monitor secara real-time
+    renderBukuPengajuanFisik();
+    
+    // 2. Kirim perintah pembaruan data ke backend Google Apps Script Anda
+    fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ 
+            aksi: "update_status_item_pengajuan", // Menggunakan penamaan aksi baru khusus item
+            id_group: idGroup, 
+            rincian: rincianBarang,
+            status: statusBaru 
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+        // Menampilkan notifikasi sukses/gagal dari server sheets Anda
+        console.log("Respon Sheets:", res.message);
+    })
+    .catch(err => {
+        console.error("Gagal sinkronisasi status ke Google Sheets:", err);
+        alert("Status lokal berubah, namun gagal disimpan ke Google Sheets.");
+    });
+}
 
     function konversiLinkDrive(urlAsli) {
         if (!urlAsli || urlAsli.trim() === "") return "";
