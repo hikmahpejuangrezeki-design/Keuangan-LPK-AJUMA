@@ -24,7 +24,7 @@
 
         .no-print-icon { display: inline; }
 
-  @media print {
+@media print {
     /* Aturan Margin Halaman */
     @page {
         margin: 15mm 15mm 15mm 15mm;
@@ -65,6 +65,19 @@
         margin: 0 !important;
     }
     
+    /* ==========================================================================
+       FIX PATEN PAGE BREAK: Memaksa halaman pecah per judul dokumen secara mutlak 
+       ========================================================================== */
+    .halaman-jurnal-cetak, 
+    .halaman-pengajuan-cetak, 
+    .halaman-bukti-cetak { 
+        page-break-before: always !important; 
+        break-before: page !important;
+        display: block !important;
+        clear: both !important;
+        padding-top: 10px !important;
+    }
+    
     /* Tabel Dasar */
     table { 
         page-break-inside: auto; 
@@ -80,10 +93,34 @@
         background-color: #ffffff !important;
     }
     
-    /* Bukti Fisik */
-    .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: center !important; width: 100% !important; }
-    .kartu-bukti { width: 23% !important; max-width: 23% !important; page-break-inside: avoid !important; border: 1px solid #000000 !important; padding: 8px !important; background: #ffffff !important; }
-    .img-bukti-file { height: 340px !important; width: 100% !important; object-fit: contain !important; border-bottom: 1px solid #000000 !important; }
+    /* ==========================================================================
+       FIX BUKTI FISIK MEMANJANG: Menjaga aspek rasio gambar agar tidak melar di portrait
+       ========================================================================== */
+    .galeri-bukti { 
+        display: flex !important; 
+        flex-wrap: wrap !important; 
+        gap: 15px !important; 
+        justify-content: flex-start !important; 
+        width: 100% !important; 
+    }
+    .kartu-bukti { 
+        width: 30% !important; /* Diubah ke 30% agar pas 3 kolom rapi di mode portrait */
+        max-width: 30% !important; 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important;
+        border: 1px solid #000000 !important; 
+        padding: 8px !important; 
+        background: #ffffff !important; 
+        margin-bottom: 15px !important;
+    }
+    .img-bukti-file { 
+        width: 100% !important; 
+        height: auto !important; /* Trik Utama: Ubah height ke auto agar gambar proporsional mengikuti lebar */
+        max-height: 220px !important; /* Batasi tinggi maksimal agar tidak menghabiskan kertas */
+        object-fit: contain !important; 
+        border-bottom: 1px solid #000000 !important; 
+        padding-bottom: 5px !important;
+    }
     
     /* Subtotal & Total */
     .baris-subtotal { font-weight: bold; border-top: 1px dashed #000000 !important; border-bottom: 1px dashed #000000 !important; }
@@ -105,7 +142,7 @@
     }
 }
 
-/* Penjaga agar teks status cetak tidak kelihatan di monitor monitor normal */
+/* Penjaga agar teks status cetak tidak kelihatan di monitor normal */
 @media screen {
     .status-text-print {
         display: none !important;
