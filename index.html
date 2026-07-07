@@ -24,8 +24,8 @@
 
         .no-print-icon { display: inline; }
 
-   @media print {
-    /* MEMBERIKAN AREA AMAN CETAK PADA KERTAS */
+  @media print {
+    /* Aturan Margin Halaman */
     @page {
         margin: 15mm 15mm 15mm 15mm;
     }
@@ -40,27 +40,19 @@
     .no-print-btn { display: none !important; }
     .row.g-3.mb-4 { display: none !important; }
     
-    /* FIX HITAM FORMAL: Memaksa warna tulisan hitam */
-    h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
+    /* Paksa Hitam Formal */
+    h2, h3, h5, h6, th, td, div, span, p, h1, h4, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
         color: #000000 !important; 
     }
     
-    /* FIX STATUS DIPROSES: Sembunyikan di monitor, tapi wajib tampil hitam tebal saat dicetak */
+    /* Teks status cetak wajib muncul */
     .status-text-print {
         display: inline-block !important;
         color: #000000 !important;
         font-weight: bold !important;
     }
 
-    /* FIX KOP MEPET: Memberikan ruang dorong ke kanan khusus untuk komponen Header/Kop Surat */
-    .header, .kop-surat, [class*="header"], [class*="kop"] {
-        padding-left: 20px !important;
-        padding-right: 20px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-    
-    /* Menghilangkan garis pembungkus kotak luar (.card) */
+    /* Hilangkan total garis pembungkus luar .card */
     .card { 
         box-shadow: none !important; 
         border: none !important; 
@@ -73,12 +65,7 @@
         margin: 0 !important;
     }
     
-    /* Pengaturan Halaman */
-    .halaman-jurnal-cetak { page-break-before: always !important; }
-    .halaman-pengajuan-cetak { page-break-before: always !important; }
-    .halaman-bukti-cetak { page-break-before: always !important; }
-    
-    /* Aturan Tabel */
+    /* Tabel Dasar */
     table { 
         page-break-inside: auto; 
         border-collapse: collapse !important; 
@@ -93,16 +80,15 @@
         background-color: #ffffff !important;
     }
     
-    /* Galeri Bukti */
+    /* Bukti Fisik */
     .galeri-bukti { display: flex !important; flex-wrap: wrap !important; gap: 20px !important; justify-content: center !important; width: 100% !important; }
     .kartu-bukti { width: 23% !important; max-width: 23% !important; page-break-inside: avoid !important; border: 1px solid #000000 !important; padding: 8px !important; background: #ffffff !important; }
     .img-bukti-file { height: 340px !important; width: 100% !important; object-fit: contain !important; border-bottom: 1px solid #000000 !important; }
     
-    /* Garis tabel pengajuan */
+    /* Subtotal & Total */
     .baris-subtotal { font-weight: bold; border-top: 1px dashed #000000 !important; border-bottom: 1px dashed #000000 !important; }
     .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000000 !important; border-bottom: 2px double #000000 !important; }
     
-    /* Lebar Kontainer Penuh */
     .container, .container-fluid {
         width: 100% !important;
         max-width: 100% !important;
@@ -119,7 +105,7 @@
     }
 }
 
-/* Sembunyikan teks cetak status "Diproses" saat aplikasi sedang dibuka normal di layar komputer/HP */
+/* Penjaga agar teks status cetak tidak kelihatan di monitor monitor normal */
 @media screen {
     .status-text-print {
         display: none !important;
@@ -219,18 +205,24 @@
 
     <div id="status-app" class="alert alert-warning text-center no-print" style="display: none;">Memperbarui laporan...</div>
 
- <div id="area-laporan">
+<div id="area-laporan">
     <div class="d-none d-print-block">
         <div class="d-flex align-items-center justify-content-between border-bottom border-4 border-dark pb-2 mb-3 w-100">
             
-            <div style="width: 125px; min-width: 125px;" class="text-start">
-                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" style="width: 125px; height: 125px; object-fit: contain;">
+            <div style="width: 110px; min-width: 110px;" class="text-start">
+                <img src="logo-ajuma.png" alt="Logo LPK AJUMA" style="width: 100px; height: 100px; object-fit: contain;">
             </div>
             
-            <div class="flex-grow-1 text-center" style="padding-left: 10px; padding-right: 125px;">
-                <h1 class="fw-bold mb-0" style="font-size: 21px; letter-spacing: 0.5px; color: #000000 !important; line-height: 1.3;">LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA</h1>
-                <h1 class="fw-bold mb-0" style="font-size: 21px; letter-spacing: 0.5px; color: #000000 !important; line-height: 1.3;">LPK AJUMA</h1>
-                <p class="mb-0 mt-1" style="font-size: 16px; color: #000000 !important;">Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat</p>
+            <div class="flex-grow-1 text-center" style="padding-left: 10px; padding-right: 110px; min-width: 0;">
+                <h1 class="fw-bold mb-0" style="font-size: calc(14px + 0.8vw); white-space: nowrap; letter-spacing: 0.3px; color: #000000 !important; line-height: 1.3;">
+                    LEMBAGA PELATIHAN KERJA ANUGRAH JULIAN UTAMA
+                </h1>
+                <h1 class="fw-bold mb-0" style="font-size: 20px; letter-spacing: 0.5px; color: #000000 !important; line-height: 1.3;">
+                    LPK AJUMA
+                </h1>
+                <p class="mb-0 mt-1" style="font-size: 12px; color: #000000 !important;">
+                    Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat
+                </p>
             </div>
 
         </div>
