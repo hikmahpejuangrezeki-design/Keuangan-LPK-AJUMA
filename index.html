@@ -27,7 +27,7 @@
 @media print {
     /* Aturan Margin Halaman */
     @page {
-        margin: 15mm 15mm 15mm 15mm;
+        margin: 15mm;
     }
 
     body { 
@@ -35,10 +35,9 @@
         color: #000000 !important; 
     }
     
-    .no-print { display: none !important; }
-    .no-print-icon { display: none !important; }
-    .no-print-btn { display: none !important; }
-    .row.g-3.mb-4 { display: none !important; }
+    .no-print, .no-print-icon, .no-print-btn, .row.g-3.mb-4 { 
+        display: none !important; 
+    }
     
     /* Paksa Hitam Formal */
     h2, h3, h5, h6, th, td, div, span, p, h1, h4, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
@@ -65,9 +64,7 @@
         margin: 0 !important;
     }
     
-    /* ==========================================================================
-       FIX PATEN PAGE BREAK: Memaksa halaman pecah per judul dokumen secara mutlak 
-       ========================================================================== */
+    /* FIX PATEN PAGE BREAK: Memaksa halaman pecah per judul dokumen secara mutlak */
     .halaman-jurnal-cetak, 
     .halaman-pengajuan-cetak, 
     .halaman-bukti-cetak { 
@@ -94,7 +91,7 @@
     }
     
     /* ==========================================================================
-       FIX BUKTI FISIK MEMANJANG: Menjaga aspek rasio gambar agar tidak melar di portrait
+       PENGATURAN GALERI BUKTI FISIK RESPONSIF (OTOMATIS MEDETEKSI PORTRAIT / LANDSCAPE)
        ========================================================================== */
     .galeri-bukti { 
         display: flex !important; 
@@ -103,8 +100,10 @@
         justify-content: flex-start !important; 
         width: 100% !important; 
     }
+
+    /* Pengaturan default untuk mode PORTRAIT (3 Kolom, Gambar Proporsional) */
     .kartu-bukti { 
-        width: 30% !important; /* Diubah ke 30% agar pas 3 kolom rapi di mode portrait */
+        width: 30% !important; 
         max-width: 30% !important; 
         page-break-inside: avoid !important; 
         break-inside: avoid !important;
@@ -115,11 +114,24 @@
     }
     .img-bukti-file { 
         width: 100% !important; 
-        height: auto !important; /* Trik Utama: Ubah height ke auto agar gambar proporsional mengikuti lebar */
-        max-height: 220px !important; /* Batasi tinggi maksimal agar tidak menghabiskan kertas */
+        height: auto !important; 
+        max-height: 240px !important; 
         object-fit: contain !important; 
         border-bottom: 1px solid #000000 !important; 
         padding-bottom: 5px !important;
+    }
+
+    /* Pengaturan khusus jika user memilih mode LANDSCAPE (Kembali ke 4 Kolom Sempurna Anda!) */
+    @media (orientation: landscape) {
+        .kartu-bukti { 
+            width: 23% !important; 
+            max-width: 23% !important; 
+            margin-bottom: 20px !important;
+        }
+        .img-bukti-file { 
+            height: 340px !important; /* Kembali ke ukuran tinggi asli Anda yang sudah bagus */
+            max-height: none !important;
+        }
     }
     
     /* Subtotal & Total */
@@ -257,8 +269,11 @@
                 <h1 class="fw-bold mb-0" style="font-size: 20px; letter-spacing: 0.5px; color: #000000 !important; line-height: 1.3;">
                     LPK AJUMA
                 </h1>
-                <p class="mb-0 mt-1" style="font-size: 12px; color: #000000 !important;">
-                    Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kota Tasikmalaya, Jawa Barat
+                <p class="mb-0 mt-1" style="font-size: 12px; white-space: nowrap; color: #000000 !important;">
+                    Alamat: Jl. Letjend Mashudi Ruko Bumi Parahyangan No.18, Kel. Setiaratu, Kec. Cibeureum, Kota Tasikmalaya
+                </p>
+                 <p class="mb-0 mt-1" style="font-size: 12px; white-space: nowrap; color: #000000 !important;">
+                    E-mail: lpkajuma@gmail.com Tlp. 0851 1759 0475
                 </p>
             </div>
 
