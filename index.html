@@ -25,111 +25,120 @@
         .no-print-icon { display: inline; }
 
         /* Aturan Khusus Saat Cetak Ke PDF / Printer */
-        @media print {
-            body { background-color: #fff; color: #000 !important; }
-            .no-print { display: none !important; }
-            .no-print-icon { display: none !important; }
-            
-            .row.g-3.mb-4 { display: none !important; }
-            
-            h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
-                color: #000000 !important; 
-                background: none !important;
-                border: none !important;
-            }
-            
-            .table th { 
-                background-color: #ffffff !important; 
-                color: #000000 !important; 
-                border: 1px solid #000000 !important;
-            }
-            
-            .card { box-shadow: none; border: 1px solid #000; margin-bottom: 20px !important; page-break-inside: avoid; }
-            
-            .halaman-jurnal-cetak { page-break-before: always !important; margin-top: 0; }
-            .halaman-pengajuan-cetak { page-break-before: always !important; margin-top: 0; }
-            .halaman-bukti-cetak { page-break-before: always !important; margin-top: 0; }
-            
-            tr { page-break-inside: avoid !important; border: 1px solid #000 !important; }
-            table { page-break-inside: auto; border-collapse: collapse !important; }
-            
-            .galeri-bukti { 
-                display: flex !important; 
-                flex-wrap: wrap !important; 
-                gap: 20px !important; 
-                justify-content: center !important; 
-                width: 100% !important;
-            }
-            .kartu-bukti { 
-                width: 23% !important; 
-                max-width: 23% !important; 
-                page-break-inside: avoid !important; 
-                border: 1px solid #000 !important; 
-                padding: 8px !important; 
-                margin-bottom: 20px !important; 
-                background: #fff !important;
-            }
-            .img-bukti-file { 
-                height: 340px !important; 
-                width: 100% !important; 
-                object-fit: contain !important; 
-                border-bottom: 1px solid #eee !important; 
-                margin: 5px 0 !important; 
-            }
-            .kartu-bukti small { font-size: 11px !important; }
-            
-            .baris-subtotal { font-weight: bold; background-color: #f8f9fa !important; border-top: 1px dashed #000 !important; border-bottom: 1px dashed #000 !important; }
-            .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000 !important; border-bottom: 2px double #000 !important; }
-            .card, .row { 
+@media print {
+    body { background-color: #fff; color: #000000 !important; }
+    .no-print { display: none !important; }
+    .no-print-icon { display: none !important; }
+    .no-print-btn { display: none !important; } /* Menyembunyikan tombol aksi ✓ / ✕ */
+    
+    .row.g-3.mb-4 { display: none !important; }
+    
+    /* SOLUSI HITAM FORMAL: Semua teks dipaksa hitam tanpa merusak border & background tabel */
+    h2, h3, h5, h6, th, td, div, span, p, .text-success, .text-danger, .text-primary, .text-secondary, .badge { 
+        color: #000000 !important; 
+    }
+    
+    /* Memastikan teks status khusus cetak muncul dengan warna hitam formal */
+    .status-text-print {
+        display: inline !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+    }
+
+    /* Membuat border tabel pengisian tetap tegas hitam */
+    .table th, .table td { 
+        border: 1px solid #000000 !important;
+    }
+    
+    .table th { 
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
+    }
+    
+    .card { box-shadow: none; border: 1px solid #000000; margin-bottom: 20px !important; page-break-inside: avoid; }
+    
+    .halaman-jurnal-cetak { page-break-before: always !important; margin-top: 0; }
+    .halaman-pengajuan-cetak { page-break-before: always !important; margin-top: 0; }
+    .halaman-bukti-cetak { page-break-before: always !important; margin-top: 0; }
+    
+    table { page-break-inside: auto; border-collapse: collapse !important; width: 100% !important; }
+    tr { page-break-inside: avoid !important; break-inside: avoid !important; border: 1px solid #000000 !important; }
+    
+    .galeri-bukti { 
+        display: flex !important; 
+        flex-wrap: wrap !important; 
+        gap: 20px !important; 
+        justify-content: center !important; 
+        width: 100% !important;
+    }
+    .kartu-bukti { 
+        width: 23% !important; 
+        max-width: 23% !important; 
+        page-break-inside: avoid !important; 
+        border: 1px solid #000000 !important; 
+        padding: 8px !important; 
+        margin-bottom: 20px !important; 
+        background: #ffffff !important;
+    }
+    .img-bukti-file { 
+        height: 340px !important; 
+        width: 100% !important; 
+        object-fit: contain !important; 
+        border-bottom: 1px solid #000000 !important; 
+        margin: 5px 0 !important; 
+    }
+    .kartu-bukti small { font-size: 11px !important; }
+    
+    /* Desain garis subtotal putus-putus formal hitam */
+    .baris-subtotal { font-weight: bold; background-color: #ffffff !important; border-top: 1px dashed #000000 !important; border-bottom: 1px dashed #000000 !important; }
+    .baris-total-akhir { font-weight: bold; font-size: 14px; border-top: 2px double #000000 !important; border-bottom: 2px double #000000 !important; }
+    
+    .card, .row { 
         page-break-inside: auto !important; 
         break-inside: auto !important; 
     }
     
-    /* Bootstrap table-responsive default-nya memicu 'break-inside: avoid' di beberapa browser, kita netralkan */
-    .table-responsive { 
-        overflow: visible !important; 
-    }
-            /* Menjaga judul tabel agar selalu gandeng dengan tabel di bawahnya */
     .keep-with-next {
         page-break-after: avoid !important;
         break-after: avoid !important;
     }
 
-    /* Memastikan tabel tidak terpotong di tengah baris yang canggung */
-    table, tr {
-        page-break-inside: auto !important;
-        break-inside: auto !important;
-    }
-    
-    tr {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-            /* Memaksa kontainer dan tabel menggunakan lebar penuh kertas */
     .container, .container-fluid, .card, .card-body {
         width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
     }
 
-    /* Menghilangkan fungsi scrollbar Bootstrap khusus saat cetak */
     .table-responsive {
         overflow: visible !important;
         display: block !important;
         width: 100% !important;
     }
 
-    table {
-        width: 100% !important;
-        table-layout: fixed !important; /* Memaksa kolom membagi ruang secara proporsional */
+    /* Pengaturan Lebar Kolom Berdasarkan ID Tabel Supaya Tidak Saling Tabrakan */
+    
+    /* 1. Tabel Kas Utama (Rincian Masuk / Keluar) */
+    #rinci-masuk-body-parent table, #rinci-keluar-body-parent table, .tabel-kas-utama {
+        table-layout: fixed !important;
     }
+    #rinci-masuk-body-parent table th:nth-child(1), #rinci-masuk-body-parent table td:nth-child(1) { width: 12% !important; }
+    #rinci-masuk-body-parent table th:nth-child(2), #rinci-masuk-body-parent table td:nth-child(2) { width: 18% !important; }
+    #rinci-masuk-body-parent table th:nth-child(3), #rinci-masuk-body-parent table td:nth-child(3) { width: 50% !important; }
+    #rinci-masuk-body-parent table th:nth-child(4), #rinci-masuk-body-parent table td:nth-child(4) { width: 20% !important; }
 
-    /* Contoh pengaturan lebar kolom tabel agar proporsional di potrait maupun landscape */
-    table th:nth-child(1), table td:nth-child(1) { width: 10% !important; } /* Kolom TGL */
-    table th:nth-child(2), table td:nth-child(2) { width: 20% !important; } /* Kolom KATEGORI */
-    table th:nth-child(3), table td:nth-child(3) { width: 50% !important; } /* Kolom KETERANGAN */
-    table th:nth-child(4), table td:nth-child(4) { width: 20% !important; } /* Kolom JUMLAH */
-        }
+    /* 2. Tabel Pengajuan Dana Baru (8 Kolom Proporsional) */
+    #pengajuan-body-parent table, #tabel-pengajuan-dana {
+        table-layout: fixed !important;
+    }
+    #pengajuan-body-parent table th:nth-child(1), #pengajuan-body-parent table td:nth-child(1) { width: 5% !important; }  /* NO */
+    #pengajuan-body-parent table th:nth-child(2), #pengajuan-body-parent table td:nth-child(2) { width: 12% !important; } /* TANGGAL */
+    #pengajuan-body-parent table th:nth-child(3), #pengajuan-body-parent table td:nth-child(3) { width: 15% !important; } /* KATEGORI */
+    #pengajuan-body-parent table th:nth-child(4), #pengajuan-body-parent table td:nth-child(4) { width: 30% !important; } /* RINCIAN BARANG */
+    #pengajuan-body-parent table th:nth-child(5), #pengajuan-body-parent table td:nth-child(5) { width: 13% !important; } /* HARGA SATUAN */
+    #pengajuan-body-parent table th:nth-child(6), #pengajuan-body-parent table td:nth-child(6) { width: 5% !important; }  /* QTY */
+    #pengajuan-body-parent table th:nth-child(7), #pengajuan-body-parent table td:nth-child(7) { width: 12% !important; } /* TOTAL */
+    #pengajuan-body-parent table th:nth-child(8), #pengajuan-body-parent table td:nth-child(8) { width: 8% !important; }  /* STATUS */
+}
     </style>
 </head>
 <body>
