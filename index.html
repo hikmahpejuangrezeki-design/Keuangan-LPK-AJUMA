@@ -26,9 +26,16 @@
 
        /* Aturan Khusus Saat Cetak Ke PDF / Printer */
 @media print {
+    /* MEMBERIKAN MARGIN AMAN PADA KERTAS AGAR KOP & LOGO TIDAK TERPOTONG */
+    @page {
+        margin: 15mm 15mm 15mm 15mm; /* Jarak aman atas, kanan, bawah, kiri */
+    }
+
     body { 
         background-color: #ffffff; 
         color: #000000 !important; 
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .no-print { display: none !important; }
@@ -119,7 +126,7 @@
         break-after: avoid !important;
     }
 
-    /* FIX MEPET KIRI: Memaksa kontainer menggunakan seluruh area cetak yang tersedia */
+    /* FIX MEPET KIRI & ATAS: Mengembalikan ukuran kontainer ke lebar penuh dengan margin kertas baru */
     .container, .container-fluid {
         width: 100% !important;
         max-width: 100% !important;
@@ -133,7 +140,7 @@
         width: 100% !important;
     }
 
-    /* FIX PROPORSI LEBAR TABEL: Menggunakan auto agar browser otomatis membagi kolom secara merata */
+    /* Lebar kolom otomatis mengikuti ruang kertas secara proporsional */
     table {
         table-layout: auto !important;
     }
@@ -376,6 +383,7 @@
                             <th style="width: 13%">Harga Satuan</th>
                             <th style="width: 8%">Qty</th>
                             <th style="width: 17%">Jumlah / Total</th>
+                            <th style="width: 15%">Status</th>
                         </tr>
                     </thead>
                     <tbody id="pengajuan-body">
