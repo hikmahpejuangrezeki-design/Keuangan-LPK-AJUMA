@@ -554,7 +554,7 @@
         return `${parseInt(bagian[2])} ${blnSingkat[parseInt(bagian[1]) - 1]}`;
     }
 
-  function muatDataDariSheets() {
+ function muatDataDariSheets() {
     const tglA = document.getElementById("input-tgl-awal").value;
     const tglB = document.getElementById("input-tgl-akhir").value;
     const statusApp = document.getElementById("status-app");
@@ -591,7 +591,8 @@
             // Masukkan data ke cache sistem admin dan jalankan fungsi render tabel kas
             dataCacheGlobal = gabungan;
             if (typeof renderDataKasUtama === "function") {
-                renderDataKasUtama();
+                // SAKRAL: Kirim nilai saldoAwalLalu ke fungsi render
+                renderDataKasUtama(parseFloat(response.saldoAwalLalu) || 0);
             }
 
             // 2. Ambil data Buku Pengajuan Anggaran Dana jika ada
@@ -702,11 +703,14 @@
         if (rKeluarBody.innerHTML === "") rKeluarBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Tidak ada data.</td></tr>`;
         if (jBody.innerHTML === "") jBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Tidak ada data jurnal.</td></tr>`;
 
+        // --- FILTER SYNC AMAN SAKRAL ---
         document.getElementById("stat-masuk").innerText = formatRupiah(tMasuk);
         document.getElementById("stat-keluar").innerText = formatRupiah(tKeluar);
-        // Jauh lebih aman: Mengambil data saldo bawaan Google Sheets lalu digabungkan dengan total transaksi baru
-let kasMasaLalu = response.saldoAwalLalu || 0; 
-document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMasuk - tKeluar);
+        
+        // Menggunakan nilai parameter saldoAwalLalu yang dilempar dari muatDataDariSheets()
+        let kasMasaLalu = parseFloat(saldoAwalLalu) || 0; 
+        document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMasuk - tKeluar);
+        // -------------------------------
 
         document.getElementById("rinci-masuk-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pemasukan:</td><td class="text-end">${formatRupiah(tMasuk)}</td></tr>`;
         document.getElementById("rinci-keluar-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pengeluaran:</td><td class="text-end">${formatRupiah(tKeluar)}</td></tr>`;
@@ -907,7 +911,6 @@ document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMa
             if(itemStatus === "Disetujui") statusStyle = "text-success fw-bold";
             if(itemStatus === "Ditolak") statusStyle = "text-danger fw-bold";
 
-            // SOLUSI STATUS: Menambahkan teks cadangan "Diproses" khusus untuk mesin printer
             let aksiItemControl = "";
             if (itemStatus === "Diproses") {
                 aksiItemControl = `
@@ -963,12 +966,10 @@ document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMa
 }
 
     function eksekusiStatusItemPengajuan(idGroup, rincianBarang, statusBaru) {
-    // 1. Update data di cache LocalStorage secara spesifik per item barang
     dataPengajuanLokal = dataPengajuanLokal.map(item => {
         const idG = item.id_group || item.id_Group || "";
         const rinc = item.rincian || item.Rincian || item.item || "";
         
-        // Kunci target: Mencocokkan nomor dokumen DAN rincian nama barangnya
         if(idG === idGroup && rinc === rincianBarang) {
             item.status = statusBaru;
             item.Status = statusBaru;
@@ -977,15 +978,12 @@ document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMa
     });
     
     localStorage.setItem("dbPengajuanAjumaV2", JSON.stringify(dataPengajuanLokal));
-    
-    // Render ulang tampilan tabel agar langsung berubah di monitor secara real-time
     renderBukuPengajuanFisik();
     
-    // 2. Kirim perintah pembaruan data ke backend Google Apps Script Anda
     fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ 
-            aksi: "update_status_item_pengajuan", // Menggunakan penamaan aksi baru khusus item
+            aksi: "update_status_item_pengajuan", 
             id_group: idGroup, 
             rincian: rincianBarang,
             status: statusBaru 
@@ -993,7 +991,6 @@ document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMa
     })
     .then(res => res.json())
     .then(res => {
-        // Menampilkan notifikasi sukses/gagal dari server sheets Anda
         console.log("Respon Sheets:", res.message);
     })
     .catch(err => {
