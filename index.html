@@ -704,7 +704,9 @@
 
         document.getElementById("stat-masuk").innerText = formatRupiah(tMasuk);
         document.getElementById("stat-keluar").innerText = formatRupiah(tKeluar);
-        document.getElementById("stat-saldo").innerText = formatRupiah(tMasuk - tKeluar);
+        // Jauh lebih aman: Mengambil data saldo bawaan Google Sheets lalu digabungkan dengan total transaksi baru
+let kasMasaLalu = response.saldoAwalLalu || 0; 
+document.getElementById("stat-saldo").innerText = formatRupiah(kasMasaLalu + tMasuk - tKeluar);
 
         document.getElementById("rinci-masuk-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pemasukan:</td><td class="text-end">${formatRupiah(tMasuk)}</td></tr>`;
         document.getElementById("rinci-keluar-foot").innerHTML = `<tr><td colspan="3" class="text-end">Total Pengeluaran:</td><td class="text-end">${formatRupiah(tKeluar)}</td></tr>`;
