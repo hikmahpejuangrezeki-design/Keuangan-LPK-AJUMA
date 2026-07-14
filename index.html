@@ -679,7 +679,7 @@
                     <td class="text-end">${debitText}</td>
                     <td class="text-end">${kreditText}</td>
                     <td class="text-center no-print">
-                        <button class="btn btn-sm btn-warning py-0 px-1" style="font-size:11px" onclick="aktifkanModeEdit('${item.rowNum || item.rowtext}')">✏️ Edit</button>
+                        <button class="btn btn-sm btn-warning py-0 px-1" style="font-size:11px" onclick="aktifkanModeEdit('${item.rowNum || item.rowtext}', '${jenis}')">✏️ Edit</button>
                     </td>
                 </tr>
             `;
@@ -761,25 +761,36 @@
         .finally(() => { btn.disabled = false; btn.innerText = "🚀 Simpan Data"; });
     }
 
-    function aktifkanModeEdit(rowNum) {
-        const item = dataCacheGlobal.find(i => String(i.rowNum || i.rowtext) === String(rowNum));
-        if(!item) return;
+    function aktifkanModeEdit(rowNum, jenisTransaksi) {
+    // Cari data yang nomor baris DAN jenis transaksinya cocok
+    const item = dataCacheGlobal.find(i => 
+        String(i.rowNum || i.rowtext) === String(rowNum) && 
+        String(i.jenis || i.Jenis || "").toLowerCase() === String(jenisTransaksi).toLowerCase()
+    );
 
-        document.getElementById("judul-form").innerText = "✏️ Edit Transaksi Lama (Baris #" + rowNum + ")";
-        document.getElementById("in-aksi").value = "edit";
-        document.getElementById("in-rownum").value = rowNum;
-        document.getElementById("in-jenis").value = item.jenis || item.Jenis || "";
-        document.getElementById("in-tanggal").value = (item.tanggal || item.Tanggal) ? (item.tanggal || item.Tanggal).split("T")[0] : '';
-        document.getElementById("in-noref").value = item.noref || item.NoRef || "";
-        document.getElementById("in-kategori").value = item.kategori || item.Kategori || "";
-        document.getElementById("in-keterangan").value = item.keterangan || item.Keterangan || "";
-        document.getElementById("in-jumlah").value = item.jumlah || item.Jumlah || "";
-        document.getElementById("in-foto").value = item.buktiFoto || item.BuktiFoto || "";
-
-        document.getElementById("btn-batal").style.display = "inline-block";
-        document.getElementById("box-form").classList.add("mode-edit");
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if(!item) {
+        alert("Data transaksi tidak ditemukan!");
+        return;
     }
+
+    document.getElementById("judul-form").innerText = "✏️ Edit Transaksi " + jenisTransaksi + " (Baris #" + rowNum + ")";
+    document.getElementById("in-aksi").value = "edit";
+    document.getElementById("in-rownum").value = rowNum;
+    
+    // Kunci jenis formulir sesuai dengan jenis transaksi yang diklik
+    document.getElementById("in-jenis").value = jenisTransaksi; 
+    
+    document.getElementById("in-tanggal").value = (item.tanggal || item.Tanggal) ? (item.tanggal || item.Tanggal).split("T")[0] : '';
+    document.getElementById("in-noref").value = item.noref || item.NoRef || "";
+    document.getElementById("in-kategori").value = item.kategori || item.Kategori || "";
+    document.getElementById("in-keterangan").value = item.keterangan || item.Keterangan || "";
+    document.getElementById("in-jumlah").value = item.jumlah || item.Jumlah || "";
+    document.getElementById("in-foto").value = item.buktiFoto || item.BuktiFoto || "";
+
+    document.getElementById("btn-batal").style.display = "inline-block";
+    document.getElementById("box-form").classList.add("mode-edit");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
     function resetFormKeAwal() {
         document.getElementById("judul-form").innerText = "➕ Input Transaksi Baru (Buku Kas Utama)";
